@@ -146,6 +146,362 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
   @keyframes moneyPop{0%{transform:scale(.92);opacity:.55}60%{transform:scale(1.055)}100%{transform:scale(1);opacity:1}}
   @media(max-width:560px){.reward-row{grid-template-columns:1fr}.cookie-card{display:flex;align-items:center;justify-content:center;gap:12px}.cookie-jar{margin:2px 0 0}header::after{right:12px;top:42px;font-size:42px}}
 
+  /* ---------- appearance + monthly insights ---------- */
+  .theme-picker{
+    display:flex;align-items:center;gap:7px;padding:5px 9px;
+    border:1px solid var(--line);border-radius:10px;background:var(--card);
+    color:var(--ink-soft);font-size:12.5px;
+  }
+  .theme-picker select{
+    border:none;background:transparent;color:var(--ink);font:inherit;
+    cursor:pointer;outline:none;padding:1px 2px;
+  }
+  body[data-theme-mode="original"]{
+    --month-a:#FCA51D;--month-b:#FFF0C9;--month-ink:#7A4A00;
+  }
+  body[data-theme-mode="original"] header::after{opacity:0}
+  body[data-theme-mode="original"] #bigMonth span{color:var(--accent-deep)}
+  body[data-theme-mode="original"] .leftbox{
+    border-color:var(--accent);
+    background:linear-gradient(180deg,#FFFDF8 0%,var(--card2) 100%);
+  }
+  body[data-theme-mode="original"] .leftbox .k::before,
+  body[data-theme-mode="original"] .leftbox .v{color:var(--accent-deep)}
+
+  .month-insights{
+    display:grid;grid-template-columns:1fr 116px;gap:10px;margin-top:10px;
+  }
+  .pace-card,.bill-ring-card{
+    border:1px dashed var(--line);border-radius:14px;
+    background:rgba(255,255,255,.48);padding:11px 12px;
+  }
+  .insight-head{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    margin-bottom:7px;
+  }
+  .insight-title{
+    font-size:10px;letter-spacing:1.25px;text-transform:uppercase;
+    color:var(--ink-soft);font-weight:700;
+  }
+  .month-badge{
+    flex:none;font-size:10.5px;font-family:ui-monospace,monospace;
+    color:var(--month-ink);background:var(--month-b);
+    border:1px solid color-mix(in srgb,var(--month-a) 55%,var(--line));
+    border-radius:999px;padding:3px 8px;white-space:nowrap;
+  }
+  .month-track{
+    height:9px;border-radius:999px;background:var(--card2);
+    overflow:hidden;border:1px solid var(--line);
+  }
+  .month-track span{
+    display:block;height:100%;width:0;border-radius:999px;
+    background:linear-gradient(90deg,var(--month-a),var(--accent));
+    transition:width .35s ease;
+  }
+  .pace-message{font-size:12px;color:var(--ink-soft);margin-top:7px;line-height:1.45}
+  .pace-message strong{color:var(--ink)}
+  .bill-ring-card{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+  }
+  .bill-ring{
+    --ring-pct:0;
+    width:66px;height:66px;border-radius:50%;
+    display:grid;place-items:center;
+    background:conic-gradient(var(--month-a) calc(var(--ring-pct)*1%),var(--card2) 0);
+    position:relative;margin:1px auto 5px;
+  }
+  .bill-ring::before{
+    content:"";position:absolute;inset:8px;border-radius:50%;
+    background:var(--card);border:1px solid var(--line);
+  }
+  .bill-ring span{
+    position:relative;z-index:1;font-family:ui-monospace,monospace;
+    font-size:12px;font-weight:800;color:var(--ink);
+  }
+  .bill-ring-label{font-size:10.5px;color:var(--ink-soft);line-height:1.3}
+  @media(max-width:560px){
+    .month-insights{grid-template-columns:1fr}
+    .bill-ring-card{flex-direction:row;gap:12px;text-align:left}
+    .bill-ring{margin:0}
+    .theme-picker{width:100%;justify-content:space-between}
+  }
+
+
+  /* ---------- monthly planner-page personality ---------- */
+  body{
+    --month-motif:"✦";
+    --month-motif-2:"•";
+    --month-tape:rgba(252,165,29,.18);
+    --month-wash:rgba(252,165,29,.08);
+  }
+
+  body[data-month="01"]{
+    --month-motif:"❄";
+    --month-motif-2:"✧";
+    --month-tape:rgba(142,185,218,.25);
+    --month-wash:rgba(142,185,218,.10);
+  }
+  body[data-month="02"]{
+    --month-motif:"♥";
+    --month-motif-2:"✦";
+    --month-tape:rgba(228,154,181,.24);
+    --month-wash:rgba(228,154,181,.10);
+  }
+  body[data-month="03"]{
+    --month-motif:"🌷";
+    --month-motif-2:"✿";
+    --month-tape:rgba(166,201,141,.26);
+    --month-wash:rgba(166,201,141,.11);
+  }
+  body[data-month="04"]{
+    --month-motif:"🌸";
+    --month-motif-2:"✿";
+    --month-tape:rgba(231,169,196,.25);
+    --month-wash:rgba(231,169,196,.10);
+  }
+  body[data-month="05"]{
+    --month-motif:"🌿";
+    --month-motif-2:"✦";
+    --month-tape:rgba(127,184,150,.24);
+    --month-wash:rgba(127,184,150,.10);
+  }
+  body[data-month="06"]{
+    --month-motif:"🍋";
+    --month-motif-2:"✦";
+    --month-tape:rgba(232,195,79,.28);
+    --month-wash:rgba(232,195,79,.11);
+  }
+  body[data-month="07"]{
+    --month-motif:"☀";
+    --month-motif-2:"🍋";
+    --month-tape:rgba(242,169,75,.27);
+    --month-wash:rgba(242,169,75,.11);
+  }
+  body[data-month="08"]{
+    --month-motif:"🏖";
+    --month-motif-2:"☀";
+    --month-tape:rgba(232,162,102,.25);
+    --month-wash:rgba(232,162,102,.10);
+  }
+  body[data-month="09"]{
+    --month-motif:"🍁";
+    --month-motif-2:"✦";
+    --month-tape:rgba(200,147,87,.25);
+    --month-wash:rgba(200,147,87,.10);
+  }
+  body[data-month="10"]{
+    --month-motif:"🎃";
+    --month-motif-2:"🍂";
+    --month-tape:rgba(212,119,69,.25);
+    --month-wash:rgba(212,119,69,.11);
+  }
+  body[data-month="11"]{
+    --month-motif:"🍂";
+    --month-motif-2:"✦";
+    --month-tape:rgba(167,122,83,.24);
+    --month-wash:rgba(167,122,83,.10);
+  }
+  body[data-month="12"]{
+    --month-motif:"❄";
+    --month-motif-2:"🎄";
+    --month-tape:rgba(114,157,138,.24);
+    --month-wash:rgba(114,157,138,.10);
+  }
+
+  /* Seasonal mode decorates the paper; Original mode remains untouched. */
+  body[data-theme-mode="seasonal"] .panel.stationery::before,
+  body[data-theme-mode="planner"] .panel.stationery::before{
+    background:var(--month-tape);
+  }
+  body[data-theme-mode="seasonal"] .leftbox::before,
+  body[data-theme-mode="seasonal"] .leftbox::after,
+  body[data-theme-mode="planner"] .leftbox::before,
+  body[data-theme-mode="planner"] .leftbox::after{
+    background:var(--month-tape);
+  }
+  body[data-theme-mode="seasonal"] section.block>h2,
+  body[data-theme-mode="planner"] section.block>h2{
+    background:
+      linear-gradient(90deg,var(--month-wash),transparent 38%);
+  }
+  body[data-theme-mode="seasonal"] section.block>h2,
+  body[data-theme-mode="planner"] section.block>h2 .chev::after{
+    content:var(--month-motif);
+    display:inline-block;
+    margin-left:7px;
+    font-size:.78rem;
+    opacity:.78;
+    transform:translateY(-1px);
+  }
+  body[data-theme-mode="seasonal"] .addrow::before,
+  body[data-theme-mode="planner"] .addrow::before{
+    content:var(--month-motif-2);
+    margin-right:5px;
+    opacity:.72;
+  }
+  body[data-theme-mode="seasonal"] #receipt h3::before,
+  body[data-theme-mode="planner"] #receipt h3::before{
+    content:var(--month-motif);
+  }
+  body[data-theme-mode="seasonal"] #receipt h3::after,
+  body[data-theme-mode="planner"] #receipt h3::after{
+    content:var(--month-motif-2);
+  }
+  body[data-theme-mode="seasonal"] .chart-card h3::after,
+  body[data-theme-mode="seasonal"] #charts>h2::after,
+  body[data-theme-mode="planner"] .chart-card h3::after,
+  body[data-theme-mode="planner"] #charts>h2::after{
+    content:"  " var(--month-motif-2);
+    color:var(--month-ink);
+    opacity:.72;
+  }
+  body[data-theme-mode="seasonal"] .month-nav button:hover,
+  body[data-theme-mode="seasonal"] .btn:hover,
+  body[data-theme-mode="seasonal"] .addrow:hover,
+  body[data-theme-mode="planner"] .month-nav button:hover,
+  body[data-theme-mode="planner"] .btn:hover,
+  body[data-theme-mode="planner"] .addrow:hover{
+    border-color:var(--month-a);
+  }
+
+
+  /* Planner Seasons recolors the full paper system while preserving layout. */
+  body[data-theme-mode="planner"][data-month="01"]{
+    --bg:#EEF4F8;--card:#F9FCFE;--card2:#E4EEF4;
+    --ink:#314A59;--ink-soft:#6F8794;--line:#CADAE4;
+    --accent:#7FAEC8;--accent-deep:#527F99;
+    --good:#5F927E;--bad:#B86666;--receipt:#F8FBFD;
+    --shadow:0 2px 12px rgba(49,74,89,.10);
+  }
+  body[data-theme-mode="planner"][data-month="02"]{
+    --bg:#F8EEF2;--card:#FFF8FB;--card2:#F2DFE8;
+    --ink:#5B3D49;--ink-soft:#947482;--line:#E5C9D5;
+    --accent:#D88FAE;--accent-deep:#A95F7F;
+    --good:#6E9A78;--bad:#BE5E67;--receipt:#FFF9FB;
+    --shadow:0 2px 12px rgba(91,61,73,.10);
+  }
+  body[data-theme-mode="planner"][data-month="03"]{
+    --bg:#F1F5EA;--card:#FCFFF8;--card2:#E5EEDB;
+    --ink:#3F5336;--ink-soft:#78866E;--line:#D4E0C8;
+    --accent:#9FBE82;--accent-deep:#6F9255;
+    --good:#5D8A66;--bad:#B86558;--receipt:#FCFFF9;
+    --shadow:0 2px 12px rgba(63,83,54,.09);
+  }
+  body[data-theme-mode="planner"][data-month="04"]{
+    --bg:#F9EFF4;--card:#FFF9FC;--card2:#F4E1EA;
+    --ink:#5A404B;--ink-soft:#967783;--line:#E8CEDA;
+    --accent:#DFA3BD;--accent-deep:#AF6F8D;
+    --good:#6A9678;--bad:#BF6269;--receipt:#FFF9FC;
+    --shadow:0 2px 12px rgba(90,64,75,.09);
+  }
+  body[data-theme-mode="planner"][data-month="05"]{
+    --bg:#EDF4EF;--card:#FAFEFB;--card2:#DDEADF;
+    --ink:#355043;--ink-soft:#70887A;--line:#C9DDD0;
+    --accent:#78AD8D;--accent-deep:#4F7F64;
+    --good:#4F8965;--bad:#B75E52;--receipt:#FAFEFB;
+    --shadow:0 2px 12px rgba(53,80,67,.09);
+  }
+  body[data-theme-mode="planner"][data-month="06"]{
+    --bg:#FFF8DE;--card:#FFFDF4;--card2:#F7EDC8;
+    --ink:#5B4D24;--ink-soft:#8C7C4E;--line:#E8D99D;
+    --accent:#E2BF45;--accent-deep:#A98720;
+    --good:#6F9470;--bad:#BC654B;--receipt:#FFFDF5;
+    --shadow:0 2px 12px rgba(91,77,36,.09);
+  }
+  body[data-theme-mode="planner"][data-month="07"]{
+    --bg:#FFF3E2;--card:#FFF9F0;--card2:#F8E4C5;
+    --ink:#5A3E24;--ink-soft:#8D7258;--line:#E8D0AD;
+    --accent:#E9A13E;--accent-deep:#B66E16;
+    --good:#6E9270;--bad:#BC5C45;--receipt:#FFF9F1;
+    --shadow:0 2px 12px rgba(90,62,36,.09);
+  }
+  body[data-theme-mode="planner"][data-month="08"]{
+    --bg:#FFF2E8;--card:#FFF9F5;--card2:#F4DFD1;
+    --ink:#5B4334;--ink-soft:#8E7768;--line:#E6CFC0;
+    --accent:#DE9561;--accent-deep:#A86438;
+    --good:#6D9275;--bad:#B75B4D;--receipt:#FFF9F5;
+    --shadow:0 2px 12px rgba(91,67,52,.09);
+  }
+  body[data-theme-mode="planner"][data-month="09"]{
+    --bg:#F6EDDF;--card:#FFF9F1;--card2:#EEDFCB;
+    --ink:#533E29;--ink-soft:#836F59;--line:#DDC8AC;
+    --accent:#C18A4D;--accent-deep:#8B5B28;
+    --good:#6F8E68;--bad:#B55A43;--receipt:#FFF9F1;
+    --shadow:0 2px 12px rgba(83,62,41,.10);
+  }
+  body[data-theme-mode="planner"][data-month="10"]{
+    --bg:#F7E9DD;--card:#FFF7F1;--card2:#EED5C5;
+    --ink:#553827;--ink-soft:#866A58;--line:#DEC0AA;
+    --accent:#C96F3E;--accent-deep:#8F4524;
+    --good:#6D8762;--bad:#A94D3E;--receipt:#FFF7F1;
+    --shadow:0 2px 12px rgba(85,56,39,.11);
+  }
+  body[data-theme-mode="planner"][data-month="11"]{
+    --bg:#F2EAE2;--card:#FCF8F4;--card2:#E5D8CC;
+    --ink:#4B3B30;--ink-soft:#7C6A5D;--line:#D5C3B4;
+    --accent:#9C7452;--accent-deep:#6E4D34;
+    --good:#6B8666;--bad:#A95446;--receipt:#FCF8F4;
+    --shadow:0 2px 12px rgba(75,59,48,.10);
+  }
+  body[data-theme-mode="planner"][data-month="12"]{
+    --bg:#EAF2EE;--card:#F8FCFA;--card2:#DCE9E2;
+    --ink:#304A40;--ink-soft:#6D857B;--line:#C5D8CE;
+    --accent:#6F9A86;--accent-deep:#476E5D;
+    --good:#4F826A;--bad:#B15B59;--receipt:#F8FCFA;
+    --shadow:0 2px 12px rgba(48,74,64,.10);
+  }
+
+  body[data-theme-mode="planner"] header,
+  body[data-theme-mode="planner"] #quickAdd{
+    background:linear-gradient(180deg,var(--card),var(--bg));
+  }
+  body[data-theme-mode="planner"] .btn.primary{
+    background:var(--accent);border-color:var(--accent);
+    color:color-mix(in srgb,var(--ink) 84%,#000);
+  }
+  body[data-theme-mode="planner"] .btn.primary:hover{
+    background:var(--accent-deep);border-color:var(--accent-deep);color:#fff;
+  }
+  body[data-theme-mode="planner"] input[type=checkbox]{accent-color:var(--accent)}
+  body[data-theme-mode="planner"] .leftbox{
+    border-color:var(--accent);
+    background:linear-gradient(180deg,var(--card),var(--card2));
+  }
+  body[data-theme-mode="planner"] .leftbox .v,
+  body[data-theme-mode="planner"] .leftbox .k::before,
+  body[data-theme-mode="planner"] #bigMonth span{
+    color:var(--accent-deep);
+  }
+  body[data-theme-mode="planner"] .month-badge{
+    color:var(--accent-deep);background:var(--card2);border-color:var(--line);
+  }
+  body[data-theme-mode="planner"] .month-track span{
+    background:linear-gradient(90deg,var(--accent),var(--accent-deep));
+  }
+
+  body[data-theme-mode="original"]{
+    --month-motif:"";
+    --month-motif-2:"";
+    --month-tape:rgba(252,165,29,.18);
+    --month-wash:rgba(252,165,29,.08);
+  }
+  body[data-theme-mode="original"] .panel.stationery::before,
+  body[data-theme-mode="original"] .leftbox::before,
+  body[data-theme-mode="original"] .leftbox::after{
+    background:rgba(252,165,29,.18);
+  }
+  body[data-theme-mode="original"] section.block>h2{
+    background:linear-gradient(90deg,rgba(252,165,29,.08),transparent 34%);
+  }
+  body[data-theme-mode="original"] section.block>h2 .chev::after,
+  body[data-theme-mode="original"] .addrow::before{
+    content:none;
+  }
+  body[data-theme-mode="original"] #receipt h3::before,
+  body[data-theme-mode="original"] #receipt h3::after{
+    content:"✦";
+  }
+
   /* ---------- archive ---------- */
   #archiveDlg{max-width:680px}
   #archiveList{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;max-height:60vh;overflow:auto;padding:2px}
@@ -389,6 +745,14 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
   <button class="btn" id="exportBtn">Export backup</button>
   <button class="btn" id="importBtn">Import / merge</button>
   <input type="file" id="importFile" accept="application/json" hidden>
+  <label class="theme-picker" title="Choose whether monthly colors change with the viewed month">
+    🎨 Appearance
+    <select id="themeMode">
+      <option value="original">Original cozy</option>
+      <option value="seasonal">Seasonal accents</option>
+      <option value="planner">Planner seasons</option>
+    </select>
+  </label>
   <span class="spacer"></span>
   <span id="storageMeter" title="localStorage used by this app (~5 MB limit)" style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-soft)">
     <span class="bar" style="width:64px;margin:0;height:7px"><i id="storageFill" style="background:var(--good)"></i></span>
@@ -450,6 +814,29 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
           <div class="cookie-jar" aria-label="cookie reward jar"><span class="cookies" id="cookieJar">·</span></div>
         </div>
       </div>
+      <div class="month-insights">
+        <div class="pace-card">
+          <div class="insight-head">
+            <div class="insight-title">📅 Month progress</div>
+            <div class="month-badge" id="monthBadge">0 of 0 days</div>
+          </div>
+          <div class="month-track" aria-label="Progress through viewed month">
+            <span id="monthProgressFill"></span>
+          </div>
+          <div class="pace-message" id="spendingPace">
+            Add an expense budget to compare your spending pace with the calendar.
+          </div>
+        </div>
+        <div class="bill-ring-card">
+          <div class="bill-ring" id="billRing" aria-label="Bills paid">
+            <span id="billRingText">0/0</span>
+          </div>
+          <div>
+            <div class="insight-title">Bills paid</div>
+            <div class="bill-ring-label" id="billRingLabel">No bills listed</div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="panel stationery">
@@ -491,8 +878,11 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
     <div class="body">
       <table><thead><tr><th>Category</th><th class="num" style="width:110px">Budget</th><th class="num" style="width:110px">Actual</th><th class="num" style="width:110px">Left</th><th style="width:34px"></th></tr></thead>
       <tbody id="tb-expcat"></tbody></table>
-      <button class="addrow" onclick="addCat()">+ add category</button>
-      <p class="hint">Actuals are computed from the expense log below (plus cash receipt items).</p>
+      <div class="addbar">
+        <button class="addrow" onclick="addCat()">+ add category</button>
+        <select id="catQuickAdd" class="addrow" style="min-width:170px;cursor:pointer"></select>
+      </div>
+      <p class="hint">Two ways to fill Actual: type a lump amount right in the column, and/or log itemized expenses below — logged ones stack on top automatically (you'll see "+ $X logged"). The donut shows the combined totals with percentages.</p>
     </div>
   </section>
 
@@ -549,10 +939,31 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
     <div class="big"><span>RECEIPT TOTAL</span><span id="rTotal"></span></div>
   </div>
   <hr>
+  <details id="pricecheck">
+    <summary style="cursor:pointer;font-weight:700;letter-spacing:1px">🧮 PRICE CHECK</summary>
+    <div class="rform" style="margin-top:8px">
+      <input class="full" id="pcName" placeholder="item… (e.g. uniqlo tees)" autocomplete="off">
+      <input id="pcQty" type="number" min="1" step="1" inputmode="numeric" placeholder="qty" value="1">
+      <input id="pcPrice" type="number" min="0" step="0.01" inputmode="decimal" placeholder="price ea.">
+      <input id="pcDisc" type="number" min="0" max="100" step="0.01" inputmode="decimal" placeholder="disc %">
+      <input id="pcTax" type="number" min="0" step="0.001" inputmode="decimal" placeholder="tax %">
+    </div>
+    <div class="rtotals" id="pcOut" style="margin-top:8px"></div>
+    <div class="rform" style="margin-top:6px">
+      <input class="full" id="pcPaid" type="number" min="0" step="0.01" inputmode="decimal" placeholder="🔄 reverse: total you paid (finds tax %)">
+    </div>
+    <div class="rform" style="margin-top:6px">
+      <select id="pcMethod"><option value="other">card/other</option><option value="cash">cash 💵</option></select>
+      <select id="pcCat" title="expense category (labeling — only cash counts)"></select>
+      <button class="btn primary" type="button" id="pcAdd">＋ add to receipt</button>
+    </div>
+  </details>
+  <hr>
   <form class="rform" id="rform">
     <input class="full" name="name" placeholder="item…" autocomplete="off" required>
     <select name="method"><option value="other">card/other</option><option value="cash">cash 💵</option></select>
     <input name="amount" type="number" step="0.01" min="0" inputmode="decimal" placeholder="0.00" required>
+    <select class="full" name="cat" id="rformCat" title="expense category (labeling — only cash counts)"></select>
     <button class="btn primary full" type="submit">＋ add to receipt</button>
   </form>
 </aside>
@@ -615,6 +1026,13 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
   <div class="row"><button class="btn" id="archiveClose">Close</button></div>
 </dialog>
 
+<dialog id="catLibDlg">
+  <h3>🗂 Category List</h3>
+  <p>Every category name you've used, remembered. Remove ones you're done with — months already using them keep them.</p>
+  <div id="catLibList" style="max-height:50vh;overflow:auto"></div>
+  <div class="row"><button class="btn" id="catLibClose">Close</button></div>
+</dialog>
+
 <dialog id="confirmDlg">
   <h3 id="dlgTitle"></h3>
   <p id="dlgBody"></p>
@@ -657,8 +1075,17 @@ function load(){
     if(raw){
       const d = JSON.parse(raw);
       d.settings = d.settings || {currency:"$"};
+      d.settings.theme = d.settings.theme || "seasonal";
       d.library  = d.library  || [];
       d.jars     = d.jars     || [];
+      if(!d.catLib){
+        d.catLib = [];
+        // seed from every category name already used in any month
+        for(const m of Object.values(d.months||{}))
+          for(const c of (m.expcat||[]))
+            if((c.name||"").trim() && !d.catLib.some(x=>x.name.toLowerCase()===c.name.trim().toLowerCase()))
+              d.catLib.push({id:(Date.now().toString(36)+Math.random().toString(36).slice(2,7)), name:c.name.trim(), budget:c.budget??""});
+      }
       // migrate old savings rows (budget/actual) → transfer log rows
       for(const m of Object.values(d.months||{})){
         m.savings = (m.savings||[]).map(s=> "amount" in s ? s :
@@ -688,7 +1115,7 @@ function load(){
       return d;
     }
   }catch(e){ console.warn("load failed",e); }
-  return {months:{}, lastBackup:null, dirtySince:null, settings:{currency:"$"}, seedCapOne:true, jars:[],
+  return {months:{}, lastBackup:null, dirtySince:null, settings:{currency:"$",theme:"seasonal"}, seedCapOne:true, jars:[], catLib:[],
     library:[{id:"seed-capone-silver",name:"Capital One Silver",category:"Credit Cards",budget:"",dueDate:"2026-07-16"}]};
 }
 function dueDayToDate(day){ return ""; } // old numeric due days: leave date blank rather than guess
@@ -762,6 +1189,7 @@ function payLabel(pay){
 
 /* ============ derived totals ============ */
 function catActual(catName){
+  if(!(catName||"").trim()) return 0; // an unnamed category owns nothing
   const m = M();
   let t = sum(m.log.filter(e=>e.cat===catName && !e.fromReceipt), e=>e.amount);
   t += sum(m.receipt.filter(r=>r.method==="cash" && r.cat===catName), r=>r.amount);
@@ -772,8 +1200,10 @@ function totals(){
   const bil = {b:sum(m.bills,x=>x.budget),   a:sum(m.bills,x=>x.actual)};
   const deb = {b:sum(m.debt,x=>x.budget),    a:sum(m.debt,x=>x.actual)};
   const sav = {b:0, a:sum(m.savings,x=>x.amount ?? x.actual)};
+  const expManual = sum(m.expcat, c=>c.manual);
   const expCash = sum(m.log.filter(e=>!e.fromReceipt && (!e.pay || e.pay==="cash")),e=>e.amount)
-                + sum(m.receipt.filter(r=>r.method==="cash"),r=>r.amount);
+                + sum(m.receipt.filter(r=>r.method==="cash"),r=>r.amount)
+                + expManual;
   const expCredit = sum(m.log.filter(e=>!e.fromReceipt && e.pay && e.pay!=="cash"),e=>e.amount);
   const exp = {b:sum(m.expcat,x=>x.budget), a:expCash, credit:expCredit};
   const bal = num(m.overview.balance);
@@ -797,6 +1227,7 @@ function render(){
   renderDebt();
   renderReceipt();
   renderQuickCats();
+  renderCatQuickAdd();
   renderCharts();
   renderBackupNote();
   checkCarryOver();
@@ -808,7 +1239,10 @@ function renderHeader(){
   $("#bigMonth").innerHTML = MONTHS[mo-1] + " <span>" + y + "</span>";
   $("#monthInput").value = cur;
   document.body.dataset.month = String(mo).padStart(2,"0");
+  document.body.dataset.themeMode = db.settings.theme || "seasonal";
   document.querySelector("header").dataset.cover = covers[mo-1];
+  const picker = $("#themeMode");
+  if(picker) picker.value = db.settings.theme || "seasonal";
 }
 function renderOverview(){
   const ov = M().overview;
@@ -853,6 +1287,52 @@ function renderRewards(t){
   const cookies = t.left>=1000?3:t.left>=500?2:t.left>=100?1:0;
   $("#cookieJar").textContent = cookies ? "🍪".repeat(cookies) : "·";
   $("#cookieNote").textContent = cookies===3?"Three-cookie month!":cookies===2?"Two treats earned":cookies===1?"One treat earned":t.left<0?"No cookie, only accounting 😭":"Reach $100 left for a cookie";
+  renderMonthlyInsights(t);
+}
+function renderMonthlyInsights(t){
+  const [year,month] = cur.split("-").map(Number);
+  const daysInMonth = new Date(year,month,0).getDate();
+  const viewedStart = new Date(year,month-1,1,12);
+  const viewedEnd = new Date(year,month-1,daysInMonth,12);
+  const today = new Date();
+  const todayNoon = new Date(today.getFullYear(),today.getMonth(),today.getDate(),12);
+
+  let elapsedDays;
+  if(todayNoon < viewedStart) elapsedDays = 0;
+  else if(todayNoon > viewedEnd) elapsedDays = daysInMonth;
+  else elapsedDays = todayNoon.getDate();
+
+  const monthPct = daysInMonth ? Math.round(elapsedDays/daysInMonth*100) : 0;
+  $("#monthBadge").textContent = `${elapsedDays} of ${daysInMonth} days`;
+  $("#monthProgressFill").style.width = monthPct + "%";
+
+  const m = M();
+  const totalBills = m.bills.length;
+  const paidBills = m.bills.filter(b=>b.paid).length;
+  const billPct = totalBills ? Math.round(paidBills/totalBills*100) : 0;
+  $("#billRing").style.setProperty("--ring-pct", billPct);
+  $("#billRingText").textContent = `${paidBills}/${totalBills}`;
+  $("#billRingLabel").textContent = totalBills
+    ? (paidBills===totalBills ? "All done ✨" : `${totalBills-paidBills} remaining`)
+    : "No bills listed";
+
+  const budget = t.exp.b;
+  const spent = t.exp.a + t.exp.credit;
+  const spendPct = budget>0 ? spent/budget*100 : 0;
+  const pace = $("#spendingPace");
+
+  if(budget<=0){
+    pace.innerHTML = `You are <strong>${monthPct}%</strong> through this month. Add an expense budget to compare your pace.`;
+  }else{
+    const diff = spendPct-monthPct;
+    let verdict;
+    if(spendPct>100) verdict = `You have used <strong>${Math.round(spendPct)}%</strong> of the expense budget — over the planned amount.`;
+    else if(diff>10) verdict = `Spending is <strong>${Math.round(diff)} points ahead</strong> of the calendar pace.`;
+    else if(diff<-10) verdict = `Spending is <strong>${Math.round(Math.abs(diff))} points behind</strong> the calendar pace.`;
+    else verdict = `Spending is <strong>roughly on pace</strong> with the calendar.`;
+
+    pace.innerHTML = `Month: <strong>${monthPct}%</strong> complete · Expense budget used: <strong>${Math.round(spendPct)}%</strong>.<br>${verdict}`;
+  }
 }
 function renderCashflow(){
   const t = totals();
@@ -1055,18 +1535,20 @@ window.delJar = id=>{
     save(); render();
   });
 };
+function catTotal(r){ return num(r.manual) + catActual(r.name); }
 function renderExpCat(){
   const rows = M().expcat.map(r=>{
-    const act = catActual(r.name), left = num(r.budget)-act;
+    const logged = catActual(r.name), total = num(r.manual)+logged, left = num(r.budget)-total;
     return `<tr>
     <td>${inputCell("expcat",r.id,"name","text",r.name,'placeholder="category"')}</td>
     <td>${inputCell("expcat",r.id,"budget","number",r.budget??"",'step="0.01" placeholder="0"')}</td>
-    <td class="num">${fmt(act)}</td>
+    <td>${inputCell("expcat",r.id,"manual","number",r.manual??"",'step="0.01" placeholder="0" '+(r.budget!==""&&total>num(r.budget)?'style="color:var(--bad);font-weight:700"':""))}
+      ${logged>0?`<div class="mono" style="font-size:10.5px;color:var(--ink-soft);text-align:right;padding-right:6px">+ ${fmt(logged)} logged = ${fmt(total)}</div>`:""}</td>
     <td class="num ${left<0?'neg':'pos'}">${fmt(left)}</td>
     <td class="chk">${delBtn("expcat",r.id)}</td></tr>`;}).join("");
   $("#tb-expcat").innerHTML = rows || emptyRow(5);
   const t = totals();
-  $("#tot-expcat").textContent = fmt(t.exp.a) + " / " + fmt(t.exp.b);
+  $("#tot-expcat").textContent = fmt(t.exp.a + t.exp.credit) + " / " + fmt(t.exp.b);
 }
 function renderLog(){
   const m = M();
@@ -1105,7 +1587,10 @@ function renderReceipt(){
   $("#rTotal").textContent = fmt(cash+other);
 }
 function renderQuickCats(){
-  $("#quickCat").innerHTML = M().expcat.map(c=>`<option>${esc(c.name)}</option>`).join("") + `<option value="">(none)</option>`;
+  const catOptsHtml = keep => M().expcat.map(c=>`<option ${c.name===keep?"selected":""}>${esc(c.name)}</option>`).join("") + `<option value="" ${!keep?"selected":""}>(no category)</option>`;
+  $("#quickCat").innerHTML = catOptsHtml($("#quickCat").value);
+  $("#rformCat").innerHTML = catOptsHtml($("#rformCat").value);
+  $("#pcCat").innerHTML = catOptsHtml($("#pcCat").value);
   const qp = $("#quickPay");
   const keep = qp.value || (cards().length ? "card:"+cards()[0].id : "credit");
   qp.innerHTML = payOptions(keep);
@@ -1206,7 +1691,7 @@ $("#quickAdd").addEventListener("submit", e=>{
 $("#rform").addEventListener("submit", e=>{
   e.preventDefault();
   const f = e.target;
-  M().receipt.push({id:uid(),date:todayISO(),name:f.name.value.trim(),method:f.method.value,amount:num(f.amount.value),cat:""});
+  M().receipt.push({id:uid(),date:todayISO(),name:f.name.value.trim(),method:f.method.value,amount:num(f.amount.value),cat:f.cat.value});
   f.reset(); save(); render();
 });
 $("#receiptToggle").addEventListener("click",()=>$("#receipt").classList.add("open"));
@@ -1431,12 +1916,69 @@ function mergeIn(incoming){
   // jars merge by id
   const jids = new Set(db.jars.map(j=>j.id));
   for(const j of (incoming.jars||[])) if(!jids.has(j.id)) db.jars.push(j);
+  // category list merge by name
+  db.catLib = db.catLib || [];
+  const cnames = new Set(db.catLib.map(c=>c.name.toLowerCase()));
+  for(const c of (incoming.catLib||[])) if(!cnames.has((c.name||"").toLowerCase())) db.catLib.push(c);
   if(incoming.lastBackup && (!db.lastBackup || incoming.lastBackup>db.lastBackup)) db.lastBackup = incoming.lastBackup;
 }
 
 /* ============ charts ============ */
 const PIE = ["#FCA51D","#B7A47C","#D9C9A3","#8A7A61","#E8DFC9","#D9880A","#C9B180","#A38F6B","#EFE3C4","#7A6A55"];
-function donutSVG(items){ // items: [{name, value}]
+
+function hexToRgb(hex){
+  const h = String(hex||"").trim().replace("#","");
+  if(!/^[0-9a-f]{6}$/i.test(h)) return null;
+  return {
+    r:parseInt(h.slice(0,2),16),
+    g:parseInt(h.slice(2,4),16),
+    b:parseInt(h.slice(4,6),16)
+  };
+}
+function rgbToHex({r,g,b}){
+  const h=n=>Math.max(0,Math.min(255,Math.round(n))).toString(16).padStart(2,"0");
+  return `#${h(r)}${h(g)}${h(b)}`;
+}
+function mixHex(a,b,weight=.5){
+  const x=hexToRgb(a), y=hexToRgb(b);
+  if(!x||!y) return a||b;
+  return rgbToHex({
+    r:x.r+(y.r-x.r)*weight,
+    g:x.g+(y.g-x.g)*weight,
+    b:x.b+(y.b-x.b)*weight
+  });
+}
+function cssColor(name,fallback){
+  const value=getComputedStyle(document.body).getPropertyValue(name).trim();
+  return /^#[0-9a-f]{6}$/i.test(value) ? value : fallback;
+}
+function chartPalette(){
+  /* Original Cozy and Seasonal Accents retain the classic ledger chart colors.
+     Planner Seasons alone derives every slice from its current monthly palette. */
+  if((db.settings.theme||"seasonal")!=="planner") return PIE;
+
+  const accent=cssColor("--accent","#FCA51D");
+  const deep=cssColor("--accent-deep","#D9880A");
+  const soft=cssColor("--ink-soft","#7A6A55");
+  const line=cssColor("--line","#E8DFC9");
+  const card2=cssColor("--card2","#F8EFD9");
+  const good=cssColor("--good","#4E8A5A");
+  const ink=cssColor("--ink","#3A2E22");
+
+  return [
+    accent,
+    deep,
+    mixHex(accent,card2,.36),
+    mixHex(deep,accent,.48),
+    mixHex(accent,good,.50),
+    good,
+    mixHex(soft,accent,.42),
+    mixHex(line,deep,.38),
+    mixHex(card2,accent,.58),
+    mixHex(ink,accent,.28)
+  ];
+}
+function donutSVG(items, colors=chartPalette()){ // items: [{name, value}]
   const total = sum(items,i=>i.value);
   if(total<=0) return "";
   let a0 = -Math.PI/2, paths = "";
@@ -1447,9 +1989,10 @@ function donutSVG(items){ // items: [{name, value}]
     const a1 = a0 + frac*2*Math.PI;
     const large = frac>0.5?1:0;
     const p = (a,rad)=>`${cx+rad*Math.cos(a)},${cy+rad*Math.sin(a)}`;
+    const color=colors[i%colors.length];
     paths += frac>=0.9999
-      ? `<circle cx="${cx}" cy="${cy}" r="${(R+r)/2}" fill="none" stroke="${PIE[i%PIE.length]}" stroke-width="${R-r}"/>`
-      : `<path d="M ${p(a0,R)} A ${R} ${R} 0 ${large} 1 ${p(a1,R)} L ${p(a1,r)} A ${r} ${r} 0 ${large} 0 ${p(a0,r)} Z" fill="${PIE[i%PIE.length]}"/>`;
+      ? `<circle cx="${cx}" cy="${cy}" r="${(R+r)/2}" fill="none" stroke="${color}" stroke-width="${R-r}"/>`
+      : `<path d="M ${p(a0,R)} A ${R} ${R} 0 ${large} 1 ${p(a1,R)} L ${p(a1,r)} A ${r} ${r} 0 ${large} 0 ${p(a0,r)} Z" fill="${color}"/>`;
     a0 = a1;
   });
   return `<svg viewBox="0 0 140 140" style="width:140px;height:140px;display:block;margin:0 auto">${paths}</svg>`;
@@ -1458,10 +2001,11 @@ function donutBox(title, items){
   items = items.filter(i=>num(i.value)>0).sort((a,b)=>b.value-a.value).slice(0,10);
   const total = sum(items,i=>i.value);
   if(total<=0) return "";
-  const legend = items.map((it,i)=>`<div><span class="sw" style="background:${PIE[i%PIE.length]}"></span>
+  const colors=chartPalette();
+  const legend = items.map((it,i)=>`<div><span class="sw" style="background:${colors[i%colors.length]}"></span>
     <span>${esc(it.name||"(unnamed)")}</span>
     <span class="lv">${fmt(it.value)} · ${(it.value/total*100).toFixed(1)}%</span></div>`).join("");
-  return `<div class="chartbox"><h4>${title}</h4>${donutSVG(items)}<div class="legend">${legend}</div></div>`;
+  return `<div class="chartbox"><h4>${title}</h4>${donutSVG(items,colors)}<div class="legend">${legend}</div></div>`;
 }
 function barsBox(){
   const t = totals();
@@ -1484,7 +2028,7 @@ function barsBox(){
 function renderCharts(){
   const m = M();
   const bills = donutBox("Bills Breakdown", m.bills.map(b=>({name:b.name,value:num(b.actual)||num(b.budget)})));
-  const exps  = donutBox("Expense Breakdown", m.expcat.map(c=>({name:c.name,value:catActual(c.name)})));
+  const exps  = donutBox("Expense Breakdown", m.expcat.map(c=>({name:c.name,value:catTotal(c)})));
   const byCard = donutBox("Charges by Card", [
     ...cards().map(c=>({name:c.name, value:cardCharges(cur,c.id)})),
     {name:"credit (other)", value:sum(m.log.filter(e=>e.pay==="credit"),e=>e.amount)}
@@ -1567,7 +2111,7 @@ function buildReport(){
 
     <div class="rp-flex" style="margin-top:14px">${[
       donutBox("Bills Breakdown", m.bills.map(b=>({name:b.name,value:num(b.actual)||num(b.budget)}))),
-      donutBox("Expense Breakdown", m.expcat.map(c=>({name:c.name,value:catActual(c.name)})))
+      donutBox("Expense Breakdown", m.expcat.map(c=>({name:c.name,value:catTotal(c)})))
     ].filter(Boolean).map(x=>`<div>${x}</div>`).join("")}</div>`;
   $("#reportView").hidden = false;
   document.body.style.overflow = "hidden";
@@ -1656,6 +2200,101 @@ $("#archiveBtn").onclick=()=>{ renderArchive(); $("#archiveDlg").showModal(); };
 $("#archiveClose").onclick=()=>$("#archiveDlg").close();
 
 
+/* ============ price check calculator ============ */
+function pcCalc(){
+  const qty = Math.max(1, num($("#pcQty").value)||1);
+  const price = num($("#pcPrice").value);
+  const disc = Math.min(100, num($("#pcDisc").value));
+  const tax = num($("#pcTax").value);
+  const sub = qty*price;
+  const discAmt = sub*disc/100;
+  const afterDisc = sub-discAmt;
+  const taxAmt = afterDisc*tax/100;
+  const total = afterDisc+taxAmt;
+  $("#pcOut").innerHTML = sub<=0 ? "" : `
+    <div><span>${qty} × ${fmt(price)}</span><span>${fmt(sub)}</span></div>
+    ${disc>0?`<div><span>discount −${disc}%</span><span>−${fmt(discAmt)}</span></div>`:""}
+    ${tax>0?`<div><span>tax +${tax}%</span><span>+${fmt(taxAmt)}</span></div>`:""}
+    <div class="big"><span>TOTAL</span><span>${fmt(total)}</span></div>`;
+  return {total, qty};
+}
+["pcQty","pcPrice","pcDisc","pcTax"].forEach(id=>$("#"+id).addEventListener("input", e=>{
+  if(e.target.id==="pcTax"){ db.settings.tax = $("#pcTax").value; save(); }
+  pcCalc();
+}));
+$("#pcTax").value = db.settings.tax ?? "10.25";
+$("#pcPaid").addEventListener("input", ()=>{
+  const paid = num($("#pcPaid").value);
+  const qty = Math.max(1, num($("#pcQty").value)||1);
+  const price = num($("#pcPrice").value);
+  const disc = Math.min(100, num($("#pcDisc").value));
+  const afterDisc = qty*price*(1-disc/100);
+  if(paid>0 && afterDisc>0){
+    const rate = Math.max(0,(paid/afterDisc - 1)*100);
+    $("#pcTax").value = rate.toFixed(3).replace(/\.?0+$/,"");
+    db.settings.tax = $("#pcTax").value; save();
+    pcCalc();
+  }
+});
+$("#pcAdd").addEventListener("click", ()=>{
+  const {total, qty} = pcCalc();
+  if(total<=0){ toast("Enter a price first 🙂"); return; }
+  const name = ($("#pcName").value.trim() || "item") + (qty>1?` ×${qty}`:"");
+  M().receipt.push({id:uid(),date:todayISO(),name,method:$("#pcMethod").value,amount:Math.round(total*100)/100,cat:$("#pcCat").value});
+  $("#pcName").value=""; $("#pcPrice").value=""; $("#pcDisc").value=""; $("#pcQty").value="1";
+  pcCalc(); save(); render(); toast("Added with the math done ✓");
+});
+pcCalc();
+
+/* ============ category library ============ */
+function catLibUpsert(name, budget){
+  name = (name||"").trim();
+  if(!name) return;
+  const hit = db.catLib.find(c=>c.name.toLowerCase()===name.toLowerCase());
+  if(hit){ if(budget!=="" && budget!=null) hit.budget = budget; }
+  else db.catLib.push({id:uid(), name, budget:budget??""});
+}
+/* register names when you finish typing them */
+document.addEventListener("focusout", e=>{
+  const el = e.target;
+  if(el.dataset && el.dataset.sec==="expcat" && el.dataset.f==="name"){
+    const row = M().expcat.find(r=>r.id===el.dataset.id);
+    if(row){ catLibUpsert(row.name, row.budget); save(); renderCatQuickAdd(); }
+  }
+});
+function renderCatQuickAdd(){
+  const inMonth = new Set(M().expcat.map(c=>(c.name||"").toLowerCase()));
+  const avail = db.catLib.filter(c=>!inMonth.has(c.name.toLowerCase()));
+  $("#catQuickAdd").innerHTML =
+    `<option value="">＋ from list…</option>` +
+    avail.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join("") +
+    (db.catLib.length?`<option value="__manage">🗂 manage list…</option>`:"");
+}
+$("#catQuickAdd").addEventListener("change", e=>{
+  const v = e.target.value;
+  e.target.value = "";
+  if(!v) return;
+  if(v==="__manage"){ renderCatLib(); $("#catLibDlg").showModal(); return; }
+  const c = db.catLib.find(x=>x.id===v);
+  if(!c) return;
+  M().expcat.push({id:uid(), name:c.name, budget:c.budget??"", manual:""});
+  save(); render(); toast(`"${c.name}" added ✓`);
+});
+function renderCatLib(){
+  $("#catLibList").innerHTML = db.catLib.length ? db.catLib.map(c=>`
+    <div class="libitem">
+      <span class="nm">${esc(c.name)}</span>
+      <span class="amt">${c.budget!==""&&c.budget!=null?fmt(num(c.budget)):""}</span>
+      <button class="rowdel" onclick="catLibDel('${c.id}')" title="remove from list">✕</button>
+    </div>`).join("")
+    : `<div style="text-align:center;color:var(--ink-soft);padding:14px">Empty — name a category in the table and it registers itself.</div>`;
+}
+window.catLibDel = id=>{
+  const i = db.catLib.findIndex(c=>c.id===id);
+  if(i>-1){ db.catLib.splice(i,1); save(); renderCatLib(); renderCatQuickAdd(); }
+};
+$("#catLibClose").onclick = ()=>$("#catLibDlg").close();
+
 /* ============ dialog & toast ============ */
 function confirmDlg(title, body, onOk){
   $("#dlgTitle").textContent = title;
@@ -1676,6 +2315,22 @@ function toast(msg){
 }
 
 /* ============ go ============ */
+$("#themeMode").addEventListener("change", e=>{
+  const allowed = ["original","seasonal","planner"];
+  db.settings.theme = allowed.includes(e.target.value) ? e.target.value : "original";
+  save();
+  renderHeader();
+  renderLeft();
+  renderJars();
+  renderCharts();
+  const msg = {
+    original:"Original cozy theme restored",
+    seasonal:"Seasonal accents on ✨",
+    planner:"Planner Seasons on 🌿"
+  };
+  toast(msg[db.settings.theme]);
+});
+
 render();
 </script>
 </body>
