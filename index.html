@@ -633,6 +633,8 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
   }
   .rform input:focus,.rform select:focus{outline:none;border-color:var(--accent)}
   .rform .full{grid-column:1/-1}
+  .pclabel{display:block;font-size:9.5px;text-transform:uppercase;letter-spacing:1px;color:#8A7A61;margin-bottom:2px}
+  .rform div>input{width:100%}
   .rtotals{margin-top:6px}
   .rtotals div{display:flex;justify-content:space-between}
   .rtotals .big{font-weight:700}
@@ -1021,11 +1023,16 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
   <details id="pricecheck">
     <summary style="cursor:pointer;font-weight:700;letter-spacing:1px">🧮 PRICE CHECK</summary>
     <div class="rform" style="margin-top:8px">
-      <input class="full" id="pcName" placeholder="item… (e.g. uniqlo tees)" autocomplete="off">
+      <input class="full" id="pcName" placeholder="store / what… (e.g. uniqlo run)" autocomplete="off">
       <input id="pcQty" type="number" min="1" step="1" inputmode="numeric" placeholder="qty" value="1">
       <input id="pcPrice" type="number" min="0" step="0.01" inputmode="decimal" placeholder="price ea.">
-      <input id="pcDisc" type="number" min="0" max="100" step="0.01" inputmode="decimal" placeholder="disc %">
-      <input id="pcTax" type="number" min="0" step="0.001" inputmode="decimal" placeholder="tax %">
+      <button class="btn primary full" type="button" id="pcItemAdd">＋ add item</button>
+    </div>
+    <div id="pcCart" class="mono" style="font-size:12px;margin-top:6px"></div>
+    <div class="rform" style="margin-top:6px;grid-template-columns:1fr 1fr 1fr">
+      <div><label class="pclabel">disc %</label><input id="pcDisc" type="number" min="0" max="100" step="0.01" inputmode="decimal" placeholder="0"></div>
+      <div><label class="pclabel">extra % (stacked)</label><input id="pcDisc2" type="number" min="0" max="100" step="0.01" inputmode="decimal" placeholder="0"></div>
+      <div><label class="pclabel">tax %</label><input id="pcTax" type="number" min="0" step="0.001" inputmode="decimal" placeholder="0"></div>
     </div>
     <div class="rtotals" id="pcOut" style="margin-top:8px"></div>
     <div class="rform" style="margin-top:6px">
@@ -1036,6 +1043,24 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
       <select id="pcCat" title="expense category (labeling — only cash counts)"></select>
       <button class="btn primary" type="button" id="pcAdd">＋ add to receipt</button>
     </div>
+  </details>
+  <hr>
+  <details id="tiptool">
+    <summary style="cursor:pointer;font-weight:700;letter-spacing:1px">🍽 TIP</summary>
+    <div class="rform" style="margin-top:8px;grid-template-columns:1fr 1fr">
+      <div><label class="pclabel">bill amount</label><input id="tipBill" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00"></div>
+      <div><label class="pclabel">tip %</label><input id="tipPct" type="number" min="0" step="0.5" inputmode="decimal" placeholder="0"></div>
+    </div>
+    <div style="display:flex;gap:6px;margin-top:6px">
+      <button type="button" class="btn small tipq" data-p="15">15%</button>
+      <button type="button" class="btn small tipq" data-p="18">18%</button>
+      <button type="button" class="btn small tipq" data-p="20">20%</button>
+      <button type="button" class="btn small tipq" data-p="25">25%</button>
+    </div>
+    <div class="rform" style="margin-top:6px;grid-template-columns:1fr">
+      <div><label class="pclabel">split between (people)</label><input id="tipSplit" type="number" min="1" step="1" inputmode="numeric" value="1"></div>
+    </div>
+    <div class="rtotals" id="tipOut" style="margin-top:8px"></div>
   </details>
   <hr>
   <form class="rform" id="rform">
@@ -1055,6 +1080,7 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
   <input name="amount" type="number" step="0.01" min="0" inputmode="decimal" placeholder="0.00" required>
   <select name="cat" id="quickCat"></select>
   <select name="pay" id="quickPay" title="how you paid"></select>
+  <button type="button" id="qaBundle" class="btn" title="add up several amounts into one expense">Σ</button>
   <button class="btn primary" type="submit">Add</button>
 </form>
 
@@ -1105,6 +1131,28 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
   <div id="archiveList"></div>
   <div id="archivePreview"></div>
   <div class="row"><button class="btn" id="archiveClose">Close</button></div>
+</dialog>
+
+<dialog id="bundleDlg">
+  <h3>Σ Bundle Expense</h3>
+  <p>Add up several amounts (same store, same statement) ~ they land in the log as one entry.</p>
+  <input id="bnName" placeholder="what is it… (e.g. Infinity Nikki)" autocomplete="off"
+    style="width:100%;font:inherit;border:1px solid var(--line);border-radius:9px;padding:8px 10px;background:var(--bg);color:var(--ink);margin-bottom:8px">
+  <div style="display:flex;gap:8px;margin-bottom:8px">
+    <input id="bnAmt" type="number" step="0.01" min="0" inputmode="decimal" placeholder="amount"
+      style="flex:1;font:inherit;border:1px solid var(--line);border-radius:9px;padding:8px 10px;background:var(--bg);color:var(--ink)">
+    <button class="btn primary" type="button" id="bnAdd">＋</button>
+  </div>
+  <div id="bnList" class="mono" style="font-size:13px;max-height:30vh;overflow:auto"></div>
+  <div id="bnTotal" class="mono" style="text-align:right;font-weight:700;font-size:16px;border-top:2px solid var(--ink);padding-top:6px;margin-top:6px"></div>
+  <div style="display:flex;gap:8px;margin-top:10px">
+    <select id="bnCat" style="flex:1;font:inherit;border:1px solid var(--line);border-radius:9px;padding:8px;background:var(--bg);color:var(--ink)"></select>
+    <select id="bnPay" style="flex:1;font:inherit;border:1px solid var(--line);border-radius:9px;padding:8px;background:var(--bg);color:var(--ink)"></select>
+  </div>
+  <div class="row">
+    <button class="btn" id="bnCancel">Cancel</button>
+    <button class="btn primary" id="bnGo">Add as one entry</button>
+  </div>
 </dialog>
 
 <dialog id="pasteDlg">
@@ -2329,50 +2377,91 @@ $("#archiveClose").onclick=()=>$("#archiveDlg").close();
 
 
 /* ============ price check calculator ============ */
-function pcCalc(){
+let pcItems = []; // {qty, price}
+function pcCartRender(){
+  $("#pcCart").innerHTML = pcItems.map((it,i)=>
+    `<div style="display:flex;justify-content:space-between;padding:1px 0">
+      <span>${it.qty} × ${fmt(it.price)}</span>
+      <span>${fmt(it.qty*it.price)} <button class="rowdel" onclick="pcDel(${i})">✕</button></span>
+    </div>`).join("");
+}
+window.pcDel = i=>{ pcItems.splice(i,1); pcCartRender(); pcCalc(); };
+function pcAddItem(){
   const qty = Math.max(1, num($("#pcQty").value)||1);
   const price = num($("#pcPrice").value);
-  const disc = Math.min(100, num($("#pcDisc").value));
+  if(price<=0){ $("#pcPrice").focus(); return; }
+  pcItems.push({qty, price});
+  $("#pcPrice").value=""; $("#pcQty").value="1";
+  pcCartRender(); pcCalc();
+  $("#pcPrice").focus();
+}
+$("#pcItemAdd").onclick = pcAddItem;
+$("#pcPrice").addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); pcAddItem(); }});
+function pcBase(){
+  // pending typed item counts too, so single-item use needs no "+ add item" tap
+  const pend = num($("#pcPrice").value);
+  const pendQty = Math.max(1, num($("#pcQty").value)||1);
+  let sub = sum(pcItems, it=>it.qty*it.price);
+  if(pend>0) sub += pendQty*pend;
+  const d1 = Math.min(100, num($("#pcDisc").value));
+  const d2 = Math.min(100, num($("#pcDisc2").value));
+  const after1 = sub*(1-d1/100);
+  const after2 = after1*(1-d2/100);
+  return {sub, d1, d2, d1amt:sub-after1, d2amt:after1-after2, after2};
+}
+function pcCalc(){
+  const b = pcBase();
   const tax = num($("#pcTax").value);
-  const sub = qty*price;
-  const discAmt = sub*disc/100;
-  const afterDisc = sub-discAmt;
-  const taxAmt = afterDisc*tax/100;
-  const total = afterDisc+taxAmt;
-  $("#pcOut").innerHTML = sub<=0 ? "" : `
-    <div><span>${qty} × ${fmt(price)}</span><span>${fmt(sub)}</span></div>
-    ${disc>0?`<div><span>discount −${disc}%</span><span>−${fmt(discAmt)}</span></div>`:""}
+  const taxAmt = b.after2*tax/100;
+  const total = b.after2+taxAmt;
+  const nItems = pcItems.length + (num($("#pcPrice").value)>0?1:0);
+  $("#pcOut").innerHTML = b.sub<=0 ? "" : `
+    <div><span>subtotal (${nItems} item${nItems===1?"":"s"})</span><span>${fmt(b.sub)}</span></div>
+    ${b.d1>0?`<div><span>discount −${b.d1}%</span><span>−${fmt(b.d1amt)}</span></div>`:""}
+    ${b.d2>0?`<div><span>extra −${b.d2}% (stacked)</span><span>−${fmt(b.d2amt)}</span></div>`:""}
     ${tax>0?`<div><span>tax +${tax}%</span><span>+${fmt(taxAmt)}</span></div>`:""}
     <div class="big"><span>TOTAL</span><span>${fmt(total)}</span></div>`;
-  return {total, qty};
+  return {total, nItems};
 }
-["pcQty","pcPrice","pcDisc","pcTax"].forEach(id=>$("#"+id).addEventListener("input", e=>{
+["pcQty","pcPrice","pcDisc","pcDisc2","pcTax"].forEach(id=>$("#"+id).addEventListener("input", e=>{
   if(e.target.id==="pcTax"){ db.settings.tax = $("#pcTax").value; save(); }
   pcCalc();
 }));
 $("#pcTax").value = db.settings.tax ?? "10.25";
 $("#pcPaid").addEventListener("input", ()=>{
   const paid = num($("#pcPaid").value);
-  const qty = Math.max(1, num($("#pcQty").value)||1);
-  const price = num($("#pcPrice").value);
-  const disc = Math.min(100, num($("#pcDisc").value));
-  const afterDisc = qty*price*(1-disc/100);
-  if(paid>0 && afterDisc>0){
-    const rate = Math.max(0,(paid/afterDisc - 1)*100);
+  const b = pcBase();
+  if(paid>0 && b.after2>0){
+    const rate = Math.max(0, (paid/b.after2 - 1)*100);
     $("#pcTax").value = rate.toFixed(3).replace(/\.?0+$/,"");
     db.settings.tax = $("#pcTax").value; save();
     pcCalc();
   }
 });
 $("#pcAdd").addEventListener("click", ()=>{
-  const {total, qty} = pcCalc();
+  const {total, nItems} = pcCalc();
   if(total<=0){ toast("Enter a price first 🙂"); return; }
-  const name = ($("#pcName").value.trim() || "item") + (qty>1?` ×${qty}`:"");
+  const name = ($("#pcName").value.trim() || "items") + (nItems>1?` (${nItems} items)`:"");
   M().receipt.push({id:uid(),date:todayISO(),name,method:$("#pcMethod").value,amount:Math.round(total*100)/100,cat:$("#pcCat").value});
-  $("#pcName").value=""; $("#pcPrice").value=""; $("#pcDisc").value=""; $("#pcQty").value="1";
-  pcCalc(); save(); render(); toast("Added with the math done ✓");
+  pcItems = []; $("#pcName").value=""; $("#pcPrice").value=""; $("#pcDisc").value=""; $("#pcDisc2").value=""; $("#pcQty").value="1"; $("#pcPaid").value="";
+  pcCartRender(); pcCalc(); save(); render(); toast("Added with the math done ✓");
 });
 pcCalc();
+
+/* ============ 🍽 tip tool ============ */
+function tipCalc(){
+  const bill = num($("#tipBill").value);
+  const pct = num($("#tipPct").value);
+  const split = Math.max(1, num($("#tipSplit").value)||1);
+  if(bill<=0){ $("#tipOut").innerHTML=""; return; }
+  const tip = bill*pct/100, total = bill+tip;
+  $("#tipOut").innerHTML = `
+    <div><span>tip ${pct}%</span><span>${fmt(tip)}</span></div>
+    <div class="big"><span>TOTAL</span><span>${fmt(total)}</span></div>
+    ${split>1?`<div><span>each (÷${split})</span><span>${fmt(total/split)}</span></div>`:""}`;
+}
+["tipBill","tipPct","tipSplit"].forEach(id=>$("#"+id).addEventListener("input", tipCalc));
+document.querySelectorAll(".tipq").forEach(b=>b.addEventListener("click", ()=>{ $("#tipPct").value=b.dataset.p; tipCalc(); }));
 
 /* ============ category library ============ */
 function catLibUpsert(name, budget){
@@ -2422,6 +2511,42 @@ window.catLibDel = id=>{
   if(i>-1){ db.catLib.splice(i,1); save(); renderCatLib(); renderCatQuickAdd(); }
 };
 $("#catLibClose").onclick = ()=>$("#catLibDlg").close();
+
+/* ============ Σ bundle expense ============ */
+let bnItems = [];
+function bnRender(){
+  $("#bnList").innerHTML = bnItems.map((a,i)=>
+    `<div style="display:flex;justify-content:space-between;padding:2px 0">
+      <span>item ${i+1}</span><span>${fmt(a)} <button class="rowdel" onclick="bnDel(${i})">✕</button></span>
+    </div>`).join("") || `<div style="color:var(--ink-soft);text-align:center;padding:6px">no amounts yet</div>`;
+  $("#bnTotal").textContent = "TOTAL  " + fmt(sum(bnItems,a=>a));
+}
+window.bnDel = i=>{ bnItems.splice(i,1); bnRender(); };
+function bnAddAmt(){
+  const v = num($("#bnAmt").value);
+  if(v>0){ bnItems.push(v); $("#bnAmt").value=""; bnRender(); }
+  $("#bnAmt").focus();
+}
+$("#bnAdd").onclick = bnAddAmt;
+$("#bnAmt").addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); bnAddAmt(); }});
+$("#qaBundle").onclick = ()=>{
+  bnItems = []; $("#bnName").value=""; $("#bnAmt").value="";
+  const catOptsHtml = M().expcat.map(c=>`<option>${esc(c.name)}</option>`).join("") + `<option value="">(no category)</option>`;
+  $("#bnCat").innerHTML = catOptsHtml;
+  $("#bnPay").innerHTML = payOptions(cards().length ? "card:"+cards()[0].id : "credit");
+  bnRender();
+  $("#bundleDlg").showModal();
+  $("#bnName").focus();
+};
+$("#bnCancel").onclick = ()=>$("#bundleDlg").close();
+$("#bnGo").onclick = ()=>{
+  const total = sum(bnItems,a=>a);
+  if(total<=0){ toast("Add at least one amount 🙂"); return; }
+  const name = ($("#bnName").value.trim() || "bundle") + ` (${bnItems.length} item${bnItems.length===1?"":"s"})`;
+  M().log.push({id:uid(),date:todayISO(),name,cat:$("#bnCat").value,amount:Math.round(total*100)/100,pay:$("#bnPay").value});
+  $("#bundleDlg").close();
+  save(); render(); toast(`"${name}" logged ~ ${fmt(total)} ✓`);
+};
 
 /* ============ lock mode ============ */
 function applyLock(){
