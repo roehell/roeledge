@@ -11,7 +11,7 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
   addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(()=>{}));
 }
 </script>
-<title>Ledger — Monthly Budget</title>
+<title>Ledger: Monthly Budget</title>
 <style>
   :root{
     --bg:#F7F1E6; --card:#FFF9F1; --card2:#F8EFD9;
@@ -804,7 +804,7 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
 
 <header>
   <div class="headline">
-    <h1>Ledger · Monthly Budget ✦</h1>
+    <h1>Ledger: Monthly Budget ✦</h1>
     <div id="bigMonth"></div>
   </div>
   <div class="month-nav">
@@ -1480,7 +1480,7 @@ function renderDebt(){
     <td>${inputCell("debt",r.id,"actual","number",r.actual??"",'step="0.01" placeholder="0" '+overStyle(r))}</td>
     <td class="chk"><input type="checkbox" data-sec="debt" data-id="${r.id}" data-f="paid" ${r.paid?"checked":""}></td>
     <td class="chk">${delBtn("debt",r.id)}</td></tr>`).join("");
-  $("#tb-debt").innerHTML = rows || emptyRow(6);
+  $("#tb-debt").innerHTML = rows || emptyRow(6, "nothing yet, and honestly? keep it that way 🎉 debt-free looks good on you");
   const t = totals();
   $("#tot-debt").textContent = fmt(t.deb.a) + " / " + fmt(t.deb.b);
 }
@@ -1686,7 +1686,7 @@ function renderQuickCats(){
   const keep = qp.value || (cards().length ? "card:"+cards()[0].id : "credit");
   qp.innerHTML = payOptions(keep);
 }
-function emptyRow(cols){ return `<tr><td colspan="${cols}" style="color:var(--ink-soft);text-align:center;padding:12px">nothing yet — add a row below</td></tr>`; }
+function emptyRow(cols, text){ return `<tr><td colspan="${cols}" style="color:var(--ink-soft);text-align:center;padding:12px">${text || "nothing yet ~ add a row below"}</td></tr>`; }
 function renderBackupNote(){
   $("#lastBackupNote").textContent = db.lastBackup ? "last backup: " + new Date(db.lastBackup).toLocaleDateString() : "no backup yet";
   renderStorage();
