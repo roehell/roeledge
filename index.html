@@ -649,6 +649,15 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
   #quickAdd input,#quickAdd select{
     font:inherit;border:1px solid var(--line);border-radius:10px;padding:9px 10px;background:var(--bg);color:var(--ink);min-width:0;
   }
+  #qaToggle{
+    position:absolute;top:-24px;right:14px;width:44px;height:24px;
+    border:2px solid var(--accent);border-bottom:none;border-radius:12px 12px 0 0;
+    background:var(--card);color:var(--accent-deep);cursor:pointer;font-size:12px;line-height:1;
+  }
+  #quickAdd.collapsed{grid-template-columns:1fr;padding-top:8px;padding-bottom:calc(8px + env(safe-area-inset-bottom));cursor:pointer}
+  #quickAdd.collapsed input,#quickAdd.collapsed select,#quickAdd.collapsed button[type=submit]{display:none}
+  #qaHint{display:none;text-align:center;font-size:12.5px;color:var(--ink-soft);letter-spacing:.5px;pointer-events:none}
+  #quickAdd.collapsed #qaHint{display:block}
   #quickAdd input:focus,#quickAdd select:focus{outline:none;border-color:var(--accent)}
   #quickAdd .btn.primary{padding:9px 16px;font-size:15px}
 
@@ -658,6 +667,17 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
     opacity:0;transition:opacity .25s;pointer-events:none;max-width:88vw;text-align:center;
   }
   .toast.show{opacity:1}
+
+  /* ---------- lock mode: look, don't touch ---------- */
+  body.locked main td input, body.locked main td select,
+  body.locked main td input[type=checkbox],
+  body.locked #overview input, body.locked #overview select,
+  body.locked #jarForm input{
+    pointer-events:none; background:transparent; border-color:transparent;
+  }
+  body.locked .rowdel, body.locked .rowsave, body.locked .addrow,
+  body.locked #jarForm button, body.locked #jarGrid .rowdel{display:none}
+  body.locked #lockBtn{background:var(--card2);border-color:var(--accent);color:var(--accent-deep);font-weight:600}
 
   /* ---------- charts ---------- */
   .chartbox h4{font-family:Georgia,serif;font-size:13.5px;text-align:center;margin-bottom:6px}
@@ -703,6 +723,62 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
   }
   @media (max-width:860px){
     body{padding-bottom:calc(210px + env(safe-area-inset-bottom))}
+    /* --- tables become stacked cards: no side-scrolling --- */
+    #sec-bills table, #sec-log table, #sec-debt table, #sec-savings table{min-width:0 !important}
+    #sec-bills thead, #sec-log thead, #sec-debt thead, #sec-savings thead{display:none}
+    #tb-bills tr, #tb-log tr, #tb-debt tr, #tb-savings tr{
+      display:block; border:1px solid var(--line); border-radius:12px;
+      margin:9px 0; padding:8px 12px; background:var(--card); position:relative;
+    }
+    #tb-bills td, #tb-log td, #tb-debt td, #tb-savings td{
+      display:flex; align-items:center; gap:8px; border-bottom:none; padding:3px 0; width:auto;
+    }
+    #tb-bills td::before, #tb-log td::before, #tb-debt td::before, #tb-savings td::before{
+      font-size:10px; text-transform:uppercase; letter-spacing:1.2px;
+      color:var(--ink-soft); width:88px; flex:none;
+    }
+    #tb-bills td input, #tb-log td input, #tb-debt td input, #tb-savings td input,
+    #tb-bills td select, #tb-log td select, #tb-debt td select, #tb-savings td select{flex:1}
+    #tb-bills td input[type=number], #tb-log td input[type=number],
+    #tb-debt td input[type=number], #tb-savings td input[type=number]{text-align:left}
+    /* labels per column */
+    #tb-bills td:nth-child(1)::before{content:"Bill"}
+    #tb-bills td:nth-child(2)::before{content:"Conf #"}
+    #tb-bills td:nth-child(3)::before{content:"Budget"}
+    #tb-bills td:nth-child(4)::before{content:"Scheduled"}
+    #tb-bills td:nth-child(5)::before{content:"Due"}
+    #tb-bills td:nth-child(6)::before{content:"Actual"}
+    #tb-bills td:nth-child(7)::before{content:"⚡ Auto"}
+    #tb-bills td:nth-child(8)::before{content:"Paid"}
+    #tb-log td:nth-child(1)::before{content:"Date"}
+    #tb-log td:nth-child(2)::before{content:"What"}
+    #tb-log td:nth-child(3)::before{content:"Category"}
+    #tb-log td:nth-child(4)::before{content:"Amount"}
+    #tb-log td:nth-child(5)::before{content:"Paid with"}
+    #tb-debt td:nth-child(1)::before{content:"Debt"}
+    #tb-debt td:nth-child(2)::before{content:"Due day"}
+    #tb-debt td:nth-child(3)::before{content:"Budget"}
+    #tb-debt td:nth-child(4)::before{content:"Actual"}
+    #tb-debt td:nth-child(5)::before{content:"Paid"}
+    #tb-savings td:nth-child(1)::before{content:"To"}
+    #tb-savings td:nth-child(2)::before{content:"Amount"}
+    #tb-savings td:nth-child(3)::before{content:"Date"}
+    #tb-savings td:nth-child(4)::before{content:"Conf #"}
+    #tb-savings td:nth-child(5)::before{content:"Jar 🫙"}
+    /* delete / save buttons float to the card's top-right corner */
+    #tb-bills td:last-child, #tb-log td:last-child, #tb-debt td:last-child, #tb-savings td:last-child{
+      position:absolute; top:4px; right:8px; padding:0;
+    }
+    #tb-bills td:last-child::before, #tb-log td:last-child::before,
+    #tb-debt td:last-child::before, #tb-savings td:last-child::before{content:none; width:0}
+    /* checkbox cells: don't stretch */
+    #tb-bills td.chk, #tb-debt td.chk{justify-content:flex-start}
+    /* empty-state rows stay plain */
+    #tb-bills td[colspan]::before, #tb-log td[colspan]::before,
+    #tb-debt td[colspan]::before, #tb-savings td[colspan]::before{content:none; width:0}
+    #tb-bills td[colspan], #tb-log td[colspan], #tb-debt td[colspan], #tb-savings td[colspan]{
+      position:static; display:block; text-align:center;
+    }
     .layout{grid-template-columns:1fr;padding:8px 12px 20px}
     header{padding:14px 12px 4px}
     #bigMonth{font-size:27px}
@@ -739,6 +815,7 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
 </header>
 
 <div class="toolbar">
+  <button class="btn" id="lockBtn" title="prevent accidental edits — adding via quick-add / receipt still works"></button>
   <button class="btn" id="libBtn">📚 Bill library</button>
   <button class="btn" id="reportBtn">🖨️ Month report</button>
   <button class="btn" id="yearBtn">📅 Year view</button>
@@ -972,6 +1049,8 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
 <button id="receiptToggle" title="Receipt">🧾</button>
 
 <form id="quickAdd" autocomplete="off">
+  <button type="button" id="qaToggle" title="collapse / expand">▾</button>
+  <span id="qaHint">＋ quick expense — tap to expand</span>
   <input name="name" placeholder="Quick expense… (e.g. groceries run)" required>
   <input name="amount" type="number" step="0.01" min="0" inputmode="decimal" placeholder="0.00" required>
   <select name="cat" id="quickCat"></select>
@@ -1692,6 +1771,16 @@ function focusLast(sec){
 window.toggleSec = h => h.parentElement.classList.toggle("closed");
 
 /* quick add */
+/* quick-add collapse (default expanded) */
+const qa = $("#quickAdd");
+function setQA(collapsed){
+  qa.classList.toggle("collapsed", collapsed);
+  $("#qaToggle").textContent = collapsed ? "▴" : "▾";
+  document.body.style.paddingBottom = collapsed ? "70px" : "";
+}
+$("#qaToggle").addEventListener("click", e=>{ e.stopPropagation(); setQA(!qa.classList.contains("collapsed")); });
+qa.addEventListener("click", ()=>{ if(qa.classList.contains("collapsed")) setQA(false); });
+
 $("#quickAdd").addEventListener("submit", e=>{
   e.preventDefault();
   const f = e.target;
@@ -2333,6 +2422,20 @@ window.catLibDel = id=>{
   if(i>-1){ db.catLib.splice(i,1); save(); renderCatLib(); renderCatQuickAdd(); }
 };
 $("#catLibClose").onclick = ()=>$("#catLibDlg").close();
+
+/* ============ lock mode ============ */
+function applyLock(){
+  // default: locked on phone-sized screens until you say otherwise
+  if(db.settings.lock === undefined) db.settings.lock = matchMedia("(max-width:860px)").matches;
+  document.body.classList.toggle("locked", !!db.settings.lock);
+  $("#lockBtn").textContent = db.settings.lock ? "🔒 Locked" : "🔓 Editing";
+}
+$("#lockBtn").addEventListener("click", ()=>{
+  db.settings.lock = !db.settings.lock;
+  save(); applyLock();
+  toast(db.settings.lock ? "Locked — existing data is safe from stray taps 🔒" : "Editing on — tap 🔒 when you're done");
+});
+applyLock();
 
 /* ============ dialog & toast ============ */
 function confirmDlg(title, body, onOk){
