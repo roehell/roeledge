@@ -74,6 +74,23 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
   }
   .banner b{color:var(--accent-deep)}
   .banner .btn{padding:5px 12px}
+  /* mobile: banners fold into a pulsing icon until tapped */
+  .banner.iconized{
+    width:46px;height:46px;border-radius:50%;padding:0;margin:8px 12px;
+    display:inline-flex;align-items:center;justify-content:center;cursor:pointer;
+    font-size:20px;background:var(--card2);border:2px solid var(--accent);
+    animation:bshine 1.1s ease-in-out 2;
+  }
+  .banner.iconized>*{display:none}
+  .banner.iconized::before{content:attr(data-icon)}
+  @keyframes bshine{
+    0%,100%{box-shadow:0 0 0 0 rgba(252,165,29,0)}
+    50%{box-shadow:0 0 0 10px rgba(252,165,29,.35)}
+  }
+  @media (prefers-reduced-motion: reduce){ .banner.iconized{animation:none} }
+  #charts.closed #chartGrid{display:none !important}
+  #charts.closed #chartsChev{transform:rotate(-90deg)}
+  #chartsChev{transition:transform .2s;font-size:12px;color:var(--ink-soft)}
 
   /* ---------- layout ---------- */
   .layout{display:grid;grid-template-columns:1fr 300px;gap:18px;padding:8px 20px 20px;align-items:start}
@@ -842,13 +859,13 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
   <span class="mono" id="lastBackupNote" style="font-size:12px;color:var(--ink-soft);align-self:center"></span>
 </div>
 
-<div class="banner" id="backupBanner" hidden>
+<div class="banner" id="backupBanner" data-icon="💾" hidden>
   <span>💾 <b>Backup nudge:</b> <span id="backupBannerText"></span></span>
   <button class="btn primary" id="bannerExport">Export now</button>
   <button class="btn" id="bannerDismiss">Later</button>
 </div>
 
-<div class="banner" id="carryBanner" hidden>
+<div class="banner" id="carryBanner" data-icon="🗓️" hidden>
   <span>🗓️ <b>New month.</b> Carry over categories &amp; budgets from <span id="carryFrom"></span>? (Actuals start fresh.)</span>
   <button class="btn primary" id="carryYes">Carry over</button>
   <button class="btn" id="carryNo">Start empty</button>
@@ -930,7 +947,7 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
   </div>
 
   <div id="charts" class="panel" style="margin-bottom:16px;display:none">
-    <h2>Breakdown</h2>
+    <h2 id="chartsToggle" style="cursor:pointer;user-select:none;display:flex;align-items:center;gap:8px"><span class="chev" id="chartsChev">▼</span> Breakdown</h2>
     <div id="chartGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px;align-items:start"></div>
   </div>
 
@@ -1974,6 +1991,7 @@ function checkCarryOver(){
   const show = monthIsEmpty(db.months[cur]) && !monthIsEmpty(db.months[prevKey]) && !bannerDismissedCarry;
   $("#carryBanner").hidden = !show;
   if(show) $("#carryFrom").textContent = prevKey;
+  iconizeBanner("carryBanner");
 }
 $("#carryYes").onclick = ()=>{
   const prev = db.months[prevMonthKey(cur)];
@@ -2031,6 +2049,7 @@ function checkBackupBanner(){
   if(show) $("#backupBannerText").textContent = db.lastBackup
     ? "it's been over 2 weeks since your last export."
     : "you haven't exported a backup yet.";
+  iconizeBanner("backupBanner");
 }
 
 $("#importBtn").onclick = ()=>$("#importFile").click();
@@ -2212,8 +2231,14 @@ function renderCharts(){
   const bars  = barsBox();
   const html = [bills,exps,byCard,bars].filter(Boolean).join("");
   $("#charts").style.display = html ? "" : "none";
+  $("#charts").classList.toggle("closed", !!db.settings.chartsClosed);
   $("#chartGrid").innerHTML = html;
 }
+$("#chartsToggle").addEventListener("click", ()=>{
+  db.settings.chartsClosed = !db.settings.chartsClosed;
+  save();
+  $("#charts").classList.toggle("closed", !!db.settings.chartsClosed);
+});
 
 /* ============ month report ============ */
 /* per-card itemized lists — line these up against your real statements */
@@ -2561,6 +2586,21 @@ $("#lockBtn").addEventListener("click", ()=>{
   toast(db.settings.lock ? "Locked — existing data is safe from stray taps 🔒" : "Editing on — tap 🔒 when you're done");
 });
 applyLock();
+
+/* on phones, banners start as pulsing icons; tap to expand */
+const bannerExpanded = {backupBanner:false, carryBanner:false};
+function iconizeBanner(id){
+  const el = document.getElementById(id);
+  if(el.hidden) return;
+  const mobile = matchMedia("(max-width:860px)").matches;
+  el.classList.toggle("iconized", mobile && !bannerExpanded[id]);
+}
+["backupBanner","carryBanner"].forEach(id=>{
+  document.getElementById(id).addEventListener("click", e=>{
+    const el = e.currentTarget;
+    if(el.classList.contains("iconized")){ bannerExpanded[id]=true; el.classList.remove("iconized"); }
+  });
+});
 
 /* ============ dialog & toast ============ */
 function confirmDlg(title, body, onOk){
