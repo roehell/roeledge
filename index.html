@@ -3,15 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#F8F4E9">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon-192.png">
-<script>
-if ("serviceWorker" in navigator && location.protocol === "https:") {
-  addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(()=>{}));
-}
-</script>
 <title>Ledger: Monthly Budget</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#F7F1E6">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <style>
   :root{
     --bg:#F7F1E6; --card:#FFF9F1; --card2:#F8EFD9;
@@ -698,7 +695,6 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
   }
   body.locked .rowdel, body.locked .rowsave, body.locked .addrow,
   body.locked #jarForm button, body.locked #jarGrid .rowdel{display:none}
-  body.locked #lockBtn{background:var(--card2);border-color:var(--accent);color:var(--accent-deep);font-weight:600}
 
   /* ---------- charts ---------- */
   .chartbox h4{font-family:Georgia,serif;font-size:13.5px;text-align:center;margin-bottom:6px}
@@ -714,8 +710,7 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
 
   /* ---------- report ---------- */
   #reportView{
-    position:fixed;inset:0;z-index:100;overflow:auto;background:var(--bg);
-    padding:20px clamp(16px,6vw,60px) 60px;
+    padding:14px clamp(12px,4vw,40px) 40px;
   }
   .report-actions{display:flex;gap:10px;justify-content:flex-end;margin-bottom:14px}
   #reportBody{max-width:760px;margin:0 auto;background:var(--card);border:1px solid var(--line);
@@ -732,8 +727,10 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
   .paidtag.n{background:#F7E3DC;color:var(--bad)}
   @media print{
     body{padding:0;background:#fff}
-    body>*:not(#reportView){display:none !important}
-    #reportView{position:static;padding:0;background:#fff}
+    body>*:not(#page-report){display:none !important}
+    #page-report{display:block !important}
+    #homeBtn{display:none !important}
+    #reportView{padding:0;background:#fff}
     .report-actions{display:none}
     #reportBody{border:none;box-shadow:none;border-radius:0;padding:0;max-width:none}
   }
@@ -819,10 +816,1584 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
     .libform{grid-template-columns:1fr 1fr;}
     .libform .btn{grid-column:1/-1}
   }
+
+  /* ================= SOFT HOBONICHI JOURNAL LANDING ================= */
+  .jpage{display:none}
+  .jpage.active{display:block}
+
+  #page-home.active{
+    display:flex;align-items:center;justify-content:center;
+    min-height:100vh;min-height:100dvh;padding:40px 78px 48px 28px;
+    overflow:hidden;position:relative;
+    background:
+      radial-gradient(circle at 14% 18%,rgba(255,255,255,.72) 0 2px,transparent 2.5px),
+      radial-gradient(circle at 78% 74%,rgba(199,164,138,.12) 0 1.4px,transparent 1.8px),
+      linear-gradient(135deg,#f8f0e7 0%,#f5eadf 52%,#efe1d4 100%);
+    background-size:52px 52px,68px 68px,auto;
+  }
+  #page-home::before{
+    content:"";position:absolute;inset:0;pointer-events:none;opacity:.42;
+    background-image:repeating-linear-gradient(0deg,rgba(93,70,49,.018) 0 1px,transparent 1px 4px);
+  }
+  #page-home::after{
+    content:"✿  little steps, lovely life  ✿";position:absolute;left:28px;bottom:18px;
+    font-family:Georgia,serif;font-size:11px;letter-spacing:2.2px;color:#a58c79;
+  }
+
+  .jcover{
+    --cover:#d7b7aa;--cover-deep:#b98f82;--paper:#fffdf8;--gold:#b48a55;
+    position:relative;width:min(430px,80vw);aspect-ratio:3/4;
+    border:1px solid rgba(93,62,49,.17);border-radius:12px 24px 24px 12px;
+    background:
+      linear-gradient(90deg,rgba(255,255,255,.23),transparent 16%,transparent 82%,rgba(91,53,45,.06)),
+      repeating-linear-gradient(90deg,rgba(255,255,255,.055) 0 1px,rgba(120,75,62,.025) 1px 3px),
+      var(--cover);
+    box-shadow:0 34px 65px rgba(91,62,46,.22),0 8px 18px rgba(91,62,46,.14),inset 0 0 0 1px rgba(255,255,255,.3);
+    padding:54px 42px 58px 62px;display:flex;align-items:center;justify-content:center;
+    transform:rotate(-1deg);isolation:isolate;
+  }
+  .jcover::before{
+    content:"";position:absolute;z-index:-2;inset:12px -14px -12px 16px;
+    border-radius:10px 25px 25px 10px;background:
+      repeating-linear-gradient(to bottom,#fffdf7 0 4px,#eee7db 4px 5px);
+    border:1px solid rgba(83,61,45,.12);box-shadow:6px 10px 16px rgba(73,50,35,.10);
+  }
+  .jcover::after{
+    content:"";position:absolute;z-index:-1;top:10px;bottom:-10px;right:-9px;width:15px;
+    border-radius:0 20px 20px 0;background:linear-gradient(90deg,#f2eadf,#fffdf7 62%,#e5dacb);
+    box-shadow:inset 1px 0 rgba(94,73,55,.08);
+  }
+
+  .jspiral{
+    position:absolute;left:0;top:0;bottom:0;width:42px;border-radius:11px 0 0 11px;
+    background:
+      linear-gradient(90deg,rgba(255,255,255,.12),transparent 42%),
+      repeating-linear-gradient(0deg,rgba(255,255,255,.06) 0 1px,transparent 1px 4px),
+      var(--cover-deep);
+    border-right:1px solid rgba(77,45,37,.15);box-shadow:inset -5px 0 10px rgba(83,45,38,.08);
+    pointer-events:none;
+  }
+  .jspiral::after{
+    content:"";position:absolute;left:31px;top:20px;bottom:20px;width:2px;
+    background:repeating-linear-gradient(to bottom,rgba(255,255,255,.34) 0 11px,transparent 11px 22px);
+  }
+
+  .jcover-art{width:100%;text-align:center;user-select:none;position:relative}
+  .jcover-art::before{display:none;content:none;}
+  .cover-sprig{font-size:31px;margin-bottom:18px;filter:saturate(.7);transform:rotate(-6deg)}
+  .cover-label{
+    position:relative;margin:0 auto;width:min(275px,100%);padding:32px 22px 28px;
+    background:rgba(255,253,248,.88);border:1px solid rgba(115,82,61,.17);border-radius:7px;
+    box-shadow:0 7px 15px rgba(83,54,40,.08),inset 0 0 0 5px rgba(255,255,255,.45);
+  }
+  .cover-label::before,.cover-label::after{
+    content:"✦";position:absolute;top:16px;color:#c39a68;font-size:10px
+  }
+  .cover-label::before{left:18px}.cover-label::after{right:18px}
+  .jcover-art .wordmark{
+    font-family:Georgia,'Times New Roman',serif;font-size:clamp(29px,7vw,42px);font-weight:600;
+    letter-spacing:1.4px;color:#5f493f;line-height:1.05;
+  }
+  .jcover-art .wordmark b{color:#9f7168;font-weight:600}
+  .jcover-art .tagline{
+    font-family:Georgia,serif;font-style:italic;font-size:13px;letter-spacing:.7px;color:#9a8173;
+    text-transform:none;margin-top:9px;
+  }
+  .cover-year{margin-top:17px;font-size:10px;letter-spacing:3.4px;text-transform:uppercase;color:#b08c78}
+  .jcover-art .hint{font-size:11px;color:#7f665d;margin-top:31px;letter-spacing:.5px}
+
+  .cover-sticker{
+    position:absolute;display:grid;place-items:center;width:58px;height:58px;border-radius:50%;
+    background:#f8e4ac;border:5px solid rgba(255,255,255,.82);box-shadow:0 4px 10px rgba(86,57,42,.12);
+    font-size:24px;transform:rotate(8deg);right:26px;bottom:34px;
+  }
+  .cover-note{
+    position:absolute;left:61px;bottom:34px;padding:7px 11px;background:#f8dce7;border:1px solid rgba(127,83,101,.10);
+    box-shadow:0 3px 7px rgba(86,57,42,.08);font-family:Georgia,serif;font-size:10px;color:#8b6877;
+    transform:rotate(-4deg);
+  }
+  .elastic{display:none}
+  .bookmark{
+    position:absolute;bottom:-31px;left:54%;width:17px;height:48px;background:#c98f9f;z-index:-1;
+    clip-path:polygon(0 0,100% 0,100% 100%,50% 78%,0 100%);box-shadow:0 3px 5px rgba(71,45,39,.12);
+  }
+
+  .cover-front-mask{
+    position:absolute;inset:0;z-index:2;pointer-events:none;border-radius:12px 24px 24px 12px;
+    background:
+      linear-gradient(90deg,rgba(255,255,255,.23),transparent 16%,transparent 82%,rgba(91,53,45,.06)),
+      repeating-linear-gradient(90deg,rgba(255,255,255,.055) 0 1px,rgba(120,75,62,.025) 1px 3px),
+      var(--cover);
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.3);
+  }
+  .jcover-art,.jspiral,.cover-sticker,.cover-note{z-index:4}
+  .bookmark{z-index:1}
+
+  .jcover .jtabs{
+    position:absolute;right:-44px;top:8%;bottom:8%;
+    display:flex;flex-direction:column;justify-content:space-between;z-index:1;
+  }
+  .jtab{
+    width:78px;height:39px;border:1px solid rgba(75,53,43,.13);border-left:none;
+    border-radius:0 7px 7px 0;cursor:pointer;padding:0 9px 0 31px;
+    display:flex;align-items:center;justify-content:flex-end;
+    box-shadow:4px 4px 8px rgba(69,49,38,.10);
+    clip-path:polygon(0 0,86% 0,100% 18%,100% 82%,86% 100%,0 100%);
+    transition:transform .18s ease,filter .18s ease;
+  }
+  .jtab:nth-child(even){transform:translateX(5px)}
+  .jtab:hover,.jtab:focus-visible{transform:translateX(8px);filter:brightness(1.035)}
+  .jtab:nth-child(even):hover,.jtab:nth-child(even):focus-visible{transform:translateX(13px)}
+  .jt-ico{font-size:14px;line-height:1;filter:saturate(.72)}
+  .jt-label{
+    position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;
+    overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important;
+  }
+  .jtab[data-tab="all"]{background:#f8e9b9}
+  .jtab[data-tab="library"]{background:#f3d9e5}
+  .jtab[data-tab="report"]{background:#dce9f5}
+  .jtab[data-tab="year"]{background:#dcebd7}
+  .jtab[data-tab="archive"]{background:#e7dff2}
+  .jtab[data-tab="receipt"]{background:#f7e2bd}
+  .jtab[data-tab="quick"]{background:#f3d6c8}
+
+  #homeBtn{font-weight:700}
+  body.on-home #homeBtn,body.on-home #lockBtn{display:none}
+  body.locked #lockBtn{background:var(--card2);border-color:var(--accent);color:var(--accent-deep);font-weight:700}
+  .jpage-inner{max-width:820px;margin:0 auto;padding:14px 20px 30px}
+  .jpage-inner>h3{font-family:Georgia,serif;margin-bottom:6px}
+  .jpage-inner>p{font-size:13.5px;color:var(--ink-soft);margin-bottom:12px}
+  #page-receipt aside#receipt{position:static;width:auto;max-width:360px;margin:0 auto}
+
+  @media(max-width:860px){
+    #page-home.active{padding:26px 66px 42px 12px}
+    .jcover{width:min(390px,78vw);padding:42px 27px 54px 51px}
+    .jspiral{width:34px}.jspiral::after{left:25px}
+    .cover-label{padding:27px 14px 24px}
+    .cover-note{left:46px;bottom:27px}.cover-sticker{right:19px;bottom:24px;width:50px;height:50px;font-size:20px}
+    .jcover .jtabs{right:-40px}
+    .jtab{width:70px;height:36px;padding:0 8px 0 28px}
+    #page-receipt aside#receipt{position:static!important;display:block!important;width:auto!important;max-height:none!important}
+  }
+  @media(max-width:520px){
+    #page-home::after{display:none}
+    .jcover{width:76vw;min-width:255px}
+    .cover-sprig{font-size:25px;margin-bottom:13px}
+    .cover-note{font-size:9px}.cover-sticker{display:none}
+    .jcover .jtabs{right:-37px}
+    .jtab{width:64px;height:33px;padding:0 7px 0 25px}.jt-ico{font-size:12px}
+  }
+
+  body:not([data-jtab="all"]) > #quickAdd{display:none}
+  #page-quick #quickAdd{position:static;grid-template-columns:1fr;gap:10px;max-width:480px;margin:0 auto;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+  #page-quick #qaToggle,#page-quick #qaHint{display:none!important}
+  #page-quick #quickAdd.collapsed input,#page-quick #quickAdd.collapsed select,#page-quick #quickAdd.collapsed button[type=submit]{display:block}
+
+
+  /* ===== CHUNKY PHYSICAL PLANNER PASS ===== */
+  #page-home.active{
+    padding:44px 96px 74px 34px;
+  }
+  .jcover{
+    width:min(460px,79vw);
+    aspect-ratio:3/4;
+    transform:rotate(-1.6deg);
+    border-radius:13px 27px 27px 13px;
+    box-shadow:
+      0 44px 72px rgba(82,55,42,.24),
+      0 16px 26px rgba(82,55,42,.16),
+      inset 0 0 0 1px rgba(255,255,255,.34);
+    overflow:visible;
+  }
+  /* Hide the old thin paper illusion; the new page block below supplies the mass. */
+  .jcover::before,.jcover::after{display:none}
+
+  .page-block{
+    position:absolute;
+    z-index:-2;
+    left:16px;
+    right:-28px;
+    top:12px;
+    bottom:-34px;
+    border-radius:10px 29px 31px 12px;
+    background:
+      repeating-linear-gradient(to bottom,
+        #fffef9 0 3px,
+        #eee7dc 3px 4px,
+        #faf6ee 4px 7px,
+        #e9e1d5 7px 8px);
+    border:1px solid rgba(84,61,46,.17);
+    box-shadow:
+      10px 17px 22px rgba(70,47,34,.16),
+      inset -9px 0 13px rgba(128,101,78,.09),
+      inset 0 -9px 10px rgba(128,101,78,.08);
+  }
+  .page-block::before{
+    content:"";
+    position:absolute;
+    left:8px;right:9px;top:8px;bottom:9px;
+    border-radius:8px 24px 25px 9px;
+    box-shadow:
+      0 4px 0 #f4eee4,
+      0 8px 0 #fffdf8,
+      0 12px 0 #ebe3d8,
+      0 16px 0 #fffdf8,
+      0 20px 0 #eee6db;
+    opacity:.92;
+  }
+  .page-block::after{
+    content:"";
+    position:absolute;
+    left:20px;right:25px;bottom:7px;height:24px;
+    background:repeating-linear-gradient(to bottom,rgba(121,97,76,.18) 0 1px,transparent 1px 4px);
+    border-radius:0 0 18px 8px;
+    opacity:.55;
+  }
+  .page-corner{
+    position:absolute;
+    z-index:-1;
+    right:-31px;
+    bottom:-36px;
+    width:58px;height:58px;
+    border-radius:0 0 32px 0;
+    background:linear-gradient(135deg,transparent 46%,rgba(207,194,177,.55) 47% 52%,#fffdf7 53% 100%);
+    filter:drop-shadow(3px 4px 2px rgba(82,55,42,.08));
+    pointer-events:none;
+  }
+
+  .cover-front-mask{
+    z-index:3;
+    border-radius:13px 27px 27px 13px;
+    box-shadow:
+      inset 0 0 0 1px rgba(255,255,255,.32),
+      8px 9px 14px rgba(70,47,34,.08);
+  }
+  .jcover-art,.jspiral,.cover-sticker,.cover-note{z-index:5}
+
+  /* Tabs are now divider leaves buried inside the page block. */
+  .jcover .jtabs{
+    z-index:0;
+    right:-60px;
+    top:10%;
+    bottom:4%;
+    justify-content:space-around;
+    pointer-events:none;
+  }
+  .jtab{
+    pointer-events:auto;
+    width:98px;
+    height:46px;
+    padding:0 12px 0 46px;
+    border-left:none;
+    border-radius:0 12px 12px 0;
+    clip-path:polygon(0 5%,82% 5%,100% 24%,100% 76%,82% 95%,0 95%);
+    box-shadow:5px 5px 9px rgba(69,49,38,.14),inset 0 1px rgba(255,255,255,.45);
+    transform:translateX(0);
+  }
+  .jtab:nth-child(even){transform:translateX(8px)}
+  .jtab:hover,.jtab:focus-visible{transform:translateX(8px)}
+  .jtab:nth-child(even):hover,.jtab:nth-child(even):focus-visible{transform:translateX(16px)}
+  .jt-ico{font-size:17px}
+
+  /* A second, subtle cover lip makes the top board visibly larger than the pages. */
+  .cover-lip{
+    position:absolute;inset:-2px -3px -2px -2px;z-index:4;pointer-events:none;
+    border-radius:14px 28px 28px 14px;
+    box-shadow:inset -2px -2px 0 rgba(93,57,45,.10),inset 2px 2px 0 rgba(255,255,255,.18);
+  }
+
+  @media(max-width:860px){
+    #page-home.active{padding:34px 82px 62px 15px}
+    .jcover{width:min(410px,76vw)}
+    .jcover .jtabs{right:-54px}
+    .jtab{width:88px;height:42px;padding-left:42px}
+  }
+  @media(max-width:520px){
+    #page-home.active{padding:26px 72px 56px 10px}
+    .jcover{width:74vw;min-width:260px}
+    .page-block{right:-22px;bottom:-28px}
+    .jcover .jtabs{right:-49px}
+    .jtab{width:78px;height:37px;padding-left:37px}
+    .jt-ico{font-size:14px}
+  }
+
+
+  /* ===== CORRECTED NOTEBOOK PROPORTIONS =====
+     The cover must remain the largest silhouette. Only a slim page block peeks out. */
+  .jcover{
+    width:min(470px,80vw);
+    border-radius:14px 28px 28px 14px;
+    transform:rotate(-1.15deg);
+  }
+  .page-block{
+    left:12px;
+    right:-9px;
+    top:8px;
+    bottom:-11px;
+    border-radius:10px 25px 26px 11px;
+    box-shadow:
+      6px 10px 15px rgba(70,47,34,.13),
+      inset -5px 0 8px rgba(128,101,78,.07),
+      inset 0 -5px 7px rgba(128,101,78,.07);
+  }
+  .page-block::before{
+    left:7px;right:7px;top:6px;bottom:7px;
+    box-shadow:
+      0 3px 0 #f4eee4,
+      0 6px 0 #fffdf8,
+      0 9px 0 #ebe3d8,
+      0 12px 0 #fffdf8;
+  }
+  .page-block::after{
+    left:18px;right:20px;bottom:3px;height:12px;
+    opacity:.38;
+  }
+  .page-corner{display:none}
+  .cover-lip{
+    inset:-3px -5px -3px -3px;
+    border-radius:15px 30px 30px 15px;
+    box-shadow:
+      inset -2px -2px 0 rgba(93,57,45,.10),
+      inset 2px 2px 0 rgba(255,255,255,.18),
+      2px 3px 5px rgba(74,49,37,.06);
+  }
+  .jcover .jtabs{
+    right:-55px;
+    top:10%;bottom:5%;
+  }
+  .jtab{
+    width:88px;height:42px;padding-left:42px;
+  }
+  @media(max-width:860px){
+    .jcover{width:min(420px,78vw)}
+    .page-block{right:-8px;bottom:-10px}
+    .jcover .jtabs{right:-51px}
+    .jtab{width:82px;height:39px;padding-left:39px}
+  }
+  @media(max-width:520px){
+    .jcover{width:76vw;min-width:260px}
+    .page-block{right:-7px;bottom:-9px}
+    .jcover .jtabs{right:-47px}
+    .jtab{width:74px;height:36px;padding-left:35px}
+  }
+
+
+  /* ===== POLISHED COVER TABS + CLEAN HOME VIEW ===== */
+  body.on-home{
+    padding-bottom:0 !important;
+    overflow:hidden;
+  }
+  body.on-home #page-home.active{
+    min-height:100vh;
+    min-height:100dvh;
+    height:100vh;
+    height:100dvh;
+    overflow:hidden;
+  }
+  /* Remove the decorative footer caption/strip at the bottom of the landing page. */
+  body.on-home #page-home::after{display:none !important;content:none !important}
+
+  /* Keep only the subtle right-side paper edge; never show pages below the cover. */
+  .page-block{
+    bottom:3px !important;
+    left:14px !important;
+    right:-9px !important;
+    border-radius:10px 25px 25px 10px !important;
+    box-shadow:6px 8px 13px rgba(70,47,34,.12),inset -5px 0 8px rgba(128,101,78,.07) !important;
+    overflow:hidden;
+  }
+  .page-block::before{
+    bottom:0 !important;
+    box-shadow:none !important;
+  }
+  .page-block::after{display:none !important;content:none !important}
+
+  /* Rounded planner dividers that expand to reveal their names. */
+  .jcover .jtabs{
+    right:-48px !important;
+    z-index:1 !important;
+    pointer-events:none;
+    align-items:flex-start;
+  }
+  .jtab,
+  .jtab:nth-child(even){
+    pointer-events:auto;
+    position:relative;
+    width:82px !important;
+    height:42px !important;
+    padding:0 15px 0 39px !important;
+    border:1px solid rgba(75,53,43,.13) !important;
+    border-left:none !important;
+    border-radius:0 999px 999px 0 !important;
+    clip-path:none !important;
+    transform:none !important;
+    filter:none !important;
+    justify-content:flex-start !important;
+    gap:9px;
+    overflow:hidden;
+    white-space:nowrap;
+    will-change:width;
+    transition:width .22s ease,box-shadow .22s ease !important;
+    box-shadow:4px 4px 8px rgba(69,49,38,.10),inset 0 1px rgba(255,255,255,.48) !important;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:geometricPrecision;
+  }
+  .jtab:nth-child(even){margin-left:6px}
+  .jtab:hover,.jtab:focus-visible,
+  .jtab:nth-child(even):hover,.jtab:nth-child(even):focus-visible{
+    width:184px !important;
+    transform:none !important;
+    filter:none !important;
+    box-shadow:6px 6px 12px rgba(69,49,38,.15),inset 0 1px rgba(255,255,255,.58) !important;
+    outline:none;
+  }
+  .jt-ico{
+    flex:0 0 auto;
+    font-size:15px !important;
+    line-height:1;
+    filter:none !important;
+  }
+  .jt-label{
+    position:static !important;
+    width:auto !important;
+    height:auto !important;
+    padding:0 !important;
+    margin:0 !important;
+    overflow:visible !important;
+    clip:auto !important;
+    clip-path:none !important;
+    white-space:nowrap !important;
+    border:0 !important;
+    opacity:0;
+    transform:none !important;
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:.15px;
+    color:#59483f;
+    transition:opacity .12s ease .06s;
+  }
+  .jtab:hover .jt-label,.jtab:focus-visible .jt-label{opacity:1}
+
+  @media(max-width:860px){
+    .jcover .jtabs{right:-45px !important}
+    .jtab,.jtab:nth-child(even){width:76px !important;height:39px !important;padding-left:36px !important}
+    .jtab:hover,.jtab:focus-visible,.jtab:nth-child(even):hover,.jtab:nth-child(even):focus-visible{width:170px !important}
+  }
+  @media(max-width:520px){
+    body.on-home{overflow:auto}
+    .jcover .jtabs{right:-42px !important}
+    .jtab,.jtab:nth-child(even){width:70px !important;height:36px !important;padding-left:33px !important}
+    .jtab:hover,.jtab:focus-visible,.jtab:nth-child(even):hover,.jtab:nth-child(even):focus-visible{width:154px !important}
+    .jt-label{font-size:11px}
+  }
+
+
+  /* FIX: independent absolutely-positioned tabs so one expanding tab never reflows/hides siblings. */
+  .jcover .jtabs{
+    position:absolute !important;
+    right:-48px !important;
+    top:8% !important;
+    bottom:8% !important;
+    width:184px !important;
+    display:block !important;
+    pointer-events:none !important;
+    overflow:visible !important;
+    z-index:1 !important;
+  }
+  .jcover .jtab,
+  .jcover .jtab:nth-child(even){
+    position:absolute !important;
+    left:0 !important;
+    margin-left:0 !important;
+    width:82px !important;
+    height:42px !important;
+    transform:none !important;
+    filter:none !important;
+    opacity:1 !important;
+    visibility:visible !important;
+    pointer-events:auto !important;
+    overflow:hidden !important;
+    z-index:1 !important;
+  }
+  .jcover .jtab:nth-child(1){top:0}
+  .jcover .jtab:nth-child(2){top:16.666%}
+  .jcover .jtab:nth-child(3){top:33.333%}
+  .jcover .jtab:nth-child(4){top:50%}
+  .jcover .jtab:nth-child(5){top:66.666%}
+  .jcover .jtab:nth-child(6){top:83.333%}
+  .jcover .jtab:nth-child(7){bottom:0}
+
+  .jcover .jtab:hover,
+  .jcover .jtab:focus-visible,
+  .jcover .jtab:nth-child(even):hover,
+  .jcover .jtab:nth-child(even):focus-visible{
+    width:184px !important;
+    z-index:10 !important;
+    transform:none !important;
+    filter:none !important;
+  }
+  .jcover .jtab .jt-ico{
+    flex:0 0 18px !important;
+    display:inline-flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    opacity:1 !important;
+    visibility:visible !important;
+  }
+  .jcover .jtab .jt-label{
+    display:inline-block !important;
+    opacity:0 !important;
+    visibility:hidden !important;
+    transition:opacity .14s ease !important;
+  }
+  .jcover .jtab:hover .jt-label,
+  .jcover .jtab:focus-visible .jt-label{
+    opacity:1 !important;
+    visibility:visible !important;
+  }
+
+  @media(max-width:860px){
+    .jcover .jtabs{right:-45px !important;width:170px !important}
+    .jcover .jtab,.jcover .jtab:nth-child(even){width:76px !important;height:39px !important}
+    .jcover .jtab:hover,.jcover .jtab:focus-visible,
+    .jcover .jtab:nth-child(even):hover,.jcover .jtab:nth-child(even):focus-visible{width:170px !important}
+  }
+  @media(max-width:520px){
+    .jcover .jtabs{right:-42px !important;width:154px !important}
+    .jcover .jtab,.jcover .jtab:nth-child(even){width:70px !important;height:36px !important}
+    .jcover .jtab:hover,.jcover .jtab:focus-visible,
+    .jcover .jtab:nth-child(even):hover,.jcover .jtab:nth-child(even):focus-visible{width:154px !important}
+  }
+
+
+  /* FINAL TAB RESTORE: anchor tabs to the cover edge and expand outward. */
+  .jcover .jtabs{
+    left:calc(100% - 34px) !important;
+    right:auto !important;
+    top:8% !important;
+    bottom:8% !important;
+    width:184px !important;
+    display:block !important;
+    overflow:visible !important;
+    pointer-events:none !important;
+    z-index:5 !important;
+  }
+  .cover-front-mask{z-index:6 !important}
+  .jcover-art,.jspiral,.cover-sticker,.cover-note{z-index:7 !important}
+
+  .jcover .jtab,
+  .jcover .jtab:nth-child(even){
+    left:0 !important;
+    right:auto !important;
+    width:76px !important;
+    height:40px !important;
+    margin:0 !important;
+    padding:0 14px 0 38px !important;
+    border-radius:0 999px 999px 0 !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:flex-start !important;
+    gap:9px !important;
+    opacity:1 !important;
+    visibility:visible !important;
+    pointer-events:auto !important;
+    overflow:hidden !important;
+    transform:none !important;
+    filter:none !important;
+    transition:width .2s ease, box-shadow .2s ease !important;
+    z-index:1 !important;
+  }
+  .jcover .jtab:hover,
+  .jcover .jtab:focus-visible,
+  .jcover .jtab:nth-child(even):hover,
+  .jcover .jtab:nth-child(even):focus-visible{
+    width:184px !important;
+    z-index:10 !important;
+    transform:none !important;
+    filter:none !important;
+  }
+  .jcover .jtab .jt-ico{
+    display:inline-flex !important;
+    flex:0 0 18px !important;
+    align-items:center !important;
+    justify-content:center !important;
+    opacity:1 !important;
+    visibility:visible !important;
+  }
+  .jcover .jtab .jt-label{
+    display:inline-block !important;
+    opacity:0 !important;
+    visibility:hidden !important;
+    white-space:nowrap !important;
+    transition:opacity .12s ease .05s !important;
+  }
+  .jcover .jtab:hover .jt-label,
+  .jcover .jtab:focus-visible .jt-label{
+    opacity:1 !important;
+    visibility:visible !important;
+  }
+
+  @media(max-width:860px){
+    .jcover .jtabs{left:calc(100% - 31px) !important;width:166px !important}
+    .jcover .jtab,.jcover .jtab:nth-child(even){width:70px !important;height:38px !important;padding-left:34px !important}
+    .jcover .jtab:hover,.jcover .jtab:focus-visible,
+    .jcover .jtab:nth-child(even):hover,.jcover .jtab:nth-child(even):focus-visible{width:166px !important}
+  }
+  @media(max-width:520px){
+    .jcover .jtabs{left:calc(100% - 29px) !important;width:150px !important}
+    .jcover .jtab,.jcover .jtab:nth-child(even){width:66px !important;height:35px !important;padding-left:31px !important}
+    .jcover .jtab:hover,.jcover .jtab:focus-visible,
+    .jcover .jtab:nth-child(even):hover,.jcover .jtab:nth-child(even):focus-visible{width:150px !important}
+  }
+
+
+
+  /* ========== JOURNAL SECTION PAGES — landing tabs only ========== */
+  body:not([data-jtab="home"]):not([data-jtab="all"]){
+    min-height:100vh;
+  }
+  body:not([data-jtab="home"]):not([data-jtab="all"]) .jpage.active{
+    min-height:100vh;
+    padding:clamp(18px,4vw,42px) 14px 48px;
+  }
+  .journal-sheet{
+    position:relative;
+    width:min(960px,96vw);
+    min-height:calc(100vh - 84px);
+    margin:0 auto;
+    overflow:hidden;
+    border:1px solid color-mix(in srgb,var(--line) 80%,#c9b99f);
+    border-radius:18px 18px 14px 14px;
+    background:
+      linear-gradient(90deg,transparent 0 52px,rgba(196,135,126,.22) 52px 53px,transparent 53px),
+      repeating-linear-gradient(180deg,transparent 0 31px,rgba(122,106,85,.085) 31px 32px),
+      color-mix(in srgb,var(--card) 92%,#fff);
+    box-shadow:0 12px 34px rgba(58,46,34,.13);
+  }
+  .journal-sheet::before{
+    content:"";
+    position:absolute;
+    inset:0 auto 0 0;
+    width:38px;
+    background:
+      radial-gradient(circle at 19px 18px,var(--bg) 3px,transparent 3.8px) 0 0/38px 32px repeat-y,
+      linear-gradient(90deg,rgba(122,106,85,.06),transparent);
+    border-right:1px dashed rgba(122,106,85,.16);
+    pointer-events:none;
+  }
+  .journal-pagebar{
+    position:relative;
+    z-index:2;
+    display:flex;
+    align-items:flex-start;
+    gap:14px;
+    padding:24px 28px 18px 74px;
+    border-bottom:1px dashed color-mix(in srgb,var(--line) 82%,transparent);
+    background:linear-gradient(180deg,rgba(255,255,255,.48),rgba(255,255,255,.12));
+  }
+  .journal-pagebar .page-kicker{
+    font-size:10px;
+    line-height:1;
+    letter-spacing:2.4px;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin-bottom:7px;
+  }
+  .journal-pagebar h2{
+    font-family:Georgia,'Times New Roman',serif;
+    font-size:clamp(23px,3vw,31px);
+    font-weight:700;
+    line-height:1.05;
+    margin:0;
+  }
+  .journal-pagebar p{
+    margin:7px 0 0;
+    color:var(--ink-soft);
+    font-size:13px;
+  }
+  .journal-pagebar .page-title-wrap{flex:1;min-width:0}
+  .journal-back{
+    flex:none;
+    border:1px solid var(--line);
+    border-radius:999px;
+    background:rgba(255,255,255,.68);
+    color:var(--ink);
+    padding:8px 13px;
+    cursor:pointer;
+    font:inherit;
+    font-size:12.5px;
+    white-space:nowrap;
+  }
+  .journal-back:hover{border-color:var(--accent);background:var(--card)}
+  .journal-page-content{
+    position:relative;
+    z-index:1;
+    padding:24px 30px 38px 74px;
+  }
+  .journal-page-content>.jpage-inner{
+    max-width:none;
+    margin:0;
+    padding:0;
+  }
+  .journal-page-content>.jpage-inner>h3,
+  .journal-page-content>.jpage-inner>p{display:none}
+
+  /* Different pastel page markers, tied only to landing tabs. */
+  #page-library .journal-sheet{--page-mark:#F3C9DE}
+  #page-report .journal-sheet{--page-mark:#CFE2F3}
+  #page-year .journal-sheet{--page-mark:#D4EAD6}
+  #page-archive .journal-sheet{--page-mark:#DED5F0}
+  #page-receipt .journal-sheet{--page-mark:#F6E2AF}
+  #page-quick .journal-sheet{--page-mark:#F3CDBE}
+  .journal-sheet::after{
+    content:"";
+    position:absolute;
+    top:22px;
+    right:0;
+    width:9px;
+    height:72px;
+    border-radius:9px 0 0 9px;
+    background:var(--page-mark,var(--card2));
+  }
+
+  /* Existing monthly report remains visually unchanged inside a journal frame. */
+  #page-report .journal-page-content{padding:18px 24px 34px 68px}
+  #page-report #reportView{padding:0}
+  #page-report .report-actions{
+    margin:0 0 14px;
+    justify-content:flex-end;
+  }
+  #page-report .report-actions .btn:last-child{display:none}
+  #page-report #reportBody{
+    max-width:760px;
+    margin:0 auto;
+  }
+
+  /* Shared receipt and quick-entry tools receive only a surrounding page treatment. */
+  #page-receipt .journal-page-content{padding-top:30px}
+  #page-receipt aside#receipt{margin:0 auto}
+  #page-quick #quickAdd{
+    background:color-mix(in srgb,var(--card) 92%,#fff);
+  }
+
+  @media(max-width:640px){
+    body:not([data-jtab="home"]):not([data-jtab="all"]) .jpage.active{padding:10px 7px 28px}
+    .journal-sheet{width:100%;min-height:calc(100vh - 20px);border-radius:14px}
+    .journal-sheet::before{width:24px;background-size:24px 30px;background-position:-7px 0}
+    .journal-pagebar{padding:18px 14px 15px 36px;gap:9px;align-items:center}
+    .journal-pagebar h2{font-size:22px}
+    .journal-pagebar p{font-size:12px}
+    .journal-pagebar .page-kicker{letter-spacing:1.7px}
+    .journal-back{padding:7px 10px;font-size:0}
+    .journal-back::before{content:"📔";font-size:17px}
+    .journal-page-content,#page-report .journal-page-content{padding:18px 12px 28px 36px}
+  }
+  @media print{
+    #page-report .journal-sheet{border:none;box-shadow:none;background:#fff;min-height:0}
+    #page-report .journal-sheet::before,#page-report .journal-sheet::after,#page-report .journal-pagebar{display:none}
+    #page-report .journal-page-content{padding:0}
+  }
+
+
+/* ===== PREMIUM JOURNAL DRAFT — landing and non-All tabs only ===== */
+#page-home.active{
+  padding:28px 132px 46px 36px !important;
+  background:
+    radial-gradient(circle at 13% 16%,rgba(255,255,255,.72) 0 2px,transparent 2.6px),
+    radial-gradient(circle at 82% 76%,rgba(157,128,106,.09) 0 1.3px,transparent 1.8px),
+    linear-gradient(135deg,#f8f2eb 0%,#f2e8de 52%,#eadccf 100%) !important;
+}
+.jcover{
+  width:min(590px,76vw) !important;
+  max-height:84vh;
+  transform:rotate(-1.15deg) !important;
+  box-shadow:0 52px 95px rgba(74,49,37,.25),0 15px 30px rgba(74,49,37,.13),inset 0 0 0 1px rgba(255,255,255,.42) !important;
+  animation:journalPlace .48s cubic-bezier(.2,.8,.2,1) both;
+}
+@keyframes journalPlace{from{opacity:0;transform:rotate(-1.15deg) translateY(12px) scale(.985)}to{opacity:1;transform:rotate(-1.15deg) translateY(0) scale(1)}}
+@media(prefers-reduced-motion:reduce){.jcover{animation:none}}
+.jcover::before{inset:16px -25px -17px 18px !important;box-shadow:11px 14px 22px rgba(73,50,35,.14) !important}
+.jcover::after{right:-17px !important;width:24px !important;background:repeating-linear-gradient(to bottom,#fffdf8 0 4px,#e8dfd3 4px 5px) !important}
+.page-block{position:absolute;z-index:-3;inset:27px -34px -27px 26px;border-radius:10px 29px 29px 10px;background:repeating-linear-gradient(to bottom,#fffdf8 0 5px,#e8dfd4 5px 6px);box-shadow:12px 18px 28px rgba(73,50,35,.12)}
+.bookmark{height:72px !important;bottom:-51px !important;width:21px !important;background:linear-gradient(90deg,#bb7d91,#d5a0af,#b8768d) !important}
+.jcover .jtabs{left:calc(100% - 37px) !important;width:214px !important;top:7% !important;bottom:7% !important}
+.jcover .jtab,.jcover .jtab:nth-child(even){width:88px !important;height:44px !important;padding-left:43px !important;border-radius:0 12px 12px 0 !important;box-shadow:5px 6px 11px rgba(69,49,38,.13),inset 0 1px rgba(255,255,255,.52) !important;border-left:1px solid rgba(75,53,43,.08) !important}
+.jcover .jtab:hover,.jcover .jtab:focus-visible,.jcover .jtab:nth-child(even):hover,.jcover .jtab:nth-child(even):focus-visible{width:214px !important;box-shadow:7px 8px 14px rgba(69,49,38,.16) !important}
+.jcover .jtab .jt-label{font-family:Georgia,serif;font-size:13px;color:#684f45;letter-spacing:.15px}
+.jcover .jtab .jt-ico{font-size:16px !important}
+.premium-cover-art .premium-title{font-size:clamp(27px,4.3vw,42px) !important;letter-spacing:5px !important}
+.premium-cover-art .premium-year{font-size:13px !important;letter-spacing:7px !important}
+.seasonal-medallion{width:min(230px,50%) !important;margin:22px auto 17px !important}
+
+.premium-page-intro{display:none;margin:0 0 22px;display:grid;grid-template-columns:1.15fr .85fr;gap:14px}
+body.premium-tab-view .premium-feature,body.premium-tab-view .premium-note,body.premium-tab-view .premium-stat{border:1px solid color-mix(in srgb,var(--line) 86%,#fff);background:rgba(255,255,255,.56);border-radius:16px;box-shadow:0 5px 14px rgba(58,46,34,.06)}
+body.premium-tab-view .premium-feature{padding:22px 24px;position:relative;overflow:hidden}
+body.premium-tab-view .premium-feature::after{content:"";position:absolute;width:110px;height:110px;border-radius:50%;right:-32px;top:-38px;background:color-mix(in srgb,var(--page-mark) 46%,transparent)}
+body.premium-tab-view .premium-eyebrow{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ink-soft);font-weight:700}
+body.premium-tab-view .premium-feature h3{font-family:Georgia,serif;font-size:24px;margin:5px 0 7px;position:relative;z-index:1}
+body.premium-tab-view .premium-feature p{font-family:Georgia,serif;font-style:italic;color:var(--ink-soft);font-size:13px;max-width:430px}
+body.premium-tab-view .premium-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+body.premium-tab-view .premium-stat{padding:13px 14px;min-height:86px;display:flex;flex-direction:column;justify-content:center}
+body.premium-tab-view .premium-stat .label{font-size:10px;text-transform:uppercase;letter-spacing:1.3px;color:var(--ink-soft)}
+body.premium-tab-view .premium-stat .value{font-family:ui-monospace,monospace;font-size:21px;font-weight:800;margin-top:4px;color:var(--ink)}
+body.premium-tab-view .premium-stat .sub{font-size:10.5px;color:var(--ink-soft);margin-top:2px}
+body.premium-tab-view .premium-note{grid-column:1/-1;padding:12px 16px;border-style:dashed;font-size:12px;color:var(--ink-soft)}
+body.premium-tab-view .journal-sheet{width:min(1080px,96vw) !important;min-height:calc(100vh - 62px) !important;border-radius:20px 24px 18px 20px !important;box-shadow:0 22px 54px rgba(58,46,34,.16),10px 10px 0 -3px color-mix(in srgb,var(--card) 92%,#eee),17px 17px 0 -7px color-mix(in srgb,var(--line) 74%,#fff) !important}
+body.premium-tab-view .journal-pagebar{padding-top:28px !important;padding-bottom:22px !important}
+body.premium-tab-view .journal-pagebar::after{content:"✦";position:absolute;right:85px;bottom:14px;color:var(--page-mark);font-size:18px;opacity:.9}
+body.premium-tab-view .journal-page-content{padding-top:28px !important}
+body.premium-tab-view #page-library .libform,body.premium-tab-view #page-library #libList,body.premium-tab-view #page-year #yearBody,body.premium-tab-view #page-archive #archiveList,body.premium-tab-view #page-archive #archivePreview{background:rgba(255,255,255,.42);border:1px solid var(--line);border-radius:15px;padding:14px}
+body.premium-tab-view #page-library .libform{margin-top:16px}
+body.premium-tab-view #page-report #reportBody{box-shadow:0 10px 24px rgba(58,46,34,.10) !important}
+body.premium-tab-view #page-quick #quickAdd{max-width:620px !important;padding:20px !important;border-radius:18px !important}
+
+body.premium-tab-view .premium-page-intro{display:grid}
+body:not(.premium-tab-view) .premium-page-intro{display:none !important}
+@media(max-width:860px){#page-home.active{padding:22px 88px 46px 14px !important}.jcover{width:min(520px,78vw) !important}.jcover .jtabs{left:calc(100% - 33px) !important;width:180px !important}.jcover .jtab,.jcover .jtab:nth-child(even){width:76px !important;height:40px !important;padding-left:36px !important}.jcover .jtab:hover,.jcover .jtab:focus-visible,.jcover .jtab:nth-child(even):hover,.jcover .jtab:nth-child(even):focus-visible{width:180px !important}.premium-page-intro{grid-template-columns:1fr}}
+@media(max-width:520px){#page-home.active{padding:18px 64px 38px 7px !important}.jcover{width:78vw !important;min-width:272px}.premium-cover-art .premium-title{letter-spacing:3px !important}.jcover .jtabs{left:calc(100% - 30px) !important;width:154px !important}.jcover .jtab,.jcover .jtab:nth-child(even){width:68px !important;height:36px !important;padding-left:31px !important}.jcover .jtab:hover,.jcover .jtab:focus-visible,.jcover .jtab:nth-child(even):hover,.jcover .jtab:nth-child(even):focus-visible{width:154px !important}body.premium-tab-view .premium-stats{grid-template-columns:1fr}body.premium-tab-view .premium-feature{padding:18px}.premium-page-intro{margin-bottom:16px}}
+
+
+
+/* ===== STANDALONE BILLS PLANNER — isolated from All ===== */
+body.premium-tab-view #page-library .jpage-inner > #libList,
+body.premium-tab-view #page-library .jpage-inner > #libForm{display:none!important}
+body:not(.premium-tab-view) #jrBillsPlanner{display:none!important}
+#jrBillsPlanner{display:grid;gap:18px}
+#jrBillsPlanner *{box-sizing:border-box}
+.jrb-overview{display:grid;grid-template-columns:1.2fr .8fr;gap:14px}
+.jrb-card{background:rgba(255,255,255,.58);border:1px solid color-mix(in srgb,var(--line) 88%,#fff);border-radius:17px;padding:18px;box-shadow:0 6px 16px rgba(58,46,34,.055)}
+.jrb-card h3{font-family:Georgia,serif;font-size:19px;margin:0 0 4px}
+.jrb-muted{font-size:12px;color:var(--ink-soft)}
+.jrb-progress-top{display:flex;justify-content:space-between;align-items:end;gap:12px;margin-top:17px}
+.jrb-progress-top strong{font-family:ui-monospace,monospace;font-size:25px}
+.jrb-track{height:10px;border-radius:999px;background:var(--card2);border:1px solid var(--line);overflow:hidden;margin-top:8px}
+.jrb-track span{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#e7a8c5,#bd7798);width:0;transition:width .25s ease}
+.jrb-focus{display:flex;flex-direction:column;justify-content:center;min-height:142px;background:linear-gradient(145deg,rgba(243,217,229,.62),rgba(255,255,255,.55))}
+.jrb-focus .jrb-date{font-size:10px;letter-spacing:1.7px;text-transform:uppercase;color:var(--ink-soft)}
+.jrb-focus .jrb-name{font-family:Georgia,serif;font-size:22px;margin-top:7px}
+.jrb-focus .jrb-amount{font-family:ui-monospace,monospace;font-size:20px;font-weight:800;margin-top:6px}
+.jrb-section-head{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:10px}
+.jrb-section-head h3{margin:0}
+.jrb-list{display:grid;gap:9px}
+.jrb-upcoming{display:grid;grid-template-columns:auto 1fr auto auto;gap:11px;align-items:center;padding:11px 12px;border:1px solid var(--line);border-radius:13px;background:rgba(255,255,255,.42)}
+.jrb-day{width:48px;text-align:center;border-right:1px dashed var(--line);padding-right:10px}
+.jrb-day b{display:block;font-family:Georgia,serif;font-size:18px}
+.jrb-day span{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-soft)}
+.jrb-upcoming .name{font-weight:650}.jrb-upcoming .meta{font-size:11px;color:var(--ink-soft);margin-top:2px}
+.jrb-upcoming .amt{font-family:ui-monospace,monospace;font-weight:700;white-space:nowrap}
+.jrb-status{font-size:10.5px;border-radius:999px;padding:4px 8px;white-space:nowrap;border:1px solid var(--line)}
+.jrb-status.paid{color:var(--good);background:color-mix(in srgb,var(--good) 9%,#fff)}
+.jrb-status.due{color:var(--bad);background:color-mix(in srgb,var(--bad) 8%,#fff)}
+.jrb-library-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.jrb-lib-card{border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.48);padding:13px;display:grid;grid-template-columns:1fr auto;gap:8px 10px;align-items:start}
+.jrb-lib-card .nm{font-family:Georgia,serif;font-size:16px;font-weight:700}
+.jrb-lib-card .cat{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-soft);margin-top:2px}
+.jrb-lib-card .budget{font-family:ui-monospace,monospace;font-weight:700;text-align:right}
+.jrb-lib-card .due{font-size:11px;color:var(--ink-soft);text-align:right}
+.jrb-lib-actions{grid-column:1/-1;display:flex;gap:7px;margin-top:3px}
+.jrb-lib-actions button{flex:1}
+.jrb-form{display:grid;grid-template-columns:1.4fr .9fr .8fr .9fr;gap:9px;align-items:end}
+.jrb-field label{display:block;font-size:9.5px;letter-spacing:1.15px;text-transform:uppercase;color:var(--ink-soft);margin:0 0 4px 2px}
+.jrb-field input,.jrb-field select{width:100%;font:inherit;color:var(--ink);background:rgba(255,255,255,.64);border:1px solid var(--line);border-radius:10px;padding:9px 10px;min-width:0}
+.jrb-field input:focus,.jrb-field select:focus{outline:none;border-color:#d795b3;background:#fff}
+.jrb-form-actions{grid-column:1/-1;display:flex;justify-content:space-between;gap:8px;align-items:center;margin-top:3px}
+.jrb-empty{padding:22px;text-align:center;color:var(--ink-soft);border:1px dashed var(--line);border-radius:13px;background:rgba(255,255,255,.32)}
+.jrb-original-link{border-style:dashed!important}
+@media(max-width:760px){.jrb-overview{grid-template-columns:1fr}.jrb-form{grid-template-columns:1fr 1fr}.jrb-upcoming{grid-template-columns:auto 1fr auto}.jrb-status{grid-column:2/-1;justify-self:start}.jrb-form-actions{align-items:stretch;flex-direction:column}.jrb-form-actions button{width:100%}}
+@media(max-width:480px){.jrb-form{grid-template-columns:1fr}.jrb-upcoming{grid-template-columns:auto 1fr}.jrb-upcoming .amt{grid-column:2}.jrb-status{grid-column:2}.jrb-library-grid{grid-template-columns:1fr}}
+
+</style>
+
+<style>
+/* ===== PREMIUM LINEN COVER EXPERIMENT =====
+   Calm stationery cover; notebook itself remains completely still. */
+#page-home.active{
+  /* Keep the existing dotted background exactly as the journal's setting. */
+}
+
+.jcover{
+  --cover:#f2eee7 !important;
+  --cover-deep:#e5ded4 !important;
+  --paper:#fffdf9 !important;
+  --gold:#b79a6b !important;
+  background:
+    linear-gradient(90deg,rgba(255,255,255,.34),transparent 18%,transparent 84%,rgba(92,75,60,.045)),
+    repeating-linear-gradient(90deg,rgba(255,255,255,.13) 0 1px,rgba(114,96,79,.025) 1px 3px),
+    repeating-linear-gradient(0deg,rgba(255,255,255,.08) 0 1px,rgba(114,96,79,.018) 1px 4px),
+    var(--cover) !important;
+  border-color:rgba(94,77,61,.15) !important;
+  border-radius:15px 29px 29px 15px !important;
+  transform:rotate(-.65deg) !important;
+  box-shadow:
+    0 30px 55px rgba(77,60,45,.18),
+    0 8px 17px rgba(77,60,45,.10),
+    inset 0 0 0 1px rgba(255,255,255,.42) !important;
+}
+.cover-front-mask{
+  background:
+    linear-gradient(90deg,rgba(255,255,255,.34),transparent 18%,transparent 84%,rgba(92,75,60,.045)),
+    repeating-linear-gradient(90deg,rgba(255,255,255,.13) 0 1px,rgba(114,96,79,.025) 1px 3px),
+    repeating-linear-gradient(0deg,rgba(255,255,255,.08) 0 1px,rgba(114,96,79,.018) 1px 4px),
+    var(--cover) !important;
+  border-radius:15px 29px 29px 15px !important;
+}
+.jspiral{
+  width:39px !important;
+  border-radius:14px 0 0 14px !important;
+  background:
+    linear-gradient(90deg,rgba(255,255,255,.22),transparent 44%),
+    repeating-linear-gradient(0deg,rgba(255,255,255,.10) 0 1px,transparent 1px 4px),
+    #ded6cb !important;
+  border-right:1px solid rgba(86,69,53,.10) !important;
+  box-shadow:inset -4px 0 9px rgba(82,66,51,.06) !important;
+}
+.jspiral::after{
+  left:29px !important;
+  background:repeating-linear-gradient(to bottom,rgba(137,115,89,.28) 0 10px,transparent 10px 21px) !important;
+}
+
+.premium-cover-art{
+  min-height:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  color:#76685d;
+}
+.premium-title{
+  margin-top:-18px;
+  font-family:Georgia,'Times New Roman',serif;
+  font-size:11px;
+  letter-spacing:4.5px;
+  color:#75685e;
+  text-transform:uppercase;
+  text-shadow:0 1px rgba(255,255,255,.75);
+}
+.premium-year{
+  margin-top:7px;
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  font-size:9px;
+  letter-spacing:3.2px;
+  color:#a79789;
+}
+.seasonal-medallion{
+  position:relative;
+  width:192px;
+  height:192px;
+  margin:48px auto 36px;
+  border-radius:50%;
+  border:2px solid rgba(183,154,107,.62);
+  background:
+    radial-gradient(circle at 50% 45%,rgba(255,255,255,.54),rgba(226,218,207,.44) 72%),
+    repeating-linear-gradient(135deg,rgba(118,100,82,.035) 0 1px,transparent 1px 5px);
+  box-shadow:
+    inset 0 0 0 7px rgba(255,255,255,.34),
+    inset 0 0 0 8px rgba(183,154,107,.13);
+  overflow:hidden;
+}
+.medallion-linework{
+  position:absolute;inset:31px 29px 37px 31px;
+  border:1px solid rgba(127,112,96,.18);
+  transform:rotate(-18deg);
+  border-radius:48% 52% 45% 55%;
+}
+.medallion-fruit{
+  position:absolute;left:84px;top:86px;
+  width:36px;height:36px;border-radius:50%;
+  display:block;color:#d7bd79;font-size:42px;line-height:26px;
+  text-shadow:inset 0 0 4px rgba(110,88,42,.18);
+}
+.medallion-stem{
+  position:absolute;left:101px;top:65px;width:2px;height:32px;
+  background:#92907b;transform:rotate(17deg);transform-origin:bottom;
+}
+.medallion-leaf{
+  position:absolute;font-family:Georgia,serif;font-size:58px;line-height:1;color:#a8ad98;opacity:.82;
+}
+.leaf-one{left:46px;top:88px;transform:rotate(-30deg)}
+.leaf-two{right:42px;top:57px;transform:rotate(40deg);color:#b8ad95}
+.premium-subtitle{
+  font-family:Georgia,'Times New Roman',serif;
+  font-size:10px;
+  letter-spacing:3.4px;
+  text-transform:uppercase;
+  color:#9c8b7d;
+}
+.premium-cover-art .hint{
+  margin-top:33px !important;
+  color:#9b8b7e !important;
+  font-size:10px !important;
+  letter-spacing:.7px !important;
+}
+.cover-note,.cover-sticker,.cover-label,.cover-sprig{display:none !important}
+.bookmark{background:#c8aeb8 !important}
+
+/* Keep all notebook hover effects disabled; only tabs respond. */
+.jcover:hover,.jcover:focus-within{
+  transform:rotate(-.65deg) !important;
+  box-shadow:
+    0 30px 55px rgba(77,60,45,.18),
+    0 8px 17px rgba(77,60,45,.10),
+    inset 0 0 0 1px rgba(255,255,255,.42) !important;
+}
+
+@media(max-width:860px){
+  .seasonal-medallion{width:166px;height:166px;margin:37px auto 29px}
+  .medallion-fruit{left:72px;top:73px}
+  .medallion-stem{left:89px;top:53px}
+  .leaf-one{left:35px;top:72px}.leaf-two{right:31px;top:44px}
+}
+@media(max-width:520px){
+  .premium-title{font-size:9px;letter-spacing:3.5px}
+  .seasonal-medallion{width:142px;height:142px;margin:29px auto 23px}
+  .medallion-fruit{left:59px;top:60px}
+  .medallion-stem{left:76px;top:42px}
+  .leaf-one{left:24px;top:57px}.leaf-two{right:21px;top:33px}
+  .premium-cover-art .hint{margin-top:25px !important}
+}
+</style>
+
+
+<style>
+/* ===== PREMIUM LINEN COVER — corrected visual pass ===== */
+.jcover{
+  --cover:#d8cec0 !important;
+  --cover-deep:#c9bcab !important;
+  --paper:#fbf8f1 !important;
+  --gold:#a8895c !important;
+  background:
+    linear-gradient(90deg,rgba(255,255,255,.20),transparent 19%,transparent 84%,rgba(80,64,48,.055)),
+    repeating-linear-gradient(90deg,rgba(255,255,255,.08) 0 1px,rgba(95,77,59,.027) 1px 3px),
+    repeating-linear-gradient(0deg,rgba(255,255,255,.045) 0 1px,rgba(95,77,59,.018) 1px 4px),
+    var(--cover) !important;
+  border-color:rgba(89,70,52,.19) !important;
+  box-shadow:
+    0 24px 42px rgba(71,54,39,.17),
+    0 7px 14px rgba(71,54,39,.09),
+    inset 0 0 0 1px rgba(255,255,255,.24) !important;
+}
+.cover-front-mask{
+  background:
+    linear-gradient(90deg,rgba(255,255,255,.20),transparent 19%,transparent 84%,rgba(80,64,48,.055)),
+    repeating-linear-gradient(90deg,rgba(255,255,255,.08) 0 1px,rgba(95,77,59,.027) 1px 3px),
+    repeating-linear-gradient(0deg,rgba(255,255,255,.045) 0 1px,rgba(95,77,59,.018) 1px 4px),
+    var(--cover) !important;
+}
+.jspiral{
+  background:
+    linear-gradient(90deg,rgba(255,255,255,.14),transparent 46%),
+    repeating-linear-gradient(0deg,rgba(255,255,255,.07) 0 1px,transparent 1px 4px),
+    #c9bcad !important;
+}
+/* Remove old accessories that looked pasted on or escaped the cover. */
+.elastic,.bookmark,.cover-lip,.cover-note,.cover-sticker,.cover-label,.cover-sprig{display:none !important}
+
+.premium-title{color:#62574e !important;text-shadow:none !important}
+.premium-year{color:#8a7b6e !important}
+.premium-subtitle{color:#817264 !important}
+.premium-cover-art .hint{color:#817266 !important}
+
+.seasonal-medallion{
+  width:190px;height:190px;
+  border:1.5px solid rgba(157,126,82,.58) !important;
+  background:
+    radial-gradient(circle at 46% 40%,rgba(255,255,255,.28),rgba(196,184,168,.22) 74%),
+    repeating-linear-gradient(135deg,rgba(105,87,68,.028) 0 1px,transparent 1px 5px) !important;
+  box-shadow:
+    inset 0 0 0 6px rgba(255,255,255,.16),
+    inset 0 0 0 7px rgba(157,126,82,.10) !important;
+}
+.medallion-linework,.medallion-fruit,.medallion-stem,.medallion-leaf{display:none !important}
+.botanical-art{position:absolute;inset:20px;width:calc(100% - 40px);height:calc(100% - 40px)}
+.botanical-art .stem{fill:none;stroke:#7d7868;stroke-width:2.1;stroke-linecap:round}
+.botanical-art .twig{fill:none;stroke:#8c8574;stroke-width:1.25;stroke-linecap:round}
+.botanical-art .leaf{fill:#a5a38f;stroke:#7f7d6d;stroke-width:.7}
+.botanical-art .leaf-light{fill:#bab5a1;stroke:#898473;stroke-width:.6}
+.botanical-art .fruit{fill:#cbb67c;stroke:#9d8757;stroke-width:1.25}
+.botanical-art .fruit-shade{fill:none;stroke:#b09a65;stroke-width:1;opacity:.72}
+.botanical-art .caption{font:7px Georgia,serif;letter-spacing:1.6px;fill:#817665}
+
+.jcover:hover,.jcover:focus-within{
+  transform:rotate(-.65deg) !important;
+  box-shadow:
+    0 24px 42px rgba(71,54,39,.17),
+    0 7px 14px rgba(71,54,39,.09),
+    inset 0 0 0 1px rgba(255,255,255,.24) !important;
+}
+@media(max-width:860px){.seasonal-medallion{width:164px;height:164px}}
+@media(max-width:520px){.seasonal-medallion{width:140px;height:140px}}
+</style>
+
+
+<style id="premium-usability-fixes">
+/* Premium-page usability corrections. These rules do not target #page-all. */
+body.premium-tab-view:not(.on-home){
+  overflow-x:hidden !important;
+  overflow-y:auto !important;
+  height:auto !important;
+  min-height:100vh;
+}
+body.premium-tab-view #page-report.active{
+  display:block !important;
+  min-height:100vh;
+  height:auto !important;
+  overflow:visible !important;
+}
+body.premium-tab-view #page-report .journal-sheet,
+body.premium-tab-view #page-report .journal-page-content,
+body.premium-tab-view #page-report #reportView,
+body.premium-tab-view #page-report #reportBody{
+  height:auto !important;
+  max-height:none !important;
+  overflow:visible !important;
+}
+
+/* Keep the landing page crisp instead of placing a translucent texture over it. */
+body.on-home #page-home::before{
+  display:none !important;
+  content:none !important;
+}
+body.on-home #page-home.active{
+  background-image:
+    radial-gradient(circle at 18px 18px,rgba(217,136,10,.045) 0 1px,transparent 1.2px),
+    radial-gradient(circle at 58px 52px,rgba(78,138,90,.035) 0 1px,transparent 1.2px),
+    linear-gradient(135deg,#faf5ef 0%,#f4ebe2 54%,#ecdfd3 100%) !important;
+  background-size:72px 72px,96px 96px,auto !important;
+  background-repeat:repeat,repeat,no-repeat !important;
+}
+body.on-home .jcover{
+  transform:none !important;
+  animation:none !important;
+  filter:none !important;
+  -webkit-font-smoothing:auto;
+  text-rendering:auto;
+  background:
+    linear-gradient(90deg,rgba(255,255,255,.24),transparent 18%,transparent 84%,rgba(92,75,60,.035)),
+    #f2eee7 !important;
+}
+body.on-home .cover-front-mask{
+  filter:none !important;
+  background:
+    linear-gradient(90deg,rgba(255,255,255,.24),transparent 18%,transparent 84%,rgba(92,75,60,.035)),
+    #f2eee7 !important;
+}
+body.on-home .premium-cover-art,
+body.on-home .premium-title,
+body.on-home .premium-year,
+body.on-home .premium-subtitle,
+body.on-home .jtab{
+  filter:none !important;
+  text-shadow:none !important;
+}
+</style>
+
+<style id="standalone-report-print-fix">
+/* Standalone report PDF: print only the clean generated report.
+   This class is added only while printing from the premium cover tab. */
+@media print {
+  body.printing-standalone-report {
+    padding:0 !important;
+    margin:0 !important;
+    background:#fff !important;
+    background-image:none !important;
+  }
+  body.printing-standalone-report > *:not(#page-report){
+    display:none !important;
+  }
+  body.printing-standalone-report #page-report{
+    display:block !important;
+    position:static !important;
+    width:auto !important;
+    min-height:0 !important;
+    height:auto !important;
+    margin:0 !important;
+    padding:0 !important;
+    overflow:visible !important;
+    background:#fff !important;
+    background-image:none !important;
+  }
+  body.printing-standalone-report #page-report .journal-sheet{
+    display:block !important;
+    position:static !important;
+    width:auto !important;
+    max-width:none !important;
+    min-height:0 !important;
+    margin:0 !important;
+    padding:0 !important;
+    border:0 !important;
+    border-radius:0 !important;
+    box-shadow:none !important;
+    filter:none !important;
+    transform:none !important;
+    overflow:visible !important;
+    background:#fff !important;
+    background-image:none !important;
+  }
+  body.printing-standalone-report #page-report .journal-sheet::before,
+  body.printing-standalone-report #page-report .journal-sheet::after,
+  body.printing-standalone-report #page-report .journal-pagebar,
+  body.printing-standalone-report #page-report .premium-page-intro,
+  body.printing-standalone-report #page-report .report-actions{
+    display:none !important;
+    content:none !important;
+  }
+  body.printing-standalone-report #page-report .journal-page-content,
+  body.printing-standalone-report #page-report #reportView{
+    display:block !important;
+    position:static !important;
+    width:auto !important;
+    max-width:none !important;
+    min-height:0 !important;
+    height:auto !important;
+    margin:0 !important;
+    padding:0 !important;
+    border:0 !important;
+    box-shadow:none !important;
+    filter:none !important;
+    transform:none !important;
+    overflow:visible !important;
+    background:#fff !important;
+    background-image:none !important;
+  }
+  body.printing-standalone-report #page-report #reportBody{
+    display:block !important;
+    position:static !important;
+    width:auto !important;
+    max-width:none !important;
+    min-height:0 !important;
+    height:auto !important;
+    margin:0 !important;
+    padding:0 !important;
+    border:0 !important;
+    border-radius:0 !important;
+    box-shadow:none !important;
+    filter:none !important;
+    transform:none !important;
+    overflow:visible !important;
+    background:#fff !important;
+    background-image:none !important;
+  }
+}
+</style>
+
+
+<style id="landing-dots-exact-restore">
+/* Exact dotted landing background from the stable Budget Journal.
+   Applied directly to the full-screen home page so it cannot be covered. */
+#page-home.active{
+  background-color:#f5ebe2 !important;
+  background-image:
+    radial-gradient(circle at 18px 18px, rgba(217,136,10,.045) 0 1px, transparent 1.2px),
+    radial-gradient(circle at 58px 52px, rgba(78,138,90,.035) 0 1px, transparent 1.2px),
+    linear-gradient(135deg,#f8f2eb 0%,#f2e8de 52%,#eadccf 100%) !important;
+  background-size:72px 72px,96px 96px,auto !important;
+  background-position:0 0,0 0,0 0 !important;
+  background-repeat:repeat,repeat,no-repeat !important;
+}
+</style>
+
+<style id="landing-dots-visible-fix">
+/* Visible dotted landing background matching the user's reference:
+   larger white dots with smaller warm beige dots between them. */
+body.on-home #page-home.active,
+#page-home.active{
+  background-color:#f6eee6 !important;
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,.94) 0 2px, transparent 2.5px),
+    radial-gradient(circle, rgba(204,158,116,.24) 0 1.15px, transparent 1.65px),
+    linear-gradient(180deg,#f8f1ea 0%,#f4e9df 100%) !important;
+  background-size:52px 52px,52px 52px,auto !important;
+  background-position:18px 18px,44px 44px,0 0 !important;
+  background-repeat:repeat,repeat,no-repeat !important;
+}
+</style>
+
+<style id="dynamic-journal-covers-css">
+/* Dynamic cover badge and metadata — notebook shell only. */
+.journal-cover-badge{
+  appearance:none;-webkit-appearance:none;cursor:pointer;
+  width:168px!important;height:168px!important;border-radius:50%!important;
+  padding:20px!important;display:flex!important;flex-direction:column;align-items:center;justify-content:center;
+  border:1px solid color-mix(in srgb,var(--cover-deep) 34%,transparent)!important;
+  background:
+    radial-gradient(circle at 34% 27%,rgba(255,255,255,.72) 0 7%,transparent 8%),
+    linear-gradient(145deg,color-mix(in srgb,var(--paper) 88%,white),color-mix(in srgb,var(--cover) 25%,var(--paper)))!important;
+  box-shadow:0 9px 20px rgba(70,49,37,.13),inset 0 0 0 7px rgba(255,255,255,.38)!important;
+  color:#654d40;transform:none!important;filter:none!important;transition:transform .2s ease,box-shadow .2s ease,background .28s ease;
+  font:inherit;position:relative;overflow:hidden;
+}
+.journal-cover-badge::before{content:"";position:absolute;inset:10px;border:1px dashed color-mix(in srgb,var(--cover-deep) 32%,transparent);border-radius:50%;pointer-events:none}
+.journal-cover-badge:hover,.journal-cover-badge:focus-visible{transform:translateY(-2px) scale(1.015)!important;box-shadow:0 13px 24px rgba(70,49,37,.17),inset 0 0 0 7px rgba(255,255,255,.42)!important;outline:none}
+.jcb-icon{font-size:45px;line-height:1;margin-bottom:8px;filter:saturate(.78);position:relative}
+.jcb-theme{font-family:Georgia,serif;font-size:14px;letter-spacing:2.4px;font-weight:700;line-height:1.1;position:relative}
+.jcb-month{font-size:9px;letter-spacing:2.7px;margin-top:5px;color:color-mix(in srgb,var(--cover-deep) 80%,#59463b);font-weight:700;position:relative}
+.jcover.cover-swapping{animation:jcbCoverSwap .34s ease both!important}
+.journal-cover-badge.badge-swapping{animation:jcbBadgeSwap .34s ease both}
+@keyframes jcbCoverSwap{0%{opacity:.72;transform:scale(.988)}50%{opacity:.92}100%{opacity:1;transform:scale(1)}}
+@keyframes jcbBadgeSwap{0%{opacity:.2;transform:scale(.91) rotate(-3deg)}100%{opacity:1;transform:scale(1) rotate(0)}}
+
+.journal-theme-dialog{width:min(390px,92vw);padding:30px 30px 27px;border:1px solid var(--line);border-radius:22px;background:linear-gradient(180deg,var(--card),color-mix(in srgb,var(--card2) 55%,var(--card)));color:var(--ink);box-shadow:0 22px 60px rgba(48,37,29,.3);text-align:center;overflow:visible}
+.journal-theme-dialog::backdrop{background:rgba(55,40,31,.38);backdrop-filter:blur(2px)}
+.jtd-close{position:absolute;right:13px;top:11px;width:32px;height:32px;border:0;border-radius:50%;background:transparent;color:var(--ink-soft);font-size:24px;cursor:pointer}
+.jtd-close:hover{background:var(--card2);color:var(--ink)}
+.jtd-badge{width:82px;height:82px;border-radius:50%;display:grid;place-items:center;margin:-67px auto 15px;background:var(--card2);border:7px solid var(--card);box-shadow:0 7px 16px rgba(55,40,31,.15);font-size:38px}
+.jtd-kicker{font-size:9px;letter-spacing:2.2px;text-transform:uppercase;color:var(--accent-deep);font-weight:800}
+.journal-theme-dialog h3{font-family:Georgia,serif;font-size:29px;margin:5px 0 1px}
+.jtd-month{font-size:12px;letter-spacing:1.4px;color:var(--ink-soft);text-transform:uppercase}
+.jtd-rule{height:1px;background:linear-gradient(90deg,transparent,var(--line),transparent);margin:18px 0 12px}
+.jtd-meta{margin:0;display:grid;gap:0;text-align:left}
+.jtd-meta>div{display:flex;justify-content:space-between;gap:20px;padding:10px 3px;border-bottom:1px dashed var(--line)}
+.jtd-meta>div:last-child{border-bottom:0}.jtd-meta dt{font-size:10px;letter-spacing:1.1px;text-transform:uppercase;color:var(--ink-soft)}.jtd-meta dd{margin:0;font-family:Georgia,serif;font-weight:700;text-align:right}
+
+/* Each archived month looks like its own miniature collected notebook. */
+.jra-volume{--mini-cover:var(--card2);--mini-spine:var(--accent-deep);padding:12px 12px 12px 82px!important;min-height:112px!important;overflow:hidden}
+.jra-volume::before{left:0!important;top:0!important;bottom:0!important;width:66px!important;border-radius:7px 15px 15px 7px!important;background:linear-gradient(90deg,var(--mini-spine) 0 9px,var(--mini-cover) 9px 100%)!important;box-shadow:inset -5px 0 8px rgba(70,49,37,.08)!important}
+.jra-mini-cover{position:absolute;left:14px;top:20px;width:43px;height:58px;border-radius:4px 9px 9px 4px;background:var(--mini-cover);border:1px solid rgba(60,40,30,.14);box-shadow:2px 3px 5px rgba(60,40,30,.14);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#5e493d;z-index:1}
+.jra-mini-cover::before{content:"";position:absolute;left:4px;top:0;bottom:0;width:4px;background:var(--mini-spine);opacity:.8}
+.jra-mini-cover .ico{font-size:17px;line-height:1}.jra-mini-cover .abbr{font-size:6px;letter-spacing:.8px;font-weight:800;margin-top:4px}
+.jra-volume[data-month-num="01"]{--mini-cover:#9ebfd1;--mini-spine:#6f99b0}.jra-volume[data-month-num="02"]{--mini-cover:#dfa7bd;--mini-spine:#bc7897}.jra-volume[data-month-num="03"]{--mini-cover:#b9cf9f;--mini-spine:#86a66b}.jra-volume[data-month-num="04"]{--mini-cover:#e3b0c7;--mini-spine:#bd7999}.jra-volume[data-month-num="05"]{--mini-cover:#95bea4;--mini-spine:#638e74}.jra-volume[data-month-num="06"]{--mini-cover:#ead06f;--mini-spine:#b89a35}.jra-volume[data-month-num="07"]{--mini-cover:#e8a950;--mini-spine:#bd7624}.jra-volume[data-month-num="08"]{--mini-cover:#e4aa7f;--mini-spine:#b9784e}.jra-volume[data-month-num="09"]{--mini-cover:#c9a06e;--mini-spine:#956d3f}.jra-volume[data-month-num="10"]{--mini-cover:#cb7c50;--mini-spine:#974b2d}.jra-volume[data-month-num="11"]{--mini-cover:#a58264;--mini-spine:#72543d}.jra-volume[data-month-num="12"]{--mini-cover:#769e8d;--mini-spine:#4e7565}
+@media(max-width:520px){.journal-cover-badge{width:145px!important;height:145px!important}.jcb-icon{font-size:38px}.jra-volume{padding-left:76px!important}}
+@media(prefers-reduced-motion:reduce){.jcover.cover-swapping,.journal-cover-badge.badge-swapping{animation:none!important}}
+</style>
+
+<style>
+
+/* ================================================================
+   FINAL MOBILE NOTEBOOK PASS — notebook shell + standalone pages only
+   Intentionally scoped away from the original All dashboard.
+   ================================================================ */
+@media (max-width: 700px){
+  body.on-home{
+    overflow-x:hidden !important;
+  }
+  body.on-home #page-home.active{
+    min-height:100svh !important;
+    min-height:100dvh !important;
+    padding:18px 58px 30px 8px !important;
+    align-items:center !important;
+    justify-content:center !important;
+    overflow:hidden !important;
+  }
+  body.on-home #page-home::after{display:none !important}
+
+  body.on-home #page-home .jcover{
+    width:clamp(258px,calc(100vw - 78px),370px) !important;
+    min-width:0 !important;
+    max-width:none !important;
+    aspect-ratio:3/4 !important;
+    padding:clamp(34px,8vw,48px) clamp(21px,6vw,34px) clamp(45px,10vw,60px) clamp(43px,11vw,58px) !important;
+    transform:none !important;
+    border-radius:11px 22px 22px 11px !important;
+    box-shadow:0 22px 38px rgba(82,55,42,.20),0 6px 13px rgba(82,55,42,.12),inset 0 0 0 1px rgba(255,255,255,.28) !important;
+    animation-duration:.28s !important;
+  }
+  body.on-home #page-home .jcover:hover,
+  body.on-home #page-home .jcover:focus-within{
+    transform:none !important;
+    box-shadow:0 22px 38px rgba(82,55,42,.20),0 6px 13px rgba(82,55,42,.12),inset 0 0 0 1px rgba(255,255,255,.28) !important;
+  }
+  body.on-home #page-home .jcover::before{
+    inset:11px -15px -11px 13px !important;
+    box-shadow:6px 8px 12px rgba(73,50,35,.10) !important;
+  }
+  body.on-home #page-home .jcover::after{
+    right:-10px !important;
+    width:15px !important;
+  }
+  body.on-home #page-home .jspiral{width:32px !important}
+  body.on-home #page-home .jspiral::after{left:23px !important}
+
+  body.on-home #page-home .cover-label{
+    width:100% !important;
+    padding:clamp(21px,6vw,28px) 13px clamp(19px,5vw,24px) !important;
+  }
+  body.on-home #page-home .jcover-art .wordmark{
+    font-size:clamp(27px,8.8vw,37px) !important;
+    letter-spacing:1px !important;
+  }
+  body.on-home #page-home .jcover-art .tagline{
+    font-size:11.5px !important;
+    line-height:1.35 !important;
+  }
+  body.on-home #page-home .cover-year{font-size:9px !important;letter-spacing:2.5px !important}
+  body.on-home #page-home .cover-note{left:39px !important;bottom:22px !important;font-size:8.5px !important}
+  body.on-home #page-home .cover-sticker{display:none !important}
+  body.on-home #page-home .bookmark{bottom:-24px !important;height:39px !important;width:15px !important}
+
+  /* Tabs remain physical side tabs, but become reliable touch targets. */
+  body.on-home #page-home .jcover .jtabs{
+    left:calc(100% - 23px) !important;
+    right:auto !important;
+    top:7% !important;
+    bottom:7% !important;
+    width:70px !important;
+    pointer-events:none !important;
+  }
+  body.on-home #page-home .jcover .jtab,
+  body.on-home #page-home .jcover .jtab:nth-child(even){
+    width:62px !important;
+    height:44px !important;
+    min-height:44px !important;
+    padding:0 9px 0 29px !important;
+    border-radius:0 9px 9px 0 !important;
+    box-shadow:3px 3px 7px rgba(69,49,38,.11) !important;
+    transform:none !important;
+    pointer-events:auto !important;
+    touch-action:manipulation;
+    -webkit-tap-highlight-color:transparent;
+  }
+  body.on-home #page-home .jcover .jtab:hover,
+  body.on-home #page-home .jcover .jtab:focus-visible,
+  body.on-home #page-home .jcover .jtab:nth-child(even):hover,
+  body.on-home #page-home .jcover .jtab:nth-child(even):focus-visible,
+  body.on-home #page-home .jcover .jtab[aria-current="page"]{
+    width:66px !important;
+    transform:translateX(3px) !important;
+  }
+  body.on-home #page-home .jcover .jtab .jt-ico{font-size:15px !important}
+  body.on-home #page-home .jcover .jtab .jt-label{display:none !important}
+
+  /* The seasonal seal stays readable without covering the title. */
+  body.on-home #page-home .journal-cover-badge,
+  body.on-home #page-home .seasonal-medallion{
+    width:clamp(108px,31vw,132px) !important;
+    height:clamp(108px,31vw,132px) !important;
+    margin-inline:auto !important;
+  }
+  body.on-home #page-home .journal-cover-badge:hover,
+  body.on-home #page-home .journal-cover-badge:focus-visible{
+    transform:none !important;
+  }
+  body.on-home #page-home .jcb-icon{font-size:32px !important}
+  body.on-home #page-home .jcb-theme{font-size:12px !important}
+  body.on-home #page-home .jcb-month{font-size:9px !important;letter-spacing:1.5px !important}
+
+  /* Notebook metadata card becomes a phone-friendly bottom sheet. */
+  #journalThemeDialog{
+    width:calc(100vw - 24px) !important;
+    max-width:430px !important;
+    max-height:calc(100dvh - 24px) !important;
+    padding:52px 18px 18px !important;
+    margin:auto !important;
+    overflow:auto !important;
+    border-radius:20px 20px 14px 14px !important;
+  }
+  #journalThemeDialog .jtd-badge{
+    width:70px !important;height:70px !important;margin:-46px auto 12px !important;font-size:32px !important;
+  }
+
+  /* Standalone journal pages get safe phone gutters. */
+  body.premium-tab-view .jpage-inner{
+    width:100% !important;
+    padding:12px 10px 28px !important;
+  }
+  body.premium-tab-view .journal-sheet{
+    width:100% !important;
+    margin:0 !important;
+    border-radius:14px !important;
+  }
+  body.premium-tab-view .premium-feature,
+  body.premium-tab-view .premium-page-intro{
+    padding-left:14px !important;
+    padding-right:14px !important;
+  }
+  body.premium-tab-view button,
+  body.premium-tab-view .btn,
+  body.premium-tab-view input,
+  body.premium-tab-view select{
+    min-height:42px;
+  }
+}
+
+@media (max-width: 380px){
+  body.on-home #page-home.active{padding-right:52px !important;padding-left:5px !important}
+  body.on-home #page-home .jcover{
+    width:clamp(248px,calc(100vw - 68px),300px) !important;
+    padding-left:40px !important;
+  }
+  body.on-home #page-home .jcover .jtabs{left:calc(100% - 21px) !important}
+  body.on-home #page-home .jcover .jtab,
+  body.on-home #page-home .jcover .jtab:nth-child(even){width:58px !important;padding-left:27px !important}
+  body.on-home #page-home .jcover .jtab:hover,
+  body.on-home #page-home .jcover .jtab:focus-visible,
+  body.on-home #page-home .jcover .jtab[aria-current="page"]{width:61px !important}
+}
+
+/* Short landscape phones: fit by height instead of forcing vertical overflow. */
+@media (max-width: 900px) and (orientation:landscape) and (max-height:520px){
+  body.on-home #page-home.active{
+    min-height:100dvh !important;
+    padding:8px 72px 12px 8px !important;
+  }
+  body.on-home #page-home .jcover{
+    width:min(calc((100dvh - 24px) * .75),calc(100vw - 100px),330px) !important;
+    padding:27px 22px 35px 42px !important;
+  }
+  body.on-home #page-home .journal-cover-badge,
+  body.on-home #page-home .seasonal-medallion{width:96px !important;height:96px !important}
+  body.on-home #page-home .jcb-icon{font-size:27px !important}
+  body.on-home #page-home .cover-note{display:none !important}
+  body.on-home #page-home .jcover .jtab,
+  body.on-home #page-home .jcover .jtab:nth-child(even){height:38px !important;min-height:38px !important}
+}
 </style>
 </head>
-<body>
+<body class="on-home" data-jtab="home">
 
+
+
+
+<!-- ===== Journal Home: the notebook landing page ===== -->
+<div class="jpage active" id="page-home" data-page="home">
+  <div class="jcover">
+    <span class="page-block" aria-hidden="true"></span>
+    <span class="page-corner" aria-hidden="true"></span>
+    <span class="cover-front-mask" aria-hidden="true"></span>
+    <span class="jspiral" aria-hidden="true"></span>
+    <span class="cover-lip" aria-hidden="true"></span>
+    <span class="elastic" aria-hidden="true"></span>
+    <span class="bookmark" aria-hidden="true"></span>
+    <div class="jcover-art premium-cover-art">
+      <div class="premium-title">BUDGET JOURNAL</div>
+      <div class="premium-year">2026</div>
+      <button class="seasonal-medallion journal-cover-badge" id="journalCoverBadge" type="button" aria-label="Open notebook theme details">
+        <span class="jcb-icon" id="jcbIcon">🍋</span>
+        <span class="jcb-theme" id="jcbTheme">CITRUS</span>
+        <span class="jcb-month" id="jcbMonth">JULY</span>
+      </button>
+      <div class="premium-subtitle">monthly planner</div>
+      <div class="hint">choose a pastel tab to begin ✦</div>
+    </div>
+    <nav class="jtabs" aria-label="Journal tabs">
+      <button class="jtab" data-tab="all" title="All" aria-label="All"><span class="jt-ico">📖</span><span class="jt-label">All</span></button>
+      <button class="jtab" data-tab="library" title="Bills Planner" aria-label="Bills Planner"><span class="jt-ico">💌</span><span class="jt-label">Bills Planner</span></button>
+      <button class="jtab" data-tab="report" title="Monthly Report" aria-label="Monthly Report"><span class="jt-ico">📊</span><span class="jt-label">Monthly Report</span></button>
+      <button class="jtab" data-tab="year" title="Year Review" aria-label="Year Review"><span class="jt-ico">🌿</span><span class="jt-label">Year Review</span></button>
+      <button class="jtab" data-tab="archive" title="Archive" aria-label="Archive"><span class="jt-ico">🗂️</span><span class="jt-label">Archive</span></button>
+      <button class="jtab" data-tab="receipt" title="Spending Journal" aria-label="Spending Journal"><span class="jt-ico">🍰</span><span class="jt-label">Spending</span></button>
+      <button class="jtab" data-tab="quick" title="Quick Entry" aria-label="Quick Entry"><span class="jt-ico">✏️</span><span class="jt-label">Quick Entry</span></button>
+    </nav>
+  </div>
+</div>
+
+<dialog id="journalThemeDlg" class="journal-theme-dialog" aria-labelledby="journalThemeTitle">
+  <button class="jtd-close" id="journalThemeClose" type="button" aria-label="Close">×</button>
+  <div class="jtd-badge" id="jtdBadge" aria-hidden="true">🍋</div>
+  <div class="jtd-kicker">Notebook identity</div>
+  <h3 id="journalThemeTitle">Citrus</h3>
+  <div class="jtd-month" id="jtdMonth">July 2026</div>
+  <div class="jtd-rule"></div>
+  <dl class="jtd-meta">
+    <div><dt>Season</dt><dd id="jtdSeason">Summer</dd></div>
+    <div><dt>Planner theme</dt><dd id="jtdTheme">Citrus</dd></div>
+    <div><dt>Appearance</dt><dd id="jtdAppearance">Planner Seasons</dd></div>
+    <div><dt>Notebook</dt><dd id="jtdVolume">Volume 7</dd></div>
+  </dl>
+</dialog>
+
+
+<div class="jpage" id="page-all" data-page="all">
 <header>
   <div class="headline">
     <h1>Ledger: Monthly Budget ✦</h1>
@@ -836,11 +2407,12 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
 </header>
 
 <div class="toolbar">
+  <button class="btn" id="homeBtn" data-tab="home" title="Back to the journal cover">🏡 Journal Home</button>
   <button class="btn" id="lockBtn" title="prevent accidental edits — adding via quick-add / receipt still works"></button>
-  <button class="btn" id="libBtn">📚 Bill library</button>
-  <button class="btn" id="reportBtn">🖨️ Month report</button>
-  <button class="btn" id="yearBtn">📅 Year view</button>
-  <button class="btn" id="archiveBtn">🗂️ Archive</button>
+  <button class="btn" data-tab="library">📚 Bill library</button>
+  <button class="btn" data-tab="report">🖨️ Month report</button>
+  <button class="btn" data-tab="year">📅 Year view</button>
+  <button class="btn" data-tab="archive">🗂️ Archive</button>
   <button class="btn" id="exportBtn">Export backup</button>
   <button class="btn" id="importBtn">Import / merge</button>
   <button class="btn" id="pasteBtn" title="for when the file picker misbehaves">📋 Paste import</button>
@@ -872,6 +2444,7 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
   <button class="btn primary" id="carryYes">Carry over</button>
   <button class="btn" id="carryNo">Start empty</button>
 </div>
+
 
 <div class="layout">
 <main>
@@ -1027,6 +2600,7 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
 
 </main>
 
+<div id="recSlot" style="display:contents">
 <aside id="receipt">
   <h3>KNICK·KNACKS</h3>
   <div class="rsub">— tracked, not budgeted —<br>(unless cash)</div>
@@ -1090,7 +2664,69 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
     <button class="btn primary full" type="submit">＋ add to receipt</button>
   </form>
 </aside>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- ===== Journal pages ===== -->
+<div class="jpage" id="page-library" data-page="library">
+  <section class="journal-sheet">
+    <div class="journal-pagebar">
+      <div class="page-title-wrap"><div class="page-kicker">Monthly reference</div><h2>📚 Bill Library</h2><p>Your recurring bills and usual monthly essentials, saved in one place.</p></div>
+      <button class="journal-back" type="button" data-tab="home">📔 Back to Cover</button>
+    </div>
+    <div class="journal-page-content">
+  <div class="premium-page-intro" id="libraryPremium"></div>
+  <div class="jpage-inner">
+  <section id="jrBillsPlanner" aria-label="Standalone Bills Planner">
+    <div class="jrb-overview">
+      <article class="jrb-card">
+        <h3>This month at a glance</h3>
+        <div class="jrb-muted">A planning view of the bills already listed in your current month.</div>
+        <div class="jrb-progress-top"><span><strong id="jrbPaidCount">0/0</strong><br><span class="jrb-muted">bills completed</span></span><span style="text-align:right"><strong id="jrbRemaining">$0.00</strong><br><span class="jrb-muted">still expected</span></span></div>
+        <div class="jrb-track"><span id="jrbProgressBar"></span></div>
+      </article>
+      <article class="jrb-card jrb-focus" id="jrbNextCard"></article>
+    </div>
+
+    <article class="jrb-card">
+      <div class="jrb-section-head"><div><h3>Upcoming this month</h3><div class="jrb-muted">Due dates and payment status from the current ledger.</div></div></div>
+      <div class="jrb-list" id="jrbUpcoming"></div>
+    </article>
+
+    <article class="jrb-card">
+      <div class="jrb-section-head"><div><h3>Recurring Bill Library</h3><div class="jrb-muted">Your saved recurring bills. Add one to this month without leaving the planner.</div></div><span class="flag" id="jrbLibraryCount">0 saved</span></div>
+      <div class="jrb-library-grid" id="jrbLibraryGrid"></div>
+    </article>
+
+    <article class="jrb-card">
+      <div class="jrb-section-head"><div><h3>Add a recurring bill</h3><div class="jrb-muted">This saves to the same Bill Library used by All.</div></div></div>
+      <form class="jrb-form" id="jrbLibraryForm" autocomplete="off">
+        <div class="jrb-field"><label for="jrbName">Bill name</label><input id="jrbName" name="name" required placeholder="e.g. Internet"></div>
+        <div class="jrb-field"><label for="jrbCategory">Category</label><select id="jrbCategory" name="category"><option>Credit Cards</option><option>Utilities</option><option>Insurance</option><option>Housing</option><option>Subscriptions</option><option>Car</option><option>Medical</option><option>Other</option></select></div>
+        <div class="jrb-field"><label for="jrbBudget">Usual budget</label><input id="jrbBudget" name="budget" type="number" step="0.01" min="0" inputmode="decimal" placeholder="0.00"></div>
+        <div class="jrb-field"><label for="jrbDueDate">Due date</label><input id="jrbDueDate" name="dueDate" type="date"></div>
+        <div class="jrb-form-actions"><span class="jrb-muted">Saving here does not duplicate the database or create another storage key.</span><button class="btn primary" type="submit">Save to Bill Library</button></div>
+      </form>
+    </article>
+
+    <button class="btn jrb-original-link" type="button" id="jrbOpenOriginal">Open original Bill Library from All</button>
+  </section>
+  <h3>📚 Bill Library</h3>
+  <p>Your usual bills, saved once. Tap <b>add</b> to drop one into this month.</p>
+  <div id="libList"></div>
 <button id="receiptToggle" title="Receipt">🧾</button>
+</div><!-- /#page-all -->
 
 <form id="quickAdd" autocomplete="off">
   <button type="button" id="qaToggle" title="collapse / expand">▾</button>
@@ -1103,10 +2739,7 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
   <button class="btn primary" type="submit">Add</button>
 </form>
 
-<dialog id="libDlg">
-  <h3>📚 Bill Library</h3>
-  <p>Your usual bills, saved once. Tap <b>add</b> to drop one into this month.</p>
-  <div id="libList"></div>
+
   <form class="libform" id="libForm">
     <div class="full">
       <label for="libName">Bill name</label>
@@ -1130,27 +2763,192 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
     </div>
     <button class="btn primary full" type="submit">Save to library</button>
   </form>
-  <div class="row"><button class="btn" id="libClose">Close</button></div>
-</dialog>
+  
+</div>
+    </div>
+  </section>
+</div>
 
-<dialog id="yearDlg">
-  <h3>📅 <span id="yearTitle"></span> at a Glance</h3>
-  <p>Actuals per month — spot the creep.</p>
-  <div style="display:flex;gap:8px;justify-content:center;margin-bottom:8px">
-    <button class="btn small" id="yearPrev">‹</button>
-    <button class="btn small" id="yearNext">›</button>
+<div class="jpage" id="page-report" data-page="report">
+  <section class="journal-sheet">
+    <div class="journal-pagebar">
+      <div class="page-title-wrap"><div class="page-kicker">Monthly summary</div><h2>🖨️ Month Report</h2><p>Your existing report, presented inside its journal section without changing the report itself.</p></div>
+      <button class="journal-back" type="button" data-tab="home">📔 Back to Cover</button>
+    </div>
+    <div class="journal-page-content">
+<div class="premium-page-intro" id="reportPremium"></div>
+<div id="reportView">
+  <div class="report-actions">
+    <button class="btn primary" onclick="printMonthlyReport()">🖨️ Print / Save as PDF</button>
+    <button class="btn" onclick="closeReport()">← Back</button>
   </div>
-  <div id="yearBody" style="max-height:56vh;overflow:auto"></div>
-  <div class="row"><button class="btn" id="yearClose">Close</button></div>
-</dialog>
+  <div id="reportBody"></div>
+</div>
+    </div>
+  </section>
+</div>
 
-<dialog id="archiveDlg">
-  <h3>🗂️ Monthly Archive</h3>
-  <p>Read-only snapshots made from the months already saved in this tracker. Nothing is duplicated.</p>
-  <div id="archiveList"></div>
-  <div id="archivePreview"></div>
-  <div class="row"><button class="btn" id="archiveClose">Close</button></div>
-</dialog>
+<div class="jpage" id="page-year" data-page="year">
+  <section class="journal-sheet">
+    <div class="journal-pagebar">
+      <div class="page-title-wrap"><div class="page-kicker">Annual journal review</div><h2>🌿 Year Review</h2><p>A calm look at the months already recorded in your ledger.</p></div>
+      <button class="journal-back" type="button" data-tab="home">📔 Back to Cover</button>
+    </div>
+    <div class="journal-page-content">
+      <div class="jpage-inner">
+        <div class="jry-wrap">
+          <div class="jry-yearnav" aria-label="Choose review year">
+            <button class="btn small" id="yearPrev" type="button" aria-label="Previous year">‹</button>
+            <strong id="yearTitle"></strong>
+            <button class="btn small" id="yearNext" type="button" aria-label="Next year">›</button>
+          </div>
+          <div id="yearBody"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="jpage" id="page-archive" data-page="archive">
+  <section class="journal-sheet">
+    <div class="journal-pagebar">
+      <div class="page-title-wrap"><div class="page-kicker">Past entries</div><h2>🗂️ Monthly Archive</h2><p>Return to earlier months without changing their saved records.</p></div>
+      <button class="journal-back" type="button" data-tab="home">📔 Back to Cover</button>
+    </div>
+    <div class="journal-page-content">
+      <div id="archiveOriginalView">
+        <div class="premium-page-intro" id="archivePremium"></div>
+        <div class="jpage-inner">
+          <h3>🗂️ Monthly Archive</h3>
+          <p>Read-only snapshots made from the months already saved in this tracker. Nothing is duplicated.</p>
+          <div id="archiveList"></div>
+          <div id="archivePreview"></div>
+        </div>
+      </div>
+      <div id="jraStandalone" class="jra-shell" hidden>
+        <div class="jra-summary" id="jraSummary"></div>
+        <div class="jra-layout">
+          <section class="jra-shelf" aria-labelledby="jraShelfTitle">
+            <div class="jra-section-head"><div><span>saved ledger months</span><h3 id="jraShelfTitle">Journal Shelf</h3></div><small>Select a volume to preview it</small></div>
+            <div id="jraList" class="jra-list"></div>
+          </section>
+          <aside class="jra-preview" id="jraPreview" aria-live="polite"></aside>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="jpage" id="page-receipt" data-page="receipt">
+  <section class="journal-sheet">
+    <div class="journal-pagebar">
+      <div class="page-title-wrap"><div class="page-kicker">Current month</div><h2>🧾 Receipt</h2><p>A focused view of the same receipt used in your full tracker.</p></div>
+      <button class="journal-back" type="button" data-tab="home">📔 Back to Cover</button>
+    </div>
+    <div class="journal-page-content">
+      <div class="premium-page-intro" id="receiptPremium"></div>
+      <div class="jpage-inner">
+        <section class="receipt-notebook" aria-label="Standalone spending notes">
+          <div class="receipt-note-head">
+            <div>
+              <span class="receipt-note-date" id="jrMonthLabel"></span>
+              <h3>Receipt entries</h3>
+              <p>Save individual purchases here, or build a full receipt in the calculator below.</p>
+            </div>
+            <div class="receipt-note-stamp">SAVED<br>ITEMS<br><span id="jrEntryCount">0</span></div>
+          </div>
+
+          <form id="jrForm" class="receipt-note-form">
+            <label class="jr-wide"><span>What did you pick up?</span><input name="name" autocomplete="off" placeholder="coffee, stationery, a tiny treat…" required></label>
+            <label><span>Date</span><input name="date" type="date" required></label>
+            <label><span>Amount</span><input name="amount" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00" required></label>
+            <label><span>Paid with</span><select name="method"><option value="other">card / other</option><option value="cash">cash 💵</option></select></label>
+            <label><span>Category</span><select name="cat" id="jrCat"></select></label>
+            <div class="jr-form-actions">
+              <button class="jr-add" type="submit">＋ Add to Receipt List</button>
+              <button class="jr-add jr-add-expense" type="button" id="jrAddExpense">＋ Add to Expense Log</button>
+            </div>
+          </form>
+
+          <div class="jr-tool-grid">
+            <section class="jr-tool-card" aria-labelledby="jrCalcTitle">
+              <div class="jr-tool-heading">
+                <div><span>Shopping scratchpad</span><h4 id="jrCalcTitle">🧮 Receipt Calculator</h4></div>
+                <button type="button" class="jr-tool-clear" id="jrPcClear">clear</button>
+              </div>
+              <div class="jr-mini-form jr-item-row">
+                <label class="jr-grow"><span>Item</span><input id="jrPcName" placeholder="shirt, snack, notebook…" autocomplete="off"></label>
+                <label><span>Qty</span><input id="jrPcQty" type="number" min="1" step="1" value="1" inputmode="numeric"></label>
+                <label><span>Price each</span><input id="jrPcPrice" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00"></label>
+                <button type="button" class="jr-mini-add" id="jrPcItemAdd">＋ Add Item to Calculator</button>
+              </div>
+              <p class="jr-calc-help">Items added here are temporary. Use <b>Add Total to Receipt List</b> or <b>Add Total to Expense Log</b> after the final total is calculated.</p>
+              <div id="jrPcCart" class="jr-calc-cart"></div>
+              <div class="jr-mini-form jr-rates">
+                <label><span>Discount %</span><input id="jrPcDisc" type="number" min="0" max="100" step="0.01" inputmode="decimal" placeholder="0"></label>
+                <label><span>Extra discount %</span><input id="jrPcDisc2" type="number" min="0" max="100" step="0.01" inputmode="decimal" placeholder="0"></label>
+                <label><span>Tax %</span><input id="jrPcTax" type="number" min="0" step="0.001" inputmode="decimal" placeholder="0"></label>
+              </div>
+              <div id="jrPcOut" class="jr-calc-total"></div>
+              <div class="jr-mini-form jr-save-total">
+                <label class="jr-grow"><span>Receipt name</span><input id="jrPcReceiptName" placeholder="Target run, dinner, etc."></label>
+                <label><span>Paid with</span><select id="jrPcMethod"><option value="other">card / other</option><option value="cash">cash 💵</option></select></label>
+                <label><span>Category</span><select id="jrPcCat"></select></label>
+                <div class="jr-calc-actions">
+                  <button type="button" class="jr-mini-add" id="jrPcAddReceipt">＋ Add Total to Receipt List</button>
+                  <button type="button" class="jr-mini-add jr-add-expense" id="jrPcAddExpense">＋ Add Total to Expense Log</button>
+                </div>
+              </div>
+            </section>
+
+            <section class="jr-tool-card" aria-labelledby="jrTipTitle">
+              <div class="jr-tool-heading"><div><span>Dining math</span><h4 id="jrTipTitle">🍽 Tip Tool</h4></div></div>
+              <div class="jr-mini-form jr-tip-fields">
+                <label><span>Bill amount</span><input id="jrTipBill" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00"></label>
+                <label><span>Tip %</span><input id="jrTipPct" type="number" min="0" step="0.5" inputmode="decimal" placeholder="20"></label>
+                <label><span>Split between</span><input id="jrTipSplit" type="number" min="1" step="1" inputmode="numeric" value="1"></label>
+              </div>
+              <div class="jr-tip-buttons">
+                <button type="button" data-jr-tip="15">15%</button><button type="button" data-jr-tip="18">18%</button><button type="button" data-jr-tip="20">20%</button><button type="button" data-jr-tip="25">25%</button>
+              </div>
+              <div id="jrTipOut" class="jr-calc-total jr-tip-output"></div>
+            </section>
+          </div>
+
+          <div class="receipt-note-summary">
+            <div><span>Cash that counts</span><strong id="jrCash"></strong></div>
+            <div><span>Card / tracked</span><strong id="jrOther"></strong></div>
+            <div class="jr-total"><span>Page total</span><strong id="jrTotal"></strong></div>
+          </div>
+
+          <div class="receipt-note-list" id="jrList"></div>
+          <div class="receipt-note-foot">same month · same receipt records · a different page</div>
+        </section>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="jpage" id="page-quick" data-page="quick">
+  <section class="journal-sheet">
+    <div class="journal-pagebar">
+      <div class="page-title-wrap"><div class="page-kicker">Fast entry</div><h2>✏️ Quick Expense</h2><p>Log an expense directly into this month, using the same form as always.</p></div>
+      <button class="journal-back" type="button" data-tab="home">📔 Back to Cover</button>
+    </div>
+    <div class="journal-page-content">
+      <div class="premium-page-intro" id="quickPremium"></div>
+      <div class="jpage-inner">
+        <section class="jrq-card">
+          <div class="jrq-head"><div><span>one clean entry</span><h3>Write it down before you forget</h3><p>This sends the expense straight to the current month’s Expense Log in All.</p></div><div class="jrq-stamp">QUICK<br>ENTRY</div></div>
+          <div id="qaSlotPage"></div>
+          <div class="jrq-foot"><span>✦ Same month</span><span>✦ Same expense log</span><span>✦ No duplicate storage</span></div>
+        </section>
+      </div>
+    </div>
+  </section>
+</div>
+
+
 
 <dialog id="bundleDlg">
   <h3>Σ Bundle Expense</h3>
@@ -1200,18 +2998,92 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
   </div>
 </dialog>
 
-<div id="reportView" hidden>
-  <div class="report-actions">
-    <button class="btn primary" onclick="window.print()">🖨️ Print / Save as PDF</button>
-    <button class="btn" onclick="closeReport()">← Back</button>
-  </div>
-  <div id="reportBody"></div>
-</div>
+
 
 <div class="toast" id="toast"></div>
 
 <script>
 "use strict";
+/* Safely detach the journal pages and shared controls from #page-all.
+   The source skeleton has malformed closing tags, so browsers parse these
+   pages as children of #page-all. Move the children first; never attempt
+   to move #page-all relative to one of its own descendants. */
+(function normalizeJournalPages(){
+  ["page-library","page-report","page-year","page-archive","page-receipt","page-quick"]
+    .forEach(id => {
+      const page = document.getElementById(id);
+      if(page) document.body.appendChild(page);
+    });
+  ["receiptToggle","quickAdd","bundleDlg","pasteDlg","confirmDlg","toast"]
+    .forEach(id => {
+      const el = document.getElementById(id);
+      if(el) document.body.appendChild(el);
+    });
+})();
+
+/* Premium journal summaries. These only read existing state and never alter the All tab. */
+function premiumMoney(v){
+  const n=Number(v)||0;
+  return n.toLocaleString(undefined,{style:"currency",currency:"USD",maximumFractionDigits:2});
+}
+function premiumMonthData(){ return (db.months && db.months[cur]) || blankMonth(); }
+function premiumTotals(){
+  const m=premiumMonthData();
+  const bills=(m.bills||[]).reduce((a,x)=>a+(Number(x.actual)||Number(x.budget)||0),0);
+  const log=(m.log||[]).reduce((a,x)=>a+(Number(x.amount)||0),0);
+  const savings=(m.savings||[]).reduce((a,x)=>a+(Number(x.amount)||0),0);
+  const paid=(m.bills||[]).filter(x=>x.paid).length;
+  return {m,bills,log,savings,paid,billCount:(m.bills||[]).length};
+}
+function premiumCard(target,title,quote,stats,note){
+  const el=document.getElementById(target); if(!el) return;
+  el.innerHTML=`<div class="premium-feature"><div class="premium-eyebrow">premium journal page</div><h3>${title}</h3><p>${quote}</p></div><div class="premium-stats">${stats.map(s=>`<div class="premium-stat"><div class="label">${s[0]}</div><div class="value">${s[1]}</div><div class="sub">${s[2]||""}</div></div>`).join("")}</div>${note?`<div class="premium-note">${note}</div>`:""}`;
+}
+function renderPremiumPage(tab){
+  const t=premiumTotals();
+  if(tab==="library") premiumCard("libraryPremium","Bills Planner","Keep promises to your future self.",[["Bills this month",t.billCount,"in the current ledger"],["Marked paid",t.paid,`${Math.max(0,t.billCount-t.paid)} still waiting`]],"Plan the month, review upcoming due dates, and use the same recurring Bill Library without changing the original All interface.");
+  if(tab==="report") premiumCard("reportPremium","Monthly Report","A gentle pause to notice where the month went.",[["Bills",premiumMoney(t.bills),"budgeted or actual"],["Everyday spending",premiumMoney(t.log),"from the spending log"],["Savings",premiumMoney(t.savings),"set aside this month"],["Paid bills",`${t.paid}/${t.billCount}`,"current completion"]],"The printable report underneath is the same existing report and keeps its original calculations.");
+  if(tab==="year") premiumCard("yearPremium","Year Review","Little months become a whole story.",[["Viewing",cur.slice(0,4),"use the arrows below"],["Current month",new Date(cur+"-01T12:00:00").toLocaleDateString(undefined,{month:"long"}),"the active ledger month"]],"Compare the year below without editing any saved monthly records.");
+  if(tab==="archive") premiumCard("archivePremium","Journal Archive","Old pages, safely tucked away.",[["Saved months",Object.keys((db&&db.months)||{}).length,"available snapshots"],["Current page",cur,"active month"]],"Open any archived month below. The archive remains read-only and does not duplicate your data.");
+  if(tab==="receipt") premiumCard("receiptPremium","Spending Journal","Small purchases still deserve a place in the story.",[["Logged spending",premiumMoney(t.log),"current month"],["Receipt notes",(t.m.receipt||[]).length,"same records, separate page"]],"This journal page has its own interface. It reads and updates the existing receipt records without moving or restyling the original receipt in All.");
+  if(tab==="quick") premiumCard("quickPremium","Quick Entry","Capture it now; sort out the details later.",[["Current month",cur,"entry destination"],["Expenses logged",(t.m.log||[]).length,"already recorded"]],"Anything added here goes directly into the current month through the existing quick-add form.");
+}
+
+/* ============ journal tab router (v6 skeleton) ============ */
+let curTab = "home";
+let premiumTabView = false;
+function showTab(tab, options={premium:false}){
+  /* Original mode is the safe default. Premium mode is allowed only when
+     explicitly requested by a landing-cover tab click. */
+  premiumTabView = options.premium === true;
+  if(tab === "all" || tab === "home") premiumTabView = false;
+  curTab = tab;
+  document.querySelectorAll(".jpage").forEach(p=>p.classList.toggle("active", p.dataset.page===tab));
+  document.body.classList.toggle("on-home", tab==="home");
+  document.body.classList.toggle("premium-tab-view", premiumTabView && tab!=="all" && tab!=="home");
+  document.body.dataset.jtab = tab;
+  /* The original receipt permanently stays inside All. The standalone receipt
+     tab has its own journal UI and only shares the existing receipt data. */
+  const qform = document.getElementById("quickAdd");
+  if(qform){
+    if(tab==="quick"){ document.getElementById("qaSlotPage").appendChild(qform); qform.classList.remove("collapsed"); }
+    else if(qform.parentElement !== document.body) document.body.appendChild(qform);
+  }
+  if(premiumTabView) renderPremiumPage(tab);
+  if(tab==="library"){ renderLib(); if(premiumTabView) renderJrBillsPlanner(); }
+  else if(tab==="report") buildReport();
+  else if(tab==="year"){ yearShown = Number(cur.slice(0,4)); renderYear(); }
+  else if(tab==="archive") renderArchive();
+  window.scrollTo({top:0});
+}
+document.addEventListener("click", e=>{
+  const b = e.target.closest("[data-tab]");
+  if(!b) return;
+  const fromCover = !!b.closest("#page-home .jtabs");
+  const fromAllToolbar = !!b.closest("#page-all .toolbar");
+  showTab(b.dataset.tab,{premium:fromCover});
+});
+
 /* ============ state ============ */
 const LS_KEY = "ledger-budget-v1";
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,7);
@@ -1384,6 +3256,7 @@ function render(){
   renderSavings();
   renderDebt();
   renderReceipt();
+  renderStandaloneReceipt();
   renderQuickCats();
   renderCatQuickAdd();
   renderCharts();
@@ -1744,6 +3617,39 @@ function renderReceipt(){
   $("#rOther").textContent = fmt(other);
   $("#rTotal").textContent = fmt(cash+other);
 }
+function renderStandaloneReceipt(){
+  const list = document.getElementById("jrList");
+  if(!list) return;
+  const m=M(), rows=m.receipt||[];
+  const [y,mo]=cur.split("-").map(Number);
+  const label=document.getElementById("jrMonthLabel");
+  if(label) label.textContent=`${MONTHS[mo-1]} ${y} · pocket notes`;
+  const count=document.getElementById("jrEntryCount");
+  if(count) count.textContent=rows.length;
+
+  list.innerHTML=rows.length ? rows.map(r=>`<article class="receipt-note-entry">
+    <div class="jr-entry-date">${esc(r.date||"")}</div>
+    <div class="jr-entry-main"><strong>${esc(r.name)}</strong><span>${esc(r.cat||"uncategorized")} · ${r.method==="cash"?"cash · counts":"card · tracked"}</span></div>
+    <div class="jr-entry-amount">${fmt(r.amount)}</div>
+    <button type="button" class="jr-entry-delete" data-jr-delete="${r.id}" aria-label="Delete ${esc(r.name)}">×</button>
+  </article>`).join("") : `<div class="receipt-note-empty"><span>✎</span><strong>This page is still fresh.</strong><p>Add a small purchase above and it will settle onto the ruled paper.</p></div>`;
+
+  const cash=sum(rows.filter(r=>r.method==="cash"),r=>r.amount);
+  const other=sum(rows.filter(r=>r.method!=="cash"),r=>r.amount);
+  document.getElementById("jrCash").textContent=fmt(cash);
+  document.getElementById("jrOther").textContent=fmt(other);
+  document.getElementById("jrTotal").textContent=fmt(cash+other);
+
+  renderJrToolCats();
+  const cat=document.getElementById("jrCat");
+  if(cat){
+    const keep=cat.value;
+    cat.innerHTML=m.expcat.map(c=>`<option ${c.name===keep?"selected":""}>${esc(c.name)}</option>`).join("")+`<option value="" ${!keep?"selected":""}>(no category)</option>`;
+  }
+  const date=document.querySelector('#jrForm input[name="date"]');
+  if(date && !date.value) date.value=todayISO();
+}
+
 function renderQuickCats(){
   const catOptsHtml = keep => M().expcat.map(c=>`<option ${c.name===keep?"selected":""}>${esc(c.name)}</option>`).join("") + `<option value="" ${!keep?"selected":""}>(no category)</option>`;
   $("#quickCat").innerHTML = catOptsHtml($("#quickCat").value);
@@ -1868,12 +3774,97 @@ document.addEventListener("click",e=>{
   if(r.classList.contains("open") && !r.contains(e.target) && e.target.id!=="receiptToggle") r.classList.remove("open");
 });
 
+/* standalone receipt journal — separate controls, existing receipt records */
+const jrForm=document.getElementById("jrForm");
+function jrFormData(){
+  if(!jrForm) return null;
+  return {date:jrForm.date.value||todayISO(),name:jrForm.name.value.trim(),method:jrForm.method.value,amount:num(jrForm.amount.value),cat:jrForm.cat.value};
+}
+function jrValidEntry(x){
+  if(!x?.name || x.amount<=0){ toast("Add an item name and amount first"); return false; }
+  return true;
+}
+function jrClearEntry(){ if(!jrForm)return; jrForm.name.value="";jrForm.amount.value="";jrForm.name.focus(); }
+if(jrForm) jrForm.addEventListener("submit",e=>{
+  e.preventDefault();
+  const x=jrFormData(); if(!jrValidEntry(x)) return;
+  M().receipt.push({id:uid(),date:x.date,name:x.name,method:x.method,amount:x.amount,cat:x.cat});
+  jrClearEntry(); save(); render(); toast("Added to Receipt List ✓");
+});
+document.getElementById("jrAddExpense")?.addEventListener("click",()=>{
+  const x=jrFormData(); if(!jrValidEntry(x)) return;
+  M().log.push({id:uid(),date:x.date,name:x.name,cat:x.cat,amount:x.amount,pay:x.method==="cash"?"cash":"credit"});
+  jrClearEntry(); save(); render(); toast("Added to Expense Log ✓");
+});
+document.addEventListener("click",e=>{
+  const btn=e.target.closest("[data-jr-delete]");
+  if(!btn) return;
+  const id=btn.dataset.jrDelete;
+  const i=M().receipt.findIndex(r=>r.id===id);
+  if(i>-1){ M().receipt.splice(i,1); save(); render(); toast("Receipt entry removed"); }
+});
+
+/* standalone receipt calculator + tip tool — separate from original receipt UI */
+let jrPcItems=[];
+function jrPcValues(){
+  const subtotal=jrPcItems.reduce((a,x)=>a+x.qty*x.price,0);
+  const d1=Math.min(100,Math.max(0,num(document.getElementById("jrPcDisc")?.value)));
+  const after1=subtotal*(1-d1/100);
+  const d2=Math.min(100,Math.max(0,num(document.getElementById("jrPcDisc2")?.value)));
+  const after2=after1*(1-d2/100);
+  const tax=Math.max(0,num(document.getElementById("jrPcTax")?.value));
+  const taxAmt=after2*tax/100;
+  return {subtotal,d1,d1amt:subtotal-after1,d2,d2amt:after1-after2,tax,taxAmt,total:after2+taxAmt};
+}
+function renderJrCalculator(){
+  const cart=document.getElementById("jrPcCart"), out=document.getElementById("jrPcOut");
+  if(!cart||!out) return;
+  cart.innerHTML=jrPcItems.length?jrPcItems.map((x,i)=>`<div class="jr-cart-line"><span><strong>${esc(x.name)}</strong> <small>${x.qty} × ${fmt(x.price)}</small></span><span>${fmt(x.qty*x.price)}</span><button type="button" data-jr-pc-del="${i}" aria-label="Remove ${esc(x.name)}">×</button></div>`).join(""):`<div class="jr-cart-empty">Add items to this temporary calculator list, then apply discounts and tax below.</div>`;
+  const v=jrPcValues();
+  out.innerHTML=`<div><span>Subtotal</span><span>${fmt(v.subtotal)}</span></div>${v.d1?`<div><span>Discount −${v.d1}%</span><span>−${fmt(v.d1amt)}</span></div>`:""}${v.d2?`<div><span>Extra discount −${v.d2}%</span><span>−${fmt(v.d2amt)}</span></div>`:""}${v.tax?`<div><span>Tax +${v.tax}%</span><span>+${fmt(v.taxAmt)}</span></div>`:""}<div class="jr-grand"><span>Calculated total</span><span>${fmt(v.total)}</span></div>`;
+}
+function renderJrToolCats(){
+  const el=document.getElementById("jrPcCat"); if(!el) return;
+  const keep=el.value; el.innerHTML=M().expcat.map(c=>`<option ${c.name===keep?"selected":""}>${esc(c.name)}</option>`).join("")+`<option value="" ${!keep?"selected":""}>(no category)</option>`;
+}
+document.getElementById("jrPcItemAdd")?.addEventListener("click",()=>{
+  const name=document.getElementById("jrPcName"),qty=document.getElementById("jrPcQty"),price=document.getElementById("jrPcPrice");
+  const n=name.value.trim(),q=Math.max(1,Math.floor(num(qty.value)||1)),p=num(price.value);
+  if(!n||p<=0){toast("Add an item name and price");return;}
+  jrPcItems.push({name:n,qty:q,price:p}); name.value="";qty.value="1";price.value="";renderJrCalculator();name.focus();
+});
+["jrPcDisc","jrPcDisc2","jrPcTax"].forEach(id=>document.getElementById(id)?.addEventListener("input",renderJrCalculator));
+document.getElementById("jrPcClear")?.addEventListener("click",()=>{jrPcItems=[];["jrPcName","jrPcPrice","jrPcDisc","jrPcDisc2"].forEach(id=>{const e=document.getElementById(id);if(e)e.value=""});renderJrCalculator();});
+document.addEventListener("click",e=>{const b=e.target.closest("[data-jr-pc-del]");if(!b)return;jrPcItems.splice(Number(b.dataset.jrPcDel),1);renderJrCalculator();});
+function jrCalculatedEntry(){
+  const v=jrPcValues();
+  if(v.total<=0){toast("Add at least one priced item first");return null;}
+  return {name:document.getElementById("jrPcReceiptName").value.trim()||jrPcItems.map(x=>x.name).join(", "),method:document.getElementById("jrPcMethod").value,cat:document.getElementById("jrPcCat").value,amount:v.total};
+}
+function jrClearCalculated(){jrPcItems=[];document.getElementById("jrPcReceiptName").value="";renderJrCalculator();}
+document.getElementById("jrPcAddReceipt")?.addEventListener("click",()=>{
+  const x=jrCalculatedEntry(); if(!x)return;
+  M().receipt.push({id:uid(),date:todayISO(),name:x.name,method:x.method,amount:x.amount,cat:x.cat});
+  jrClearCalculated();save();render();toast("Calculated total added to Receipt List ✓");
+});
+document.getElementById("jrPcAddExpense")?.addEventListener("click",()=>{
+  const x=jrCalculatedEntry(); if(!x)return;
+  M().log.push({id:uid(),date:todayISO(),name:x.name,cat:x.cat,amount:x.amount,pay:x.method==="cash"?"cash":"credit"});
+  jrClearCalculated();save();render();toast("Calculated total added to Expense Log ✓");
+});
+function renderJrTip(){
+  const bill=num(document.getElementById("jrTipBill")?.value),pct=num(document.getElementById("jrTipPct")?.value),split=Math.max(1,num(document.getElementById("jrTipSplit")?.value)||1),out=document.getElementById("jrTipOut");
+  if(!out)return;if(bill<=0){out.innerHTML="";return;}const tip=bill*pct/100,total=bill+tip;
+  out.innerHTML=`<div><span>Tip (${pct}%)</span><span>${fmt(tip)}</span></div><div><span>Total with tip</span><span>${fmt(total)}</span></div><div class="jr-grand"><span>Per person (${split})</span><span>${fmt(total/split)}</span></div>`;
+}
+["jrTipBill","jrTipPct","jrTipSplit"].forEach(id=>document.getElementById(id)?.addEventListener("input",renderJrTip));
+document.addEventListener("click",e=>{const b=e.target.closest("[data-jr-tip]");if(!b)return;document.getElementById("jrTipPct").value=b.dataset.jrTip;renderJrTip();});
+renderJrCalculator();renderJrToolCats();
+
 /* ============ bill library ============ */
 const CATS = ["Credit Cards","Utilities","Insurance","Housing","Subscriptions","Car","Medical","Other"];
-function openLib(){ renderLib(); $("#libDlg").showModal(); }
+function openLib(){ showTab("library",{premium:false}); }
 window.openLib = openLib;
-$("#libBtn").onclick = openLib;
-$("#libClose").onclick = ()=>$("#libDlg").close();
 
 function catSelect(b){
   const cats = [...new Set([...CATS, b.category||"Other"])];
@@ -1969,6 +3960,59 @@ $("#libForm").addEventListener("submit", e=>{
   db.library.push({id:uid(),name:f.name.value.trim(),category:f.category.value,budget:f.budget.value,dueDate:f.dueDate.value||""});
   f.reset(); save(); renderLib();
 });
+
+
+
+/* ===== Standalone Bills Planner logic — shares data, never All markup ===== */
+function jrbDateLabel(iso){
+  if(!iso) return {day:"—",mon:"No date",full:"Due date not set"};
+  const d=new Date(iso+"T12:00:00");
+  if(Number.isNaN(d.getTime())) return {day:"—",mon:"No date",full:"Due date not set"};
+  return {day:String(d.getDate()),mon:d.toLocaleDateString(undefined,{month:"short"}),full:d.toLocaleDateString(undefined,{month:"long",day:"numeric",year:"numeric"})};
+}
+function jrbExpected(b){ return Number(b.actual)||Number(b.budget)||0; }
+function renderJrBillsPlanner(){
+  const root=document.getElementById("jrBillsPlanner"); if(!root) return;
+  const m=M(), bills=[...(m.bills||[])];
+  const paid=bills.filter(b=>b.paid).length;
+  const remain=bills.filter(b=>!b.paid).reduce((a,b)=>a+jrbExpected(b),0);
+  const count=document.getElementById("jrbPaidCount"), rem=document.getElementById("jrbRemaining"), bar=document.getElementById("jrbProgressBar");
+  if(count) count.textContent=`${paid}/${bills.length}`;
+  if(rem) rem.textContent=fmt(remain);
+  if(bar) bar.style.width=(bills.length?Math.round(paid/bills.length*100):0)+"%";
+
+  const sorted=bills.slice().sort((a,b)=>(a.dueDate||"9999-99-99").localeCompare(b.dueDate||"9999-99-99"));
+  const next=sorted.find(b=>!b.paid);
+  const nextCard=document.getElementById("jrbNextCard");
+  if(nextCard){
+    if(next){ const d=jrbDateLabel(next.dueDate); nextCard.innerHTML=`<div class="jrb-date">Next bill · ${esc(d.full)}</div><div class="jrb-name">${esc(next.name||"Unnamed bill")}</div><div class="jrb-amount">${fmt(jrbExpected(next))}</div><div class="jrb-muted" style="margin-top:5px">${next.autopay?"⚡ Autopay":"Manual payment"}</div>`; }
+    else nextCard.innerHTML=`<div class="jrb-date">Monthly focus</div><div class="jrb-name">${bills.length?"Everything is paid ✓":"No bills added yet"}</div><div class="jrb-muted" style="margin-top:7px">${bills.length?"Your current month is all caught up.":"Use the recurring library below to add one."}</div>`;
+  }
+
+  const upcoming=document.getElementById("jrbUpcoming");
+  if(upcoming){
+    upcoming.innerHTML=sorted.length?sorted.map(b=>{const d=jrbDateLabel(b.dueDate);return `<div class="jrb-upcoming"><div class="jrb-day"><b>${esc(d.day)}</b><span>${esc(d.mon)}</span></div><div><div class="name">${esc(b.name||"Unnamed bill")}</div><div class="meta">${b.autopay?"⚡ Autopay":"Manual"}${b.scheduled?` · scheduled ${esc(b.scheduled)}`:""}</div></div><div class="amt">${fmt(jrbExpected(b))}</div><span class="jrb-status ${b.paid?"paid":"due"}">${b.paid?"✓ paid":"waiting"}</span></div>`}).join(""):`<div class="jrb-empty">No bills are listed for this month yet.</div>`;
+  }
+
+  const grid=document.getElementById("jrbLibraryGrid"), badge=document.getElementById("jrbLibraryCount");
+  if(badge) badge.textContent=`${db.library.length} saved`;
+  if(grid){
+    grid.innerHTML=db.library.length?db.library.map(b=>{const d=jrbDateLabel(b.dueDate);return `<article class="jrb-lib-card"><div><div class="nm">${esc(b.name||"Unnamed bill")}</div><div class="cat">${esc(b.category||"Other")}${b.autopay?" · ⚡ autopay":""}</div></div><div><div class="budget">${b.budget!==""&&b.budget!=null?fmt(Number(b.budget)||0):"—"}</div><div class="due">${b.dueDate?`due ${esc(d.mon)} ${esc(d.day)}`:"no due date"}</div></div><div class="jrb-lib-actions"><button class="btn small primary" type="button" data-jrb-add="${b.id}">Add to ${esc(new Date(cur+"-01T12:00:00").toLocaleDateString(undefined,{month:"short"}))}</button><button class="btn small" type="button" data-jrb-delete="${b.id}">Remove</button></div></article>`}).join(""):`<div class="jrb-empty" style="grid-column:1/-1">Your recurring Bill Library is empty. Add the first bill below.</div>`;
+  }
+}
+document.getElementById("jrbLibraryForm")?.addEventListener("submit",e=>{
+  e.preventDefault(); const f=e.currentTarget; const name=f.name.value.trim(); if(!name)return;
+  if(db.library.some(x=>(x.name||"").trim().toLowerCase()===name.toLowerCase())){toast("That bill is already in your library");return;}
+  db.library.push({id:uid(),name,category:f.category.value,budget:f.budget.value,dueDate:f.dueDate.value||"",autopay:false});
+  f.reset(); save(); renderLib(); renderJrBillsPlanner(); toast(`"${name}" saved to Bill Library 📚`);
+});
+document.addEventListener("click",e=>{
+  const add=e.target.closest("[data-jrb-add]");
+  if(add){libAdd(add.dataset.jrbAdd);renderJrBillsPlanner();return;}
+  const del=e.target.closest("[data-jrb-delete]");
+  if(del){const b=db.library.find(x=>x.id===del.dataset.jrbDelete);if(!b)return;if(!confirm(`Remove "${b.name}" from the recurring Bill Library?`))return;libDel(del.dataset.jrbDelete);renderJrBillsPlanner();}
+});
+document.getElementById("jrbOpenOriginal")?.addEventListener("click",()=>showTab("library",{premium:false}));
 
 /* ============ month nav & carry-over ============ */
 function shiftMonth(delta){
@@ -2316,11 +4360,9 @@ function buildReport(){
       donutBox("Bills Breakdown", m.bills.map(b=>({name:b.name,value:num(b.actual)||num(b.budget)}))),
       donutBox("Expense Breakdown", m.expcat.map(c=>({name:c.name,value:catTotal(c)})))
     ].filter(Boolean).map(x=>`<div>${x}</div>`).join("")}</div>`;
-  $("#reportView").hidden = false;
-  document.body.style.overflow = "hidden";
+  document.body.style.overflow = "";
 }
-window.closeReport = ()=>{ $("#reportView").hidden = true; document.body.style.overflow = ""; };
-$("#reportBtn").onclick = buildReport;
+window.closeReport = ()=>showTab("all",{premium:false});
 
 /* ============ year view ============ */
 let yearShown = Number(thisMonth().slice(0,4));
@@ -2335,32 +4377,64 @@ function totalsForKey(k){
 }
 function renderYear(){
   $("#yearTitle").textContent = yearShown;
-  const rows = [];
-  let maxBil = 1;
-  const data = MONTHS.map((_,i)=>{
+  const data = MONTHS.map((name,i)=>{
     const k = yearShown+"-"+String(i+1).padStart(2,"0");
-    const t = totalsForKey(k);
-    if(t) maxBil = Math.max(maxBil, t.bil);
-    return [k,t];
+    return {k,name,t:totalsForKey(k)};
   });
-  for(const [k,t] of data){
-    const mn = MONTHS[Number(k.slice(5,7))-1].slice(0,3);
-    if(!t){ rows.push(`<tr style="opacity:.4"><td>${mn}</td><td colspan="5" style="color:var(--ink-soft)">—</td></tr>`); continue; }
-    rows.push(`<tr style="cursor:pointer" onclick="jumpMonth('${k}')" title="open ${mn}">
-      <td><b>${mn}</b></td>
-      <td style="min-width:110px"><div class="bar" style="margin:0"><i style="width:${t.bil/maxBil*100}%;background:var(--accent)"></i></div></td>
-      <td class="num">${fmt(t.bil)}</td>
-      <td class="num">${fmt(t.exp)}</td>
-      <td class="num ${t.left<0?'neg':''}">${fmt(t.left)}</td>
-      <td class="num" style="color:var(--ink-soft)">${t.all?`${t.paid}/${t.all} paid`:""}</td></tr>`);
+  const saved = data.filter(x=>x.t);
+  if(!saved.length){
+    $("#yearBody").innerHTML = `<div class="jry-empty-note">No saved months for ${yearShown} yet.<br><span style="font-size:11px">Months will appear here automatically as you use the ledger.</span></div>`;
+    return;
   }
-  $("#yearBody").innerHTML = `<table>
-    <thead><tr><th></th><th>Bills</th><th class="num">Bills</th><th class="num">Expenses</th><th class="num">Left</th><th class="num">Status</th></tr></thead>
-    <tbody>${rows.join("")}</tbody></table>`;
+  const annual = saved.reduce((a,x)=>{
+    a.bil+=x.t.bil;a.exp+=x.t.exp;a.sav+=x.t.sav;a.deb+=x.t.deb;a.left+=x.t.left;a.paid+=x.t.paid;a.all+=x.t.all;return a;
+  },{bil:0,exp:0,sav:0,deb:0,left:0,paid:0,all:0});
+  const bestSave = saved.reduce((a,b)=>b.t.sav>a.t.sav?b:a,saved[0]);
+  const highSpend = saved.reduce((a,b)=>(b.t.exp+b.t.bil+b.t.deb)>(a.t.exp+a.t.bil+a.t.deb)?b:a,saved[0]);
+  const bestLeft = saved.reduce((a,b)=>b.t.left>a.t.left?b:a,saved[0]);
+  const paidPct = annual.all ? Math.round(annual.paid/annual.all*100) : 0;
+  const avgLeft = annual.left/saved.length;
+  const cards = `
+    <div class="jry-summary">
+      <div class="jry-card"><div class="k">Months recorded</div><div class="v">${saved.length}/12</div><div class="s">saved ledger months</div></div>
+      <div class="jry-card"><div class="k">Saved this year</div><div class="v">${fmt(annual.sav)}</div><div class="s">total moved to savings</div></div>
+      <div class="jry-card"><div class="k">Everyday spending</div><div class="v">${fmt(annual.exp)}</div><div class="s">from cash and expense logs</div></div>
+      <div class="jry-card"><div class="k">Average left</div><div class="v ${avgLeft<0?'neg':''}">${fmt(avgLeft)}</div><div class="s">per recorded month</div></div>
+    </div>`;
+  const highlights = `
+    <div class="jry-highlights">
+      <section class="jry-panel">
+        <h3>✦ Year Highlights</h3>
+        <div class="jry-highlight-list">
+          <div class="jry-highlight"><div class="ico">🌱</div><div class="txt"><b>Strongest savings month</b><span>${bestSave.name}</span></div><div class="amt">${fmt(bestSave.t.sav)}</div></div>
+          <div class="jry-highlight"><div class="ico">🧾</div><div class="txt"><b>Highest outflow month</b><span>${highSpend.name}</span></div><div class="amt">${fmt(highSpend.t.exp+highSpend.t.bil+highSpend.t.deb)}</div></div>
+          <div class="jry-highlight"><div class="ico">✨</div><div class="txt"><b>Most left to spend</b><span>${bestLeft.name}</span></div><div class="amt ${bestLeft.t.left<0?'neg':''}">${fmt(bestLeft.t.left)}</div></div>
+        </div>
+      </section>
+      <section class="jry-panel">
+        <h3>✓ Bill Completion</h3>
+        <div style="font-family:Georgia,serif;font-size:30px;font-weight:700">${paidPct}%</div>
+        <div class="jry-progress"><span style="width:${Math.min(100,paidPct)}%"></span></div>
+        <div class="jry-progress-note"><span>${annual.paid} paid</span><span>${Math.max(0,annual.all-annual.paid)} remaining</span></div>
+        <div style="margin-top:17px;border-top:1px dashed var(--line);padding-top:12px;font-size:11.5px;color:var(--ink-soft);line-height:1.55">This review is read-only. Select any month below to open that month in <b style="color:var(--ink)">All</b> and manage its full ledger.</div>
+      </section>
+    </div>`;
+  const monthCards = data.map(({k,name,t})=>{
+    if(!t) return `<div class="jry-month empty"><div class="mh"><span class="mn">${name}</span></div><div class="balance">—</div><div class="jry-mini"><span>No saved ledger</span><b></b></div></div>`;
+    return `<button class="jry-month" type="button" onclick="jumpMonth('${k}')" aria-label="Open ${name} ${yearShown} in All">
+      <div class="mh"><span class="mn">${name}</span><span class="open">Open in All →</span></div>
+      <div class="balance ${t.left<0?'neg':''}">${fmt(t.left)} left</div>
+      <div class="jry-mini">
+        <span>Bills</span><b>${fmt(t.bil)}</b>
+        <span>Spending</span><b>${fmt(t.exp)}</b>
+        <span>Savings</span><b>${fmt(t.sav)}</b>
+        <span>Paid</span><b>${t.all?`${t.paid}/${t.all}`:'—'}</b>
+      </div>
+    </button>`;
+  }).join("");
+  $("#yearBody").innerHTML = `${cards}${highlights}<div class="jry-months-head"><div><h3>Monthly Pages</h3><p>Select a recorded month to continue working in the original All dashboard.</p></div></div><div class="jry-monthgrid">${monthCards}</div>`;
 }
-window.jumpMonth = k=>{ cur = k; bannerDismissedCarry=false; $("#yearDlg").close(); render(); };
-$("#yearBtn").onclick = ()=>{ yearShown = Number(cur.slice(0,4)); renderYear(); $("#yearDlg").showModal(); };
-$("#yearClose").onclick = ()=>$("#yearDlg").close();
+window.jumpMonth = k=>{ cur = k; bannerDismissedCarry=false; showTab("all",{premium:false}); render(); };
 $("#yearPrev").onclick = ()=>{ yearShown--; renderYear(); };
 $("#yearNext").onclick = ()=>{ yearShown++; renderYear(); };
 
@@ -2399,8 +4473,6 @@ window.previewArchive=k=>{
     </tbody></table>
     <p style="font-size:12px;color:var(--ink-soft);margin-top:8px">${unpaid.length?'Unpaid: '+esc(unpaid.join(', ')):'All listed bills paid 🎉'}</p>`;
 };
-$("#archiveBtn").onclick=()=>{ renderArchive(); $("#archiveDlg").showModal(); };
-$("#archiveClose").onclick=()=>$("#archiveDlg").close();
 
 
 /* ============ price check calculator ============ */
@@ -2589,6 +4661,7 @@ $("#lockBtn").addEventListener("click", ()=>{
 });
 applyLock();
 
+/* on phones, banners start as pulsing icons; tap to expand */
 /* on phones, banners render as pulsing icons (pure CSS); tapping expands them */
 function iconizeBanner(){} /* detection now lives in CSS, kept so callers don't break */
 ["backupBanner","carryBanner"].forEach(id=>{
@@ -2639,5 +4712,524 @@ $("#themeMode").addEventListener("change", e=>{
 
 render();
 </script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(()=>{}));
+}
+</script>
+
+<script id="standalone-report-print-handler">
+function printMonthlyReport(){
+  const premium = document.body.classList.contains("premium-tab-view");
+  if(!premium){
+    // All-tab route: preserve the original report printing behavior.
+    window.print();
+    return;
+  }
+
+  // Cover-tab route: hide the journal frame only for the print/PDF render.
+  document.body.classList.add("printing-standalone-report");
+  const cleanup = () => document.body.classList.remove("printing-standalone-report");
+  window.addEventListener("afterprint", cleanup, {once:true});
+  window.print();
+  // Fallback for browsers that do not reliably fire afterprint.
+  setTimeout(cleanup, 1500);
+}
+
+
+/* ===== standalone archive + interaction helpers (never target All markup) ===== */
+let jraSelectedKey = null;
+function renderStandaloneArchive(){
+  const host=document.getElementById('jraStandalone'); if(!host) return;
+  const keys=Object.keys((db&&db.months)||{}).sort().reverse();
+  const summary=document.getElementById('jraSummary'), list=document.getElementById('jraList'), preview=document.getElementById('jraPreview');
+  if(!keys.length){
+    summary.innerHTML=''; list.innerHTML='<div class="jra-preview-empty">No saved monthly volumes yet.<br>Your months will appear here automatically.</div>'; preview.innerHTML='<div class="jra-preview-empty">Choose a saved month when one becomes available.</div>'; return;
+  }
+  const totals=keys.map(k=>({k,t:archiveTotals(k)}));
+  const totalSaved=totals.reduce((a,x)=>a+x.t.sav,0);
+  const best=totals.reduce((a,b)=>b.t.left>a.t.left?b:a,totals[0]);
+  const billAll=totals.reduce((a,x)=>a+x.t.all,0), billPaid=totals.reduce((a,x)=>a+x.t.paid,0);
+  summary.innerHTML=`<div class="jra-summary-card"><span>Volumes saved</span><strong>${keys.length}</strong><small>monthly ledger pages</small></div><div class="jra-summary-card"><span>Total set aside</span><strong>${fmt(totalSaved)}</strong><small>across archived months</small></div><div class="jra-summary-card"><span>Bills completed</span><strong>${billAll?Math.round(billPaid/billAll*100):0}%</strong><small>best balance: ${best.k}</small></div>`;
+  if(!jraSelectedKey || !db.months[jraSelectedKey]) jraSelectedKey=keys[0];
+  list.innerHTML=keys.map(k=>{const t=archiveTotals(k),[y,mo]=k.split('-').map(Number);return `<button class="jra-volume ${k===jraSelectedKey?'active':''}" type="button" data-jra-key="${k}" data-month-num="${String(mo).padStart(2,'0')}"><span class="jra-mini-cover" aria-hidden="true"><span class="ico">${JOURNAL_MONTH_IDENTITIES[mo-1].icon}</span><span class="abbr">${JOURNAL_MONTH_IDENTITIES[mo-1].theme.toUpperCase().slice(0,7)}</span></span><div class="month">${MONTHS[mo-1]}</div><div class="year">${y} · ${JOURNAL_MONTH_IDENTITIES[mo-1].theme.toUpperCase()}</div><div class="meta"><span>${t.all?t.paid+'/'+t.all+' bills paid':'no bills'}</span><span class="left ${t.left<0?'neg':''}">${fmt(t.left)}</span></div></button>`}).join('');
+  renderStandaloneArchivePreview(jraSelectedKey);
+}
+function renderStandaloneArchivePreview(k){
+  const preview=document.getElementById('jraPreview'); if(!preview||!db.months[k]) return;
+  jraSelectedKey=k; const m=db.months[k],t=archiveTotals(k),[y,mo]=k.split('-').map(Number);
+  const unpaid=(m.bills||[]).filter(b=>!b.paid).map(b=>b.name).filter(Boolean);
+  preview.innerHTML=`<h3>${MONTHS[mo-1]} ${y}</h3><div class="sub">read-only monthly snapshot</div><div class="jra-ledger"><span>Starting balance</span><b>${fmt(t.bal)}</b><span>Bills</span><b>${fmt(t.bil)}</b><span>Everyday spending</span><b>${fmt(t.exp)}</b><span>Savings</span><b>${fmt(t.sav)}</b><span>Debt</span><b>${fmt(t.deb)}</b><span><strong>Left to spend</strong></span><b class="${t.left<0?'neg':''}">${fmt(t.left)}</b></div><div class="jra-unpaid">${unpaid.length?'Still unpaid: '+esc(unpaid.join(', ')):'All listed bills were paid 🎉'}</div><button class="btn primary jra-open" type="button" data-jra-open="${k}">Open this month in All</button>`;
+  document.querySelectorAll('[data-jra-key]').forEach(b=>b.classList.toggle('active',b.dataset.jraKey===k));
+}
+document.addEventListener('click',e=>{
+  const volume=e.target.closest('[data-jra-key]'); if(volume){renderStandaloneArchivePreview(volume.dataset.jraKey);return;}
+  const open=e.target.closest('[data-jra-open]'); if(open){cur=open.dataset.jraOpen;bannerDismissedCarry=false;showTab('all',{premium:false});render();}
+});
+
+const _showTabJournalFinish=showTab;
+showTab=function(tab,options={premium:false}){
+  _showTabJournalFinish(tab,options);
+  document.querySelectorAll('.jtab').forEach(t=>{if(t.dataset.tab===tab)t.setAttribute('aria-current','page');else t.removeAttribute('aria-current')});
+  const page=document.querySelector(`.jpage[data-page="${tab}"]`);
+  if(page&&tab!=='all'&&tab!=='home'){page.classList.remove('page-enter');void page.offsetWidth;page.classList.add('page-enter');setTimeout(()=>page.classList.remove('page-enter'),300)}
+  if(tab==='archive'&&options.premium===true) renderStandaloneArchive();
+};
+</script>
+
+
+<script id="dynamic-journal-covers-js">
+const JOURNAL_MONTH_IDENTITIES = [
+  {theme:'Winter',icon:'❄️',season:'Winter'},
+  {theme:'Valentine',icon:'💗',season:'Winter'},
+  {theme:'Spring',icon:'🌱',season:'Spring'},
+  {theme:'Sakura',icon:'🌸',season:'Spring'},
+  {theme:'Garden',icon:'🌼',season:'Spring'},
+  {theme:'Coastal',icon:'🐚',season:'Summer'},
+  {theme:'Citrus',icon:'🍋',season:'Summer'},
+  {theme:'Orchard',icon:'🍑',season:'Summer'},
+  {theme:'Harvest',icon:'🍄',season:'Autumn'},
+  {theme:'Pumpkin',icon:'🎃',season:'Autumn'},
+  {theme:'Maple',icon:'🍁',season:'Autumn'},
+  {theme:'Holly',icon:'🎄',season:'Winter'}
+];
+function journalAppearanceName(){
+  return ({original:'Original Cozy',seasonal:'Seasonal Accents',planner:'Planner Seasons'})[(db&&db.settings&&db.settings.theme)||'seasonal'];
+}
+function updateJournalCoverIdentity(animate=false){
+  if(typeof cur!=='string') return;
+  const [year,month]=cur.split('-').map(Number), info=JOURNAL_MONTH_IDENTITIES[month-1];
+  if(!info) return;
+  const icon=document.getElementById('jcbIcon'), theme=document.getElementById('jcbTheme'), monthEl=document.getElementById('jcbMonth');
+  if(icon) icon.textContent=info.icon;
+  if(theme) theme.textContent=info.theme.toUpperCase();
+  if(monthEl) monthEl.textContent=MONTHS[month-1].toUpperCase();
+  const title=document.querySelector('.premium-year'); if(title) title.textContent=year;
+  const badge=document.getElementById('journalCoverBadge');
+  if(badge){badge.setAttribute('aria-label',`${info.theme} ${MONTHS[month-1]} ${year}. Open notebook theme details.`);badge.title=`${info.theme} · ${MONTHS[month-1]} ${year}`;}
+  const fields={jtdBadge:info.icon,journalThemeTitle:info.theme,jtdMonth:`${MONTHS[month-1]} ${year}`,jtdSeason:info.season,jtdTheme:info.theme,jtdAppearance:journalAppearanceName(),jtdVolume:`Volume ${month}`};
+  Object.entries(fields).forEach(([id,value])=>{const el=document.getElementById(id);if(el)el.textContent=value});
+  if(animate){
+    const cover=document.querySelector('#page-home .jcover');
+    [cover,badge].forEach(el=>{if(!el)return;const cls=el===cover?'cover-swapping':'badge-swapping';el.classList.remove(cls);void el.offsetWidth;el.classList.add(cls);setTimeout(()=>el.classList.remove(cls),380)});
+  }
+}
+const _renderHeaderDynamicCover=renderHeader;
+renderHeader=function(){_renderHeaderDynamicCover();updateJournalCoverIdentity(false)};
+
+document.getElementById('journalCoverBadge')?.addEventListener('click',()=>{
+  updateJournalCoverIdentity(false);
+  document.getElementById('journalThemeDlg')?.showModal();
+});
+document.getElementById('journalThemeClose')?.addEventListener('click',()=>document.getElementById('journalThemeDlg')?.close());
+document.getElementById('journalThemeDlg')?.addEventListener('click',e=>{if(e.target===e.currentTarget)e.currentTarget.close()});
+
+/* Animate identity changes after month navigation or appearance selection, without targeting All markup. */
+document.getElementById('themeMode')?.addEventListener('change',()=>setTimeout(()=>updateJournalCoverIdentity(true),0));
+document.getElementById('monthInput')?.addEventListener('change',()=>setTimeout(()=>updateJournalCoverIdentity(true),0));
+document.getElementById('prevM')?.addEventListener('click',()=>setTimeout(()=>updateJournalCoverIdentity(true),0));
+document.getElementById('nextM')?.addEventListener('click',()=>setTimeout(()=>updateJournalCoverIdentity(true),0));
+updateJournalCoverIdentity(false);
+</script>
+
+
+
+<style id="journal-continuity-css">
+/* ===== PLANNER CONTINUITY PASS — notebook shell + standalone pages only ===== */
+body{--jr-ribbon-y:18px;--jr-ribbon-color:#c98f9f}
+body[data-jtab="library"]{--jr-ribbon-y:58px;--jr-ribbon-color:#d99bb3}
+body[data-jtab="report"]{--jr-ribbon-y:98px;--jr-ribbon-color:#8fb2d1}
+body[data-jtab="year"]{--jr-ribbon-y:138px;--jr-ribbon-color:#91b889}
+body[data-jtab="archive"]{--jr-ribbon-y:178px;--jr-ribbon-color:#a995c7}
+body[data-jtab="receipt"]{--jr-ribbon-y:218px;--jr-ribbon-color:#dfa858}
+body[data-jtab="quick"]{--jr-ribbon-y:258px;--jr-ribbon-color:#d79b83}
+
+/* A slim section marker on standalone pages creates the bookmark illusion.
+   It is deliberately excluded from All and the cover. */
+body.premium-tab-view .jpage.active:not(#page-all):not(#page-home){position:relative}
+body.premium-tab-view .jpage.active:not(#page-all):not(#page-home)::before{
+  content:"";position:fixed;right:0;top:clamp(92px,var(--jr-ribbon-y),300px);
+  width:13px;height:72px;z-index:28;pointer-events:none;
+  background:linear-gradient(90deg,color-mix(in srgb,var(--jr-ribbon-color) 78%,#fff),var(--jr-ribbon-color));
+  border-radius:7px 0 0 7px;box-shadow:-3px 4px 9px rgba(62,43,34,.14);
+  transition:top .24s ease,background .24s ease;
+}
+body.premium-tab-view .jpage.active:not(#page-all):not(#page-home)::after{
+  content:"";position:fixed;right:0;top:calc(clamp(92px,var(--jr-ribbon-y),300px) + 58px);
+  width:13px;height:22px;z-index:29;pointer-events:none;background:var(--jr-ribbon-color);
+  clip-path:polygon(0 0,100% 0,100% 100%,50% 72%,0 100%);
+  transition:top .24s ease,background .24s ease;
+}
+
+/* Cover-opening moment: brief and calm, not a theatrical page flip. */
+body.journal-opening #page-home .jcover{
+  animation:jrNotebookOpen .28s cubic-bezier(.22,.72,.28,1) both!important;
+  transform-origin:left center;
+}
+body.journal-opening .jpage.active:not(#page-home):not(#page-all) .journal-sheet,
+body.journal-opening .jpage.active:not(#page-home):not(#page-all) .jpage-inner{
+  animation:jrSectionReveal .3s .08s ease both!important;
+}
+@keyframes jrNotebookOpen{
+  0%{opacity:1;transform:perspective(1100px) rotateY(0deg) scale(1)}
+  65%{opacity:.72;transform:perspective(1100px) rotateY(-8deg) scale(.992)}
+  100%{opacity:0;transform:perspective(1100px) rotateY(-13deg) scale(.985)}
+}
+@keyframes jrSectionReveal{
+  from{opacity:.15;transform:translateX(12px)}
+  to{opacity:1;transform:translateX(0)}
+}
+
+/* Normal section-to-section movement remains intentionally subtle. */
+body.journal-section-shift .jpage.active:not(#page-all):not(#page-home) .journal-sheet,
+body.journal-section-shift .jpage.active:not(#page-all):not(#page-home) .jpage-inner{
+  animation:jrQuietShift .2s ease both!important;
+}
+@keyframes jrQuietShift{from{opacity:.42;transform:translateX(5px)}to{opacity:1;transform:none}}
+
+/* Let the physical cover ribbon line up with the last journal section when
+   the user returns to the cover. */
+#page-home .bookmark{transition:left .28s ease,background .28s ease}
+body[data-last-journal="library"] #page-home .bookmark{left:47%;background:#d99bb3}
+body[data-last-journal="report"] #page-home .bookmark{left:50%;background:#8fb2d1}
+body[data-last-journal="year"] #page-home .bookmark{left:53%;background:#91b889}
+body[data-last-journal="archive"] #page-home .bookmark{left:56%;background:#a995c7}
+body[data-last-journal="receipt"] #page-home .bookmark{left:59%;background:#dfa858}
+body[data-last-journal="quick"] #page-home .bookmark{left:62%;background:#d79b83}
+
+@media(max-width:520px){
+  body.premium-tab-view .jpage.active:not(#page-all):not(#page-home)::before{width:9px;height:58px}
+  body.premium-tab-view .jpage.active:not(#page-all):not(#page-home)::after{width:9px;top:calc(clamp(92px,var(--jr-ribbon-y),300px) + 47px)}
+}
+@media(prefers-reduced-motion:reduce){
+  body.journal-opening #page-home .jcover,
+  body.journal-opening .jpage.active .journal-sheet,
+  body.journal-opening .jpage.active .jpage-inner,
+  body.journal-section-shift .jpage.active .journal-sheet,
+  body.journal-section-shift .jpage.active .jpage-inner{animation:none!important}
+}
+</style>
+
+<script id="journal-continuity-js">
+/* Standalone journal continuity. The remembered value lives inside the
+   existing ledger-budget-v1 settings object; no additional storage key. */
+(function(){
+  const JOURNAL_TABS = new Set(['library','report','year','archive','receipt','quick']);
+  const previousShowTab = window.showTab;
+  if(typeof previousShowTab !== 'function') return;
+
+  function rememberJournalTab(tab){
+    if(!JOURNAL_TABS.has(tab) || typeof db === 'undefined') return;
+    db.settings = db.settings || {};
+    db.settings.lastJournalTab = tab;
+    document.body.dataset.lastJournal = tab;
+    if(typeof save === 'function') save();
+  }
+
+  window.showTab = function(tab, options={premium:false}){
+    const oldTab = (typeof curTab === 'string' ? curTab : 'home');
+    const isJournal = JOURNAL_TABS.has(tab) && options.premium === true;
+    const openingFromCover = oldTab === 'home' && isJournal;
+    const movingWithinJournal = JOURNAL_TABS.has(oldTab) && isJournal && oldTab !== tab;
+
+    document.body.classList.toggle('journal-opening', openingFromCover);
+    document.body.classList.toggle('journal-section-shift', movingWithinJournal);
+    previousShowTab(tab, options);
+
+    if(isJournal) rememberJournalTab(tab);
+    if(tab === 'home'){
+      const last = db?.settings?.lastJournalTab;
+      if(JOURNAL_TABS.has(last)) document.body.dataset.lastJournal = last;
+    }
+
+    window.setTimeout(()=>{
+      document.body.classList.remove('journal-opening','journal-section-shift');
+    }, 380);
+  };
+
+  /* Reopen the last standalone section after the regular page initialization.
+     All is never stored or auto-opened as a journal section. */
+  window.setTimeout(()=>{
+    const last = db?.settings?.lastJournalTab;
+    if(!JOURNAL_TABS.has(last)) return;
+    document.body.dataset.lastJournal = last;
+    window.showTab(last,{premium:true});
+  }, 90);
+})();
+</script>
 </body>
 </html>
+
+<style>
+/* Final proportion fix: page edges may peek from the RIGHT only—never below the cover. */
+.page-block{
+  left:18px !important;
+  right:-14px !important;
+  top:10px !important;
+  bottom:10px !important;
+  border-radius:10px 24px 24px 10px !important;
+  background:
+    linear-gradient(90deg,transparent calc(100% - 18px),rgba(238,231,220,.8) calc(100% - 18px)),
+    repeating-linear-gradient(to bottom,#fffef9 0 3px,#eee7dc 3px 4px) !important;
+  border:none !important;
+  box-shadow:8px 8px 15px rgba(70,47,34,.12),inset -7px 0 10px rgba(128,101,78,.08) !important;
+  overflow:hidden;
+}
+.page-block::before,
+.page-block::after,
+.page-corner{display:none !important;content:none !important;}
+
+/* Keep the cover clearly larger than the paper block. */
+.cover-front-mask{inset:0 !important;}
+.cover-lip{inset:-2px -3px -2px -2px !important;}
+
+@media(max-width:520px){
+  .page-block{right:-11px !important;bottom:9px !important;}
+}
+
+/* ===== STANDALONE RECEIPT NOTE PAGE — original #receipt remains untouched ===== */
+#page-receipt .journal-page-content{padding-top:22px !important}
+#page-receipt .receipt-notebook{
+  position:relative;max-width:780px;margin:0 auto;padding:34px 42px 40px 72px;
+  border:1px solid #dfd2bd;border-radius:8px 18px 18px 8px;
+  background:
+    linear-gradient(90deg,transparent 0 47px,rgba(211,112,112,.28) 47px 49px,transparent 49px),
+    repeating-linear-gradient(to bottom,#fffdf8 0 31px,#dfe8e7 31px 32px);
+  box-shadow:0 16px 34px rgba(73,52,39,.12),7px 8px 0 #f1e8da,12px 13px 0 #e6dac9;
+  color:#4d4036;overflow:hidden;
+  -webkit-font-smoothing:antialiased;transform:none;filter:none;
+}
+#page-receipt .receipt-notebook::before{
+  content:"";position:absolute;left:16px;top:20px;bottom:20px;width:18px;
+  background:radial-gradient(circle,#c8b8a3 0 3px,#f8f0e5 3.5px 6px,transparent 6.5px) center top/18px 31px repeat-y;
+}
+#page-receipt .receipt-notebook::after{
+  content:"";position:absolute;right:22px;top:18px;width:78px;height:22px;
+  background:rgba(239,199,159,.42);transform:rotate(2deg);border-radius:2px;
+}
+#page-receipt .receipt-note-head{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:24px;position:relative;z-index:1}
+#page-receipt .receipt-note-date{font-size:10px;text-transform:uppercase;letter-spacing:2.2px;color:#9a806d;font-weight:700}
+#page-receipt .receipt-note-head h3{font-family:Georgia,serif;font-size:30px;font-weight:500;margin:4px 0 3px;color:#57463b}
+#page-receipt .receipt-note-head p{font-family:Georgia,serif;font-style:italic;color:#9a8271;font-size:13px}
+#page-receipt .receipt-note-stamp{width:72px;height:72px;border:2px solid rgba(177,108,91,.48);border-radius:50%;display:grid;place-content:center;text-align:center;font-size:9px;letter-spacing:1.5px;color:#aa6c5d;transform:rotate(5deg);line-height:1.25;background:rgba(255,253,248,.58)}
+#page-receipt .receipt-note-stamp span{font-family:Georgia,serif;font-size:19px;letter-spacing:0}
+#page-receipt .receipt-note-form{display:grid;grid-template-columns:1.35fr .72fr .68fr;gap:12px 14px;padding:17px 18px 18px;background:rgba(255,255,255,.62);border:1px solid rgba(198,178,153,.68);border-radius:13px;box-shadow:0 4px 10px rgba(73,52,39,.05);position:relative;z-index:1;margin-bottom:20px}
+#page-receipt .receipt-note-form label{display:flex;flex-direction:column;gap:5px;min-width:0}
+#page-receipt .receipt-note-form label>span{font-size:9.5px;text-transform:uppercase;letter-spacing:1.25px;color:#8d7867;font-weight:700}
+#page-receipt .receipt-note-form .jr-wide{grid-column:1/-1}
+#page-receipt .receipt-note-form input,#page-receipt .receipt-note-form select{width:100%;min-width:0;border:none;border-bottom:1px solid #cbbda9;border-radius:0;background:transparent;padding:7px 3px 6px;color:#4d4036;font:inherit;outline:none}
+#page-receipt .receipt-note-form input:focus,#page-receipt .receipt-note-form select:focus{border-bottom-color:#b77b69;background:rgba(247,229,208,.28)}
+#page-receipt .jr-form-actions{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:9px}
+#page-receipt .jr-add{border:1px dashed #c3a990;background:#f8eddf;color:#6f5143;padding:10px 14px;border-radius:10px;font-family:Georgia,serif;font-size:13px;cursor:pointer}
+#page-receipt .jr-add:hover{background:#f3e2d1;border-color:#af806a}
+#page-receipt .jr-add-expense{background:#efe7d8;border-style:solid;border-color:#b9a586;color:#5f5545}
+#page-receipt .jr-add-expense:hover{background:#e8dcc8;border-color:#9e876c}
+#page-receipt .jr-tool-grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(250px,.75fr);gap:14px;margin:0 0 20px;position:relative;z-index:1}
+#page-receipt .jr-tool-card{background:rgba(255,253,248,.72);border:1px solid rgba(198,178,153,.72);border-radius:13px;padding:15px 16px;box-shadow:0 4px 10px rgba(73,52,39,.045)}
+#page-receipt .jr-tool-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:12px}
+#page-receipt .jr-tool-heading span{font-size:8.5px;text-transform:uppercase;letter-spacing:1.4px;color:#9a806d;font-weight:700}
+#page-receipt .jr-tool-heading h4{font-family:Georgia,serif;font-size:18px;font-weight:500;color:#5d493d;margin-top:2px}
+#page-receipt .jr-tool-clear{border:none;background:transparent;color:#a18473;font:inherit;font-size:11px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+#page-receipt .jr-mini-form{display:grid;gap:9px;align-items:end}
+#page-receipt .jr-item-row{grid-template-columns:minmax(120px,1fr) 64px minmax(96px,.72fr)}
+#page-receipt .jr-item-row .jr-mini-add{grid-column:1/-1;width:100%;margin-top:1px;min-height:36px}
+#page-receipt .jr-rates{grid-template-columns:repeat(3,1fr);margin-top:11px}
+#page-receipt .jr-save-total{grid-template-columns:minmax(120px,1fr) 108px minmax(110px,1fr);margin-top:12px;padding-top:11px;border-top:1px dashed rgba(183,157,133,.58)}
+#page-receipt .jr-calc-actions{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:2px}
+#page-receipt .jr-calc-actions .jr-mini-add{width:100%;white-space:normal;line-height:1.25;min-height:38px}
+#page-receipt .jr-tip-fields{grid-template-columns:1fr 1fr}
+#page-receipt .jr-tip-fields label:last-child{grid-column:1/-1}
+#page-receipt .jr-mini-form label{display:flex;flex-direction:column;gap:4px;min-width:0}
+#page-receipt .jr-mini-form label>span{font-size:8.5px;text-transform:uppercase;letter-spacing:1px;color:#907968;font-weight:700}
+#page-receipt .jr-mini-form input,#page-receipt .jr-mini-form select{width:100%;min-width:0;border:1px solid #d8c8b6;border-radius:8px;background:#fffdf8;padding:7px 8px;color:#4d4036;font:inherit;font-size:12px;outline:none}
+#page-receipt .jr-mini-form input:focus,#page-receipt .jr-mini-form select:focus{border-color:#b7836e;background:#fff}
+#page-receipt .jr-mini-add{border:1px solid #c5a68f;background:#f5e5d5;color:#6e4f41;border-radius:8px;padding:8px 10px;font:inherit;font-family:Georgia,serif;font-size:12px;cursor:pointer;white-space:nowrap}
+#page-receipt .jr-mini-add:hover{background:#efd8c5;border-color:#ad7d65}
+#page-receipt .jr-calc-help{font-family:Georgia,serif;font-style:italic;font-size:10.5px;line-height:1.4;color:#9a8271;margin:7px 1px 0}
+#page-receipt .jr-calc-cart{margin-top:10px;display:grid;gap:5px}
+#page-receipt .jr-cart-line{display:grid;grid-template-columns:1fr auto 24px;gap:8px;align-items:center;padding:5px 3px;border-bottom:1px dotted rgba(174,151,130,.55);font-size:11.5px}
+#page-receipt .jr-cart-line small{color:#9a8271}
+#page-receipt .jr-cart-line button{border:none;background:transparent;color:#b18d7a;cursor:pointer;font-size:15px}
+#page-receipt .jr-cart-empty{font-family:Georgia,serif;font-style:italic;color:#a28b79;font-size:11.5px;padding:5px 2px}
+#page-receipt .jr-calc-total{margin-top:11px;padding:10px 11px;border-radius:9px;background:#f7ead9;border:1px solid #dfc8aa;display:grid;gap:4px;font-size:11.5px}
+#page-receipt .jr-calc-total>div{display:flex;justify-content:space-between;gap:10px}
+#page-receipt .jr-calc-total .jr-grand{font-weight:800;font-size:13px;padding-top:5px;margin-top:3px;border-top:1px dashed #ccb18f}
+#page-receipt .jr-tip-buttons{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+#page-receipt .jr-tip-buttons button{border:1px solid #d4bea9;background:#fffaf3;color:#785b4b;border-radius:999px;padding:5px 9px;font-size:11px;cursor:pointer}
+#page-receipt .jr-tip-buttons button:hover{background:#f3dfcd;border-color:#b88b72}
+#page-receipt .jr-tip-output:empty{display:none}
+#page-receipt .receipt-note-summary{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:18px;position:relative;z-index:1}
+#page-receipt .receipt-note-summary>div{padding:11px 13px;background:rgba(255,253,248,.68);border:1px solid rgba(205,188,166,.7);border-radius:10px;display:flex;flex-direction:column;gap:3px}
+#page-receipt .receipt-note-summary span{font-size:9px;text-transform:uppercase;letter-spacing:1px;color:#927d6d}
+#page-receipt .receipt-note-summary strong{font-family:ui-monospace,monospace;font-size:16px;color:#5d4b40}
+#page-receipt .receipt-note-summary .jr-total{background:#f7ead6;border-color:#d9bfa0}
+#page-receipt .receipt-note-list{position:relative;z-index:1;min-height:190px}
+#page-receipt .receipt-note-entry{display:grid;grid-template-columns:86px 1fr auto 28px;gap:12px;align-items:center;min-height:64px;padding:8px 4px;border-bottom:1px solid rgba(185,199,198,.58)}
+#page-receipt .jr-entry-date{font-family:ui-monospace,monospace;font-size:10.5px;color:#9b8777}
+#page-receipt .jr-entry-main{display:flex;flex-direction:column;min-width:0}
+#page-receipt .jr-entry-main strong{font-family:Georgia,serif;font-size:15px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#page-receipt .jr-entry-main span{font-size:10px;color:#9a8575;margin-top:2px}
+#page-receipt .jr-entry-amount{font-family:ui-monospace,monospace;font-weight:700;white-space:nowrap}
+#page-receipt .jr-entry-delete{border:none;background:transparent;color:#b89c8d;font-size:19px;cursor:pointer;border-radius:50%;width:28px;height:28px}
+#page-receipt .jr-entry-delete:hover{background:#f3dfd7;color:#a8584d}
+#page-receipt .receipt-note-empty{text-align:center;padding:38px 15px;color:#a28c7b}
+#page-receipt .receipt-note-empty span{display:block;font-size:26px;margin-bottom:5px}
+#page-receipt .receipt-note-empty strong{display:block;font-family:Georgia,serif;color:#735e50;font-size:17px}
+#page-receipt .receipt-note-empty p{font-size:12px;margin-top:4px}
+#page-receipt .receipt-note-foot{text-align:right;margin-top:22px;font-family:Georgia,serif;font-style:italic;font-size:10.5px;color:#aa9584;letter-spacing:.4px}
+@media(max-width:680px){
+  #page-receipt .receipt-notebook{padding:27px 16px 34px 48px;border-radius:7px 13px 13px 7px}
+  #page-receipt .receipt-notebook::before{left:8px}
+  #page-receipt .receipt-note-head h3{font-size:24px}
+  #page-receipt .receipt-note-stamp{width:58px;height:58px}
+  #page-receipt .receipt-note-form{grid-template-columns:1fr 1fr;padding:14px}
+  #page-receipt .receipt-note-form .jr-wide,#page-receipt .jr-form-actions{grid-column:1/-1}
+  #page-receipt .jr-tool-grid{grid-template-columns:1fr}
+  #page-receipt .jr-item-row{grid-template-columns:1fr 62px 92px}
+  #page-receipt .jr-item-row .jr-mini-add{grid-column:1/-1}
+  #page-receipt .jr-save-total{grid-template-columns:1fr 1fr}
+  #page-receipt .jr-save-total .jr-grow,#page-receipt .jr-calc-actions{grid-column:1/-1}
+  #page-receipt .jr-form-actions,#page-receipt .jr-calc-actions{grid-template-columns:1fr}
+  #page-receipt .receipt-note-summary{grid-template-columns:1fr}
+  #page-receipt .receipt-note-entry{grid-template-columns:1fr auto 26px;gap:8px}
+  #page-receipt .jr-entry-date{grid-column:1/-1;padding-top:3px}
+}
+
+
+
+/* ===== STANDALONE YEAR REVIEW — scoped away from All ===== */
+#page-year .jry-wrap{display:grid;gap:16px}
+#page-year .jry-yearnav{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:2px}
+#page-year .jry-yearnav strong{font-family:Georgia,serif;font-size:25px;min-width:96px;text-align:center}
+#page-year .jry-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+#page-year .jry-card,#page-year .jry-panel,#page-year .jry-month{
+  border:1px solid var(--line);border-radius:15px;background:rgba(255,255,255,.5);
+  box-shadow:0 5px 13px rgba(58,46,34,.05)
+}
+#page-year .jry-card{padding:14px 15px;min-height:92px;display:flex;flex-direction:column;justify-content:center}
+#page-year .jry-card .k{font-size:9.5px;text-transform:uppercase;letter-spacing:1.35px;color:var(--ink-soft);font-weight:750}
+#page-year .jry-card .v{font-family:ui-monospace,monospace;font-size:21px;font-weight:800;margin-top:5px}
+#page-year .jry-card .s{font-size:10.5px;color:var(--ink-soft);margin-top:3px;line-height:1.3}
+#page-year .jry-highlights{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+#page-year .jry-panel{padding:16px}
+#page-year .jry-panel h3{font-family:Georgia,serif;font-size:16px;margin:0 0 10px}
+#page-year .jry-highlight-list{display:grid;gap:8px}
+#page-year .jry-highlight{display:flex;align-items:center;gap:10px;padding:9px 10px;border:1px dashed var(--line);border-radius:12px;background:rgba(255,255,255,.35)}
+#page-year .jry-highlight .ico{font-size:20px;width:28px;text-align:center}
+#page-year .jry-highlight .txt{min-width:0;flex:1}
+#page-year .jry-highlight .txt b{display:block;font-size:12.5px}
+#page-year .jry-highlight .txt span{display:block;font-size:10.5px;color:var(--ink-soft);margin-top:1px}
+#page-year .jry-highlight .amt{font-family:ui-monospace,monospace;font-weight:750;white-space:nowrap;font-size:12px}
+#page-year .jry-progress{height:10px;border-radius:999px;background:var(--card2);border:1px solid var(--line);overflow:hidden;margin:8px 0 6px}
+#page-year .jry-progress span{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--month-a),var(--accent));width:0}
+#page-year .jry-progress-note{display:flex;justify-content:space-between;gap:8px;font-size:11px;color:var(--ink-soft)}
+#page-year .jry-months-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+#page-year .jry-months-head h3{font-family:Georgia,serif;margin:0;font-size:17px}
+#page-year .jry-months-head p{font-size:11px;color:var(--ink-soft);margin:2px 0 0}
+#page-year .jry-monthgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+#page-year .jry-month{padding:13px;cursor:pointer;text-align:left;color:var(--ink);font:inherit;position:relative;overflow:hidden;transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease}
+#page-year .jry-month:hover,#page-year .jry-month:focus-visible{transform:translateY(-2px);border-color:var(--month-a);box-shadow:0 8px 17px rgba(58,46,34,.09);outline:none}
+#page-year .jry-month.empty{opacity:.48;cursor:default;box-shadow:none}
+#page-year .jry-month.empty:hover{transform:none;border-color:var(--line)}
+#page-year .jry-month::after{content:"";position:absolute;right:-18px;top:-20px;width:60px;height:60px;border-radius:50%;background:var(--month-b);opacity:.72}
+#page-year .jry-month .mh{display:flex;align-items:center;justify-content:space-between;gap:8px;position:relative;z-index:1}
+#page-year .jry-month .mn{font-family:Georgia,serif;font-weight:750;font-size:16px}
+#page-year .jry-month .open{font-size:10px;color:var(--ink-soft)}
+#page-year .jry-month .balance{font-family:ui-monospace,monospace;font-size:18px;font-weight:800;margin:10px 0 7px;position:relative;z-index:1}
+#page-year .jry-month .balance.neg{color:var(--bad)}
+#page-year .jry-mini{display:grid;grid-template-columns:1fr auto;gap:3px 8px;font-size:10.5px;color:var(--ink-soft);position:relative;z-index:1}
+#page-year .jry-mini b{font-family:ui-monospace,monospace;color:var(--ink);font-weight:650}
+#page-year .jry-empty-note{text-align:center;padding:26px 16px;color:var(--ink-soft);border:1px dashed var(--line);border-radius:15px;background:rgba(255,255,255,.34)}
+@media(max-width:900px){#page-year .jry-summary{grid-template-columns:1fr 1fr}#page-year .jry-monthgrid{grid-template-columns:1fr 1fr}}
+@media(max-width:580px){#page-year .jry-highlights,#page-year .jry-summary,#page-year .jry-monthgrid{grid-template-columns:1fr}#page-year .jry-months-head{align-items:flex-start;flex-direction:column}}
+
+/* ===== STANDALONE JOURNAL FINISHING PASS: scoped away from All ===== */
+body.premium-tab-view .journal-sheet{
+  --jr-accent:var(--accent);--jr-deep:var(--accent-deep);--jr-paper:var(--card);--jr-paper2:var(--card2);
+}
+body[data-theme-mode="planner"].premium-tab-view .journal-sheet{
+  background:linear-gradient(180deg,color-mix(in srgb,var(--card) 96%,white),var(--card));
+  border-color:var(--line);color:var(--ink);box-shadow:0 22px 52px color-mix(in srgb,var(--ink) 16%,transparent);
+}
+body[data-theme-mode="planner"].premium-tab-view .journal-pagebar{
+  background:linear-gradient(90deg,var(--card2),color-mix(in srgb,var(--card) 92%,white));border-color:var(--line);
+}
+body[data-theme-mode="planner"].premium-tab-view .page-kicker,
+body[data-theme-mode="planner"].premium-tab-view .premium-eyebrow{color:var(--accent-deep)}
+body[data-theme-mode="planner"].premium-tab-view .journal-back,
+body[data-theme-mode="planner"].premium-tab-view .btn.primary{background:var(--accent);border-color:var(--accent);color:var(--ink)}
+body[data-theme-mode="planner"].premium-tab-view .premium-stat,
+body[data-theme-mode="planner"].premium-tab-view .premium-note{background:var(--card2);border-color:var(--line)}
+
+/* Seasonal physical covers: only the home notebook, never All. */
+body[data-theme-mode="planner"][data-month="01"] .jcover{--cover:#9ebfd1;--cover-deep:#6f99b0;--paper:#f8fcfe;--gold:#6d8fa3}
+body[data-theme-mode="planner"][data-month="02"] .jcover{--cover:#dfa7bd;--cover-deep:#bc7897;--paper:#fff9fb;--gold:#a66c83}
+body[data-theme-mode="planner"][data-month="03"] .jcover{--cover:#b9cf9f;--cover-deep:#86a66b;--paper:#fcfff8;--gold:#778f5d}
+body[data-theme-mode="planner"][data-month="04"] .jcover{--cover:#e3b0c7;--cover-deep:#bd7999;--paper:#fff9fc;--gold:#a46f86}
+body[data-theme-mode="planner"][data-month="05"] .jcover{--cover:#95bea4;--cover-deep:#638e74;--paper:#fafffb;--gold:#5f7f69}
+body[data-theme-mode="planner"][data-month="06"] .jcover{--cover:#ead06f;--cover-deep:#b89a35;--paper:#fffdf4;--gold:#a48629}
+body[data-theme-mode="planner"][data-month="07"] .jcover{--cover:#e8a950;--cover-deep:#bd7624;--paper:#fff9f0;--gold:#a36c27}
+body[data-theme-mode="planner"][data-month="08"] .jcover{--cover:#e4aa7f;--cover-deep:#b9784e;--paper:#fff9f5;--gold:#9a6849}
+body[data-theme-mode="planner"][data-month="09"] .jcover{--cover:#c9a06e;--cover-deep:#956d3f;--paper:#fff9f1;--gold:#84643e}
+body[data-theme-mode="planner"][data-month="10"] .jcover{--cover:#cb7c50;--cover-deep:#974b2d;--paper:#fff7f1;--gold:#84482e}
+body[data-theme-mode="planner"][data-month="11"] .jcover{--cover:#a58264;--cover-deep:#72543d;--paper:#fcf8f4;--gold:#684f3c}
+body[data-theme-mode="planner"][data-month="12"] .jcover{--cover:#769e8d;--cover-deep:#4e7565;--paper:#f8fcfa;--gold:#597467}
+body[data-theme-mode="planner"] .cover-label{background:color-mix(in srgb,var(--card) 91%,white);border-color:var(--line)}
+body[data-theme-mode="planner"] .jcover-art .wordmark{color:var(--ink)}
+body[data-theme-mode="planner"] .jcover-art .wordmark b,
+body[data-theme-mode="planner"] .cover-year{color:var(--accent-deep)}
+body[data-theme-mode="planner"] .cover-sticker{background:var(--card2)}
+
+/* Better cover interaction without touching any All content. */
+#page-home.active .jcover{transition:transform .26s ease,box-shadow .26s ease;animation:jrCoverSettle .42s ease both}
+#page-home.active .jcover:hover{transform:translateY(-3px);box-shadow:0 48px 76px rgba(82,55,42,.25),0 10px 22px rgba(82,55,42,.14)}
+.jtab{transition:transform .16s ease,filter .16s ease,box-shadow .16s ease}
+.jtab[aria-current="page"]{filter:brightness(1.04);box-shadow:6px 5px 12px rgba(69,49,38,.16);transform:translateX(13px)}
+.jpage.page-enter .journal-sheet{animation:jrPageIn .24s ease both}
+@keyframes jrCoverSettle{from{opacity:.5;transform:translateY(8px) scale(.988)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes jrPageIn{from{opacity:.35;transform:translateX(10px)}to{opacity:1;transform:translateX(0)}}
+@media(prefers-reduced-motion:reduce){#page-home.active .jcover,.jpage.page-enter .journal-sheet{animation:none}.jcover,.jtab{transition:none!important}}
+
+/* Premium Archive — independent markup, same existing month data. */
+body:not(.premium-tab-view) #jraStandalone{display:none!important}
+body.premium-tab-view[data-jtab="archive"] #archiveOriginalView{display:none!important}
+body.premium-tab-view[data-jtab="archive"] #jraStandalone{display:block!important}
+.jra-shell{max-width:1040px;margin:0 auto;padding:4px 0 12px}
+.jra-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:15px}
+.jra-summary-card{padding:14px 16px;border:1px solid var(--line);border-radius:16px;background:var(--card2)}
+.jra-summary-card span{display:block;font-size:10px;letter-spacing:1.2px;text-transform:uppercase;color:var(--ink-soft)}
+.jra-summary-card strong{display:block;font:700 23px Georgia,serif;margin-top:4px;color:var(--ink)}
+.jra-summary-card small{color:var(--ink-soft)}
+.jra-layout{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(270px,.65fr);gap:16px;align-items:start}
+.jra-shelf,.jra-preview{border:1px solid var(--line);border-radius:18px;background:var(--card);box-shadow:var(--shadow);padding:17px}
+.jra-section-head{display:flex;justify-content:space-between;gap:12px;align-items:end;border-bottom:1px dashed var(--line);padding-bottom:11px;margin-bottom:13px}
+.jra-section-head span{font-size:10px;letter-spacing:1.3px;text-transform:uppercase;color:var(--accent-deep)}
+.jra-section-head h3{font-family:Georgia,serif;margin-top:2px}.jra-section-head small{color:var(--ink-soft)}
+.jra-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.jra-volume{appearance:none;text-align:left;border:1px solid var(--line);border-radius:8px 16px 16px 8px;background:linear-gradient(90deg,var(--card2),var(--card));padding:14px 14px 13px 20px;color:var(--ink);cursor:pointer;position:relative;box-shadow:3px 5px 9px color-mix(in srgb,var(--ink) 9%,transparent);transition:transform .15s ease,border-color .15s ease}
+.jra-volume::before{content:"";position:absolute;left:7px;top:7px;bottom:7px;width:3px;border-radius:9px;background:var(--accent)}
+.jra-volume:hover,.jra-volume.active{transform:translateY(-2px);border-color:var(--accent)}
+.jra-volume .month{font:700 17px Georgia,serif}.jra-volume .year{font-size:10px;letter-spacing:1.5px;color:var(--ink-soft);margin-top:1px}
+.jra-volume .meta{display:flex;justify-content:space-between;gap:8px;margin-top:12px;font-size:11px;color:var(--ink-soft)}
+.jra-volume .left{font-family:ui-monospace,monospace;font-weight:700;color:var(--good)}.jra-volume .left.neg{color:var(--bad)}
+.jra-preview{position:sticky;top:14px;min-height:305px}
+.jra-preview-empty{height:270px;display:grid;place-items:center;text-align:center;color:var(--ink-soft);line-height:1.6}
+.jra-preview h3{font-family:Georgia,serif;font-size:21px;margin-bottom:3px}.jra-preview .sub{font-size:11px;color:var(--ink-soft);margin-bottom:13px}
+.jra-ledger{display:grid;grid-template-columns:1fr auto;gap:8px 14px;border-top:1px dashed var(--line);border-bottom:1px dashed var(--line);padding:13px 0;font-size:12px}.jra-ledger b{font-family:ui-monospace,monospace;text-align:right}
+.jra-preview .jra-open{width:100%;margin-top:14px}
+.jra-unpaid{font-size:11px;line-height:1.55;color:var(--ink-soft);margin-top:10px}
+
+/* Quick Entry polish — scoped only to the standalone premium page. */
+.jrq-card{max-width:760px;margin:0 auto;border:1px solid var(--line);border-radius:20px;background:linear-gradient(180deg,var(--card),color-mix(in srgb,var(--card2) 55%,var(--card)));box-shadow:var(--shadow);padding:22px;position:relative;overflow:hidden}
+.jrq-card::before{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(to bottom,transparent 0 34px,color-mix(in srgb,var(--line) 38%,transparent) 34px 35px);opacity:.48}
+.jrq-card>*{position:relative}.jrq-head{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;padding-bottom:16px;border-bottom:1px dashed var(--line);margin-bottom:18px}
+.jrq-head span{font-size:10px;letter-spacing:1.4px;text-transform:uppercase;color:var(--accent-deep)}.jrq-head h3{font:700 21px Georgia,serif;margin:3px 0}.jrq-head p{font-size:12px;color:var(--ink-soft)}
+.jrq-stamp{flex:none;border:2px solid var(--accent);border-radius:50%;width:62px;height:62px;display:grid;place-items:center;text-align:center;font-size:9px;letter-spacing:1.1px;color:var(--accent-deep);transform:rotate(6deg)}
+body.premium-tab-view[data-jtab="quick"] #quickAdd{position:static!important;display:grid!important;grid-template-columns:minmax(0,1.45fr) .7fr .9fr .8fr auto auto!important;gap:9px!important;max-width:none!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important}
+body.premium-tab-view[data-jtab="quick"] #quickAdd::before{content:"Expense entry";grid-column:1/-1;font-size:10px;letter-spacing:1.25px;text-transform:uppercase;color:var(--ink-soft);margin-bottom:-2px}
+body.premium-tab-view[data-jtab="quick"] #quickAdd input,body.premium-tab-view[data-jtab="quick"] #quickAdd select{background:color-mix(in srgb,var(--card) 88%,white);border-color:var(--line)}
+body.premium-tab-view[data-jtab="quick"] #qaToggle,body.premium-tab-view[data-jtab="quick"] #qaHint{display:none!important}
+.jrq-foot{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin-top:17px;padding-top:13px;border-top:1px dashed var(--line);font-size:10px;color:var(--ink-soft)}
+@media(max-width:860px){.jra-layout{grid-template-columns:1fr}.jra-preview{position:static}.jra-summary{grid-template-columns:1fr}.jra-list{grid-template-columns:1fr}body.premium-tab-view[data-jtab="quick"] #quickAdd{grid-template-columns:1fr 1fr!important}body.premium-tab-view[data-jtab="quick"] #quickAdd input[name="name"]{grid-column:1/-1}.jrq-card{padding:17px}}
+@media(max-width:520px){body.premium-tab-view[data-jtab="quick"] #quickAdd{grid-template-columns:1fr!important}body.premium-tab-view[data-jtab="quick"] #quickAdd>*{grid-column:1!important}.jrq-stamp{display:none}}
+</style>
