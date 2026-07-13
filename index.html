@@ -4936,20 +4936,13 @@ body[data-last-journal="quick"] #page-home .bookmark{left:62%;background:#d79b83
 </style>
 
 <script id="journal-continuity-js">
-/* Standalone journal continuity. The remembered value lives inside the
-   existing ledger-budget-v1 settings object; no additional storage key. */
+/* Page-turn transition only. Every refresh always lands back on the cover
+   (#page-home) via the normal showTab default ~ no tab is remembered or
+   auto-reopened across reloads. */
 (function(){
   const JOURNAL_TABS = new Set(['library','report','year','archive','receipt','quick']);
   const previousShowTab = window.showTab;
   if(typeof previousShowTab !== 'function') return;
-
-  function rememberJournalTab(tab){
-    if(!JOURNAL_TABS.has(tab) || typeof db === 'undefined') return;
-    db.settings = db.settings || {};
-    db.settings.lastJournalTab = tab;
-    document.body.dataset.lastJournal = tab;
-    if(typeof save === 'function') save();
-  }
 
   window.showTab = function(tab, options={premium:false}){
     const oldTab = (typeof curTab === 'string' ? curTab : 'home');
@@ -4961,25 +4954,10 @@ body[data-last-journal="quick"] #page-home .bookmark{left:62%;background:#d79b83
     document.body.classList.toggle('journal-section-shift', movingWithinJournal);
     previousShowTab(tab, options);
 
-    if(isJournal) rememberJournalTab(tab);
-    if(tab === 'home'){
-      const last = db?.settings?.lastJournalTab;
-      if(JOURNAL_TABS.has(last)) document.body.dataset.lastJournal = last;
-    }
-
     window.setTimeout(()=>{
       document.body.classList.remove('journal-opening','journal-section-shift');
     }, 380);
   };
-
-  /* Reopen the last standalone section after the regular page initialization.
-     All is never stored or auto-opened as a journal section. */
-  window.setTimeout(()=>{
-    const last = db?.settings?.lastJournalTab;
-    if(!JOURNAL_TABS.has(last)) return;
-    document.body.dataset.lastJournal = last;
-    window.showTab(last,{premium:true});
-  }, 90);
 })();
 </script>
 </body>
