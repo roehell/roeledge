@@ -1,5 +1,5 @@
 // Ledger service worker — cache-first so the app opens with zero signal
-const CACHE = "ledger-v17"; // bump this string whenever you upload a new index.html
+const CACHE = "ledger-v18"; // bump this string whenever you upload a new index.html
 const FILES = ["./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png"];
 
 self.addEventListener("install", e => {
