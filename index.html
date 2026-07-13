@@ -3651,7 +3651,19 @@ function renderStandaloneReceipt(){
 }
 
 function renderQuickCats(){
-  const catOptsHtml = keep => M().expcat.map(c=>`<option ${c.name===keep?"selected":""}>${esc(c.name)}</option>`).join("") + `<option value="" ${!keep?"selected":""}>(no category)</option>`;
+  /* active this-month categories, PLUS every saved Category Library name not already active,
+     so you can quick-log against any category you've ever used without adding it to the
+     month first. Picking a library-only one auto-activates it via ensureExpCat(). */
+  const catOptsHtml = keep => {
+    const active = M().expcat.map(c=>c.name);
+    const activeSet = new Set(active.map(n=>n.toLowerCase()));
+    const libOnly = db.catLib.map(c=>c.name).filter(n=>!activeSet.has(n.toLowerCase()));
+    let html = M().expcat.map(c=>`<option ${c.name===keep?"selected":""}>${esc(c.name)}</option>`).join("");
+    if(libOnly.length) html += `<optgroup label="From category library">` +
+      libOnly.map(n=>`<option ${n===keep?"selected":""}>${esc(n)}</option>`).join("") + `</optgroup>`;
+    html += `<option value="" ${!keep?"selected":""}>(no category)</option>`;
+    return html;
+  };
   $("#quickCat").innerHTML = catOptsHtml($("#quickCat").value);
   $("#rformCat").innerHTML = catOptsHtml($("#rformCat").value);
   $("#pcCat").innerHTML = catOptsHtml($("#pcCat").value);
@@ -3757,6 +3769,7 @@ qa.addEventListener("click", ()=>{ if(qa.classList.contains("collapsed")) setQA(
 $("#quickAdd").addEventListener("submit", e=>{
   e.preventDefault();
   const f = e.target;
+  ensureExpCat(f.cat.value);
   M().log.push({id:uid(),date:todayISO(),name:f.name.value.trim(),cat:f.cat.value,amount:num(f.amount.value),pay:f.pay.value});
   f.reset(); save(); render(); toast("Expense added ✓");
 });
@@ -3765,6 +3778,7 @@ $("#quickAdd").addEventListener("submit", e=>{
 $("#rform").addEventListener("submit", e=>{
   e.preventDefault();
   const f = e.target;
+  ensureExpCat(f.cat.value);
   M().receipt.push({id:uid(),date:todayISO(),name:f.name.value.trim(),method:f.method.value,amount:num(f.amount.value),cat:f.cat.value});
   f.reset(); save(); render();
 });
@@ -4541,6 +4555,7 @@ $("#pcAdd").addEventListener("click", ()=>{
   const {total, nItems} = pcCalc();
   if(total<=0){ toast("Enter a price first 🙂"); return; }
   const name = ($("#pcName").value.trim() || "items") + (nItems>1?` (${nItems} items)`:"");
+  ensureExpCat($("#pcCat").value);
   M().receipt.push({id:uid(),date:todayISO(),name,method:$("#pcMethod").value,amount:Math.round(total*100)/100,cat:$("#pcCat").value});
   pcItems = []; $("#pcName").value=""; $("#pcPrice").value=""; $("#pcDisc").value=""; $("#pcDisc2").value=""; $("#pcQty").value="1"; $("#pcPaid").value="";
   pcCartRender(); pcCalc(); save(); render(); toast("Added with the math done ✓");
@@ -4569,6 +4584,16 @@ function catLibUpsert(name, budget){
   const hit = db.catLib.find(c=>c.name.toLowerCase()===name.toLowerCase());
   if(hit){ if(budget!=="" && budget!=null) hit.budget = budget; }
   else db.catLib.push({id:uid(), name, budget:budget??""});
+}
+/* if `name` isn't an active category for this month yet, activate it now
+   (pulling its saved budget from the library if it has one). No-op for "" / unknown. */
+function ensureExpCat(name){
+  name = (name||"").trim();
+  if(!name) return;
+  const inMonth = M().expcat.some(c=>c.name.toLowerCase()===name.toLowerCase());
+  if(inMonth) return;
+  const fromLib = db.catLib.find(c=>c.name.toLowerCase()===name.toLowerCase());
+  M().expcat.push({id:uid(), name, budget:(fromLib && fromLib.budget!=null)?fromLib.budget:"", manual:""});
 }
 /* register names when you finish typing them */
 document.addEventListener("focusout", e=>{
