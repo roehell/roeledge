@@ -1047,7 +1047,7 @@
     left:20px;right:25px;bottom:7px;height:24px;
     background:repeating-linear-gradient(to bottom,rgba(121,97,76,.18) 0 1px,transparent 1px 4px);
     border-radius:0 0 18px 8px;
-    opacity:.55;
+    opacity:.74;
   }
   .page-corner{
     position:absolute;
@@ -1702,6 +1702,115 @@ body:not(.premium-tab-view) #jrBillsPlanner{display:none!important}
 .jrb-original-link{border-style:dashed!important}
 @media(max-width:760px){.jrb-overview{grid-template-columns:1fr}.jrb-form{grid-template-columns:1fr 1fr}.jrb-upcoming{grid-template-columns:auto 1fr auto}.jrb-status{grid-column:2/-1;justify-self:start}.jrb-form-actions{align-items:stretch;flex-direction:column}.jrb-form-actions button{width:100%}}
 @media(max-width:480px){.jrb-form{grid-template-columns:1fr}.jrb-upcoming{grid-template-columns:auto 1fr}.jrb-upcoming .amt{grid-column:2}.jrb-status{grid-column:2}.jrb-library-grid{grid-template-columns:1fr}}
+
+
+/* ===== CATEGORY HANDBOOK — scoped feature only ===== */
+#catLibDlg{
+  width:min(760px,95vw);
+  max-width:760px;
+}
+#catLibDlg .ch-intro{margin-bottom:10px}
+#catLibDlg .ch-toolbar{
+  display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:8px 0 12px;
+}
+#catLibDlg .ch-search{
+  flex:1;min-width:190px;font:inherit;border:1px solid var(--line);
+  border-radius:10px;padding:9px 11px;background:var(--bg);color:var(--ink);
+}
+#catLibDlg .ch-search:focus{outline:none;border-color:var(--accent)}
+#catLibList.ch-list{display:grid;gap:9px;max-height:58vh;overflow:auto;padding:2px}
+#catLibDlg .ch-card{
+  border:1px solid var(--line);border-radius:14px;background:var(--bg);overflow:hidden;
+}
+#catLibDlg .ch-head{
+  width:100%;display:flex;align-items:center;gap:9px;padding:11px 12px;
+  border:0;background:transparent;color:var(--ink);font:inherit;text-align:left;cursor:pointer;
+}
+#catLibDlg .ch-head:hover{background:var(--card2)}
+#catLibDlg .ch-name{font-family:Georgia,serif;font-weight:700;font-size:15px;flex:1}
+#catLibDlg .ch-preview{
+  color:var(--ink-soft);font-size:11.5px;max-width:310px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+#catLibDlg .ch-chev{font-size:11px;color:var(--ink-soft);transition:transform .18s ease}
+#catLibDlg .ch-card.open .ch-chev{transform:rotate(180deg)}
+#catLibDlg .ch-body{display:none;padding:0 12px 12px;border-top:1px dashed var(--line)}
+#catLibDlg .ch-card.open .ch-body{display:block}
+#catLibDlg .ch-label{
+  display:block;margin:10px 0 4px;font-size:10px;font-weight:700;
+  letter-spacing:1.2px;text-transform:uppercase;color:var(--ink-soft);
+}
+#catLibDlg .ch-area{
+  width:100%;min-height:88px;resize:vertical;font:inherit;line-height:1.45;
+  border:1px solid var(--line);border-radius:10px;padding:9px 10px;
+  background:var(--card);color:var(--ink);
+}
+#catLibDlg .ch-area.ch-note{min-height:64px}
+#catLibDlg .ch-area:focus{outline:none;border-color:var(--accent);background:var(--card2)}
+#catLibDlg .ch-actions{
+  display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-top:9px;
+}
+#catLibDlg .ch-saved{font-size:11.5px;color:var(--good);min-height:1em}
+.cat-select-wrap{
+  display:inline-grid;
+  grid-template-columns:auto 16px;
+  gap:5px;
+  align-items:center;
+  justify-content:center;
+  max-width:100%;
+}
+.cat-select-wrap>select{
+  min-width:112px;
+  max-width:190px;
+  width:auto;
+}
+
+.cat-info-btn{
+  width:16px;
+  height:16px;
+  border:none;
+  border-radius:0;
+  background:transparent;
+  color:var(--ink-soft);
+  opacity:.55;
+  cursor:pointer;
+  font-family:Georgia,"Times New Roman",serif;
+  font-style:italic;
+  font-size:.72rem;
+  font-weight:400;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  line-height:1;
+  padding:0;
+  margin-left:2px;
+  transition:opacity .18s ease,color .18s ease,transform .18s ease;
+}
+.cat-info-btn:hover,.cat-info-btn:focus-visible{
+  opacity:1;
+  color:var(--accent-deep);
+  transform:translateY(-1px);
+  outline:none;
+}
+
+#quickAdd .cat-quick-wrap{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 16px;
+  width:100%;
+  min-width:0;
+}
+#quickAdd .cat-quick-wrap select{
+  width:100%!important;
+  min-width:0;
+  max-width:none;
+  height:100%;
+}
+#catHandbookBtn{white-space:nowrap}
+@media(max-width:560px){
+  #catLibDlg{padding:15px}
+  #catLibDlg .ch-preview{display:none}
+  #catLibList.ch-list{max-height:64vh}
+}
 
 </style>
 
@@ -2554,8 +2663,9 @@ body.on-home #page-home.active,
       <div class="addbar">
         <button class="addrow" onclick="addCat()">+ add category</button>
         <select id="catQuickAdd" class="addrow" style="min-width:170px;cursor:pointer"></select>
+        <button class="addrow" type="button" id="catHandbookBtn">ⓘ category handbook</button>
       </div>
-      <p class="hint">Two ways to fill Actual: type a lump amount right in the column, and/or log itemized expenses below — logged ones stack on top automatically (you'll see "+ $X logged"). The donut shows the combined totals with percentages.</p>
+      <p class="hint">Two ways to fill Actual: type a lump amount right in the column, and/or log itemized expenses below. Logged ones stack on top automatically (you'll see "+ $X logged"). The donut shows the combined totals with percentages.</p>
     </div>
   </section>
 
@@ -2564,7 +2674,7 @@ body.on-home #page-home.active,
     <div class="body">
       <table style="min-width:680px"><thead><tr><th style="width:118px">Date</th><th>What</th><th style="width:130px">Category</th><th class="num" style="width:110px">Amount</th><th style="width:120px">Paid with</th><th style="width:34px"></th></tr></thead>
       <tbody id="tb-log"></tbody></table>
-      <p class="hint">💳 credit purchases count toward category budgets but don't deduct from your leftover — the money leaves when you pay the card bill. 💵 cash/debit deducts right away. 🧾 receipt rows only count when cash.</p>
+      <p class="hint">💳 credit purchases count toward category budgets but don't deduct from your leftover. The money leaves when you pay the card bill. 💵 cash/debit deducts right away. 🧾 receipt rows only count when cash.</p>
     </div>
   </section>
 
@@ -2683,7 +2793,7 @@ body.on-home #page-home.active,
   <section class="journal-sheet">
     <div class="journal-pagebar">
       <div class="page-title-wrap"><div class="page-kicker">Monthly reference</div><h2>📚 Bill Library</h2><p>Your recurring bills and usual monthly essentials, saved in one place.</p></div>
-      <button class="journal-back" type="button" data-tab="home">📔 Back to Cover</button>
+      <button class="journal-back" type="button" id="backBtn-library" data-tab="home">📔 Back to Cover</button>
     </div>
     <div class="journal-page-content">
   <div class="premium-page-intro" id="libraryPremium"></div>
@@ -2733,7 +2843,10 @@ body.on-home #page-home.active,
   <span id="qaHint">＋ quick expense — tap to expand</span>
   <input name="name" placeholder="Quick expense… (e.g. groceries run)" required>
   <input name="amount" type="number" step="0.01" min="0" inputmode="decimal" placeholder="0.00" required>
-  <select name="cat" id="quickCat"></select>
+  <span class="cat-select-wrap cat-quick-wrap">
+    <select name="cat" id="quickCat"></select>
+    <button class="cat-info-btn" type="button" id="quickCatInfo" title="Open Category Handbook">𝒾</button>
+  </span>
   <select name="pay" id="quickPay" title="how you paid"></select>
   <button type="button" id="qaBundle" class="btn" title="add up several amounts into one expense">Σ</button>
   <button class="btn primary" type="submit">Add</button>
@@ -2773,7 +2886,7 @@ body.on-home #page-home.active,
   <section class="journal-sheet">
     <div class="journal-pagebar">
       <div class="page-title-wrap"><div class="page-kicker">Monthly summary</div><h2>🖨️ Month Report</h2><p>Your existing report, presented inside its journal section without changing the report itself.</p></div>
-      <button class="journal-back" type="button" data-tab="home">📔 Back to Cover</button>
+      <button class="journal-back" type="button" id="backBtn-report" data-tab="home">📔 Back to Cover</button>
     </div>
     <div class="journal-page-content">
 <div class="premium-page-intro" id="reportPremium"></div>
@@ -2792,7 +2905,7 @@ body.on-home #page-home.active,
   <section class="journal-sheet">
     <div class="journal-pagebar">
       <div class="page-title-wrap"><div class="page-kicker">Annual journal review</div><h2>🌿 Year Review</h2><p>A calm look at the months already recorded in your ledger.</p></div>
-      <button class="journal-back" type="button" data-tab="home">📔 Back to Cover</button>
+      <button class="journal-back" type="button" id="backBtn-year" data-tab="home">📔 Back to Cover</button>
     </div>
     <div class="journal-page-content">
       <div class="jpage-inner">
@@ -2813,7 +2926,7 @@ body.on-home #page-home.active,
   <section class="journal-sheet">
     <div class="journal-pagebar">
       <div class="page-title-wrap"><div class="page-kicker">Past entries</div><h2>🗂️ Monthly Archive</h2><p>Return to earlier months without changing their saved records.</p></div>
-      <button class="journal-back" type="button" data-tab="home">📔 Back to Cover</button>
+      <button class="journal-back" type="button" id="backBtn-archive" data-tab="home">📔 Back to Cover</button>
     </div>
     <div class="journal-page-content">
       <div id="archiveOriginalView">
@@ -2843,7 +2956,7 @@ body.on-home #page-home.active,
   <section class="journal-sheet">
     <div class="journal-pagebar">
       <div class="page-title-wrap"><div class="page-kicker">Current month</div><h2>🧾 Receipt</h2><p>A focused view of the same receipt used in your full tracker.</p></div>
-      <button class="journal-back" type="button" data-tab="home">📔 Back to Cover</button>
+      <button class="journal-back" type="button" id="backBtn-receipt" data-tab="home">📔 Back to Cover</button>
     </div>
     <div class="journal-page-content">
       <div class="premium-page-intro" id="receiptPremium"></div>
@@ -2863,7 +2976,10 @@ body.on-home #page-home.active,
             <label><span>Date</span><input name="date" type="date" required></label>
             <label><span>Amount</span><input name="amount" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00" required></label>
             <label><span>Paid with</span><select name="method"><option value="other">card / other</option><option value="cash">cash 💵</option></select></label>
-            <label><span>Category</span><select name="cat" id="jrCat"></select></label>
+            <label><span>Category</span><span class="cat-select-wrap">
+              <select name="cat" id="jrCat"></select>
+              <button class="cat-info-btn" type="button" id="jrCatInfo" title="Open Category Handbook">𝒾</button>
+            </span></label>
             <div class="jr-form-actions">
               <button class="jr-add" type="submit">＋ Add to Receipt List</button>
               <button class="jr-add jr-add-expense" type="button" id="jrAddExpense">＋ Add to Expense Log</button>
@@ -2933,7 +3049,7 @@ body.on-home #page-home.active,
   <section class="journal-sheet">
     <div class="journal-pagebar">
       <div class="page-title-wrap"><div class="page-kicker">Fast entry</div><h2>✏️ Quick Expense</h2><p>Log an expense directly into this month, using the same form as always.</p></div>
-      <button class="journal-back" type="button" data-tab="home">📔 Back to Cover</button>
+      <button class="journal-back" type="button" id="backBtn-quick" data-tab="home">📔 Back to Cover</button>
     </div>
     <div class="journal-page-content">
       <div class="premium-page-intro" id="quickPremium"></div>
@@ -2983,9 +3099,14 @@ body.on-home #page-home.active,
 </dialog>
 
 <dialog id="catLibDlg">
-  <h3>🗂 Category List</h3>
-  <p>Every category name you've used, remembered. Remove ones you're done with — months already using them keep them.</p>
-  <div id="catLibList" style="max-height:50vh;overflow:auto"></div>
+  <h3>📚 Category Handbook</h3>
+  <p class="ch-intro">A personal cheat sheet for what belongs in each category. Edit the examples or add your own reminder anytime.</p>
+  <div class="ch-toolbar">
+    <input class="ch-search" id="catGuideSearch" type="search" placeholder="Search categories or examples…">
+    <button class="btn small" type="button" id="catGuideExpand">Expand all</button>
+    <button class="btn small" type="button" id="catGuideCollapse">Collapse all</button>
+  </div>
+  <div id="catLibList" class="ch-list"></div>
   <div class="row"><button class="btn" id="catLibClose">Close</button></div>
 </dialog>
 
@@ -3091,6 +3212,68 @@ const todayISO = () => new Date().toISOString().slice(0,10);
 const thisMonth = () => todayISO().slice(0,7);
 
 let db = load();
+
+/* Category Handbook data lives inside each existing db.catLib record.
+   No new localStorage key and no changes to tab routing. */
+const CATEGORY_GUIDE_DEFAULTS = {
+  "misc": {
+    examples:"Anything that truly does not fit another category\nSmall one-off charges\nUnclear or uncategorized purchases",
+    note:"Use this only when no more specific category makes sense."
+  },
+  "gaming": {
+    examples:"Video games\nDLC and in-game purchases\nGaming subscriptions\nControllers and accessories\nConsoles and gaming hardware",
+    note:"Entertainment purchases specifically related to games."
+  },
+  "little finds": {
+    examples:"Small treats\nCute inexpensive discoveries\nStationery\nTiny impulse buys\nNovelty items",
+    note:"Low-cost finds that made me happy but are not a major purchase."
+  },
+  "adventures": {
+    examples:"Vacations and day trips\nHotels and flights\nTheme parks and attractions\nMuseums and zoos\nConcerts and special experiences",
+    note:"If the main purpose is the experience or memory, it belongs here."
+  },
+  "on the road": {
+    examples:"Gas\nTolls\nParking\nCar washes\nMaintenance and repairs\nTires and vehicle accessories\nRideshare",
+    note:"Anything connected to transportation or keeping the car moving."
+  },
+  "am i kind?": {
+    examples:"Gifts\nDonations\nTreating someone\nHelping family or friends\nCare packages\nActs of kindness",
+    note:"Money spent primarily for someone else's benefit."
+  },
+  "cozy home": {
+    examples:"Home decor\nFurniture\nCleaning supplies\nHousehold supplies\nKitchen and bathroom items\nRepairs and organization",
+    note:"Things that maintain, furnish, or make home more comfortable."
+  },
+  "self care": {
+    examples:"Skincare\nHair care and salon visits\nNails and spa\nPersonal care products\nWellness purchases\nClothing bought specifically for myself",
+    note:"Purchases focused on taking care of me."
+  },
+  "busy bee": {
+    examples:"Work supplies\nOffice expenses\nUniforms\nLicenses and certifications\nProfessional fees\nWork-related tools",
+    note:"Anything required for work or professional responsibilities."
+  },
+  "out & about": {
+    examples:"Movies\nLocal outings\nCasual activities\nErrands with a fun stop\nBowling or mini golf\nEveryday places visited outside home",
+    note:"Local leisure that is more casual than a full Adventure."
+  },
+  "delishcious": {
+    examples:"Restaurants\nFast food\nTakeout and delivery\nCoffee shops\nBakeries\nDining out",
+    note:"Prepared food and drinks bought outside regular grocery shopping."
+  },
+  "rare stuff": {
+    examples:"Limited editions\nCollectibles\nHard-to-find items\nSpecial releases\nUnusual one-time purchases",
+    note:"Things that are uncommon, collectible, or difficult to replace."
+  }
+};
+function ensureCategoryHandbookData(){
+  db.catLib = db.catLib || [];
+  db.catLib.forEach(c=>{
+    const d = CATEGORY_GUIDE_DEFAULTS[(c.name||"").trim().toLowerCase()] || {examples:"",note:""};
+    if(typeof c.guideExamples!=="string") c.guideExamples = d.examples;
+    if(typeof c.guideNote!=="string") c.guideNote = d.note;
+  });
+}
+ensureCategoryHandbookData();
 let cur = thisMonth();
 let bannerDismissed = false;
 let bannerDismissedCarry = false;
@@ -3587,14 +3770,14 @@ function renderLog(){
   const receiptRows = m.receipt.map(r=>`<tr style="opacity:${r.method==='cash'?1:.65}">
     <td class="num">${esc(r.date)}</td>
     <td>${esc(r.name)}</td>
-    <td><select data-sec="receipt" data-id="${r.id}" data-f="cat">${catOpts(r.cat)}</select></td>
+    <td><span class="cat-select-wrap"><select data-sec="receipt" data-id="${r.id}" data-f="cat">${catOpts(r.cat)}</select><button class="cat-info-btn" type="button" data-cat-guide-for="previous" title="Open Category Handbook">𝒾</button></span></td>
     <td class="num">${fmt(r.amount)}</td>
     <td><span class="flag ${r.method==='cash'?'cash':''}">🧾 ${r.method==='cash'?'cash · counts':'tracked only'}</span></td>
     <td class="chk">${delBtn("receipt",r.id)}</td></tr>`);
   const logRows = m.log.map(e=>`<tr>
     <td>${inputCell("log",e.id,"date","date",e.date)}</td>
     <td>${inputCell("log",e.id,"name","text",e.name,'placeholder="what"')}</td>
-    <td><select data-sec="log" data-id="${e.id}" data-f="cat">${catOpts(e.cat)}</select></td>
+    <td><span class="cat-select-wrap"><select data-sec="log" data-id="${e.id}" data-f="cat">${catOpts(e.cat)}</select><button class="cat-info-btn" type="button" data-cat-guide-for="previous" title="Open Category Handbook">𝒾</button></span></td>
     <td>${inputCell("log",e.id,"amount","number",e.amount??"",'step="0.01" placeholder="0"')}</td>
     <td><select data-sec="log" data-id="${e.id}" data-f="pay" title="how you paid">${payOptions(e.pay)}</select></td>
     <td class="chk">${delBtn("log",e.id)}</td></tr>`);
@@ -4583,7 +4766,10 @@ function catLibUpsert(name, budget){
   if(!name) return;
   const hit = db.catLib.find(c=>c.name.toLowerCase()===name.toLowerCase());
   if(hit){ if(budget!=="" && budget!=null) hit.budget = budget; }
-  else db.catLib.push({id:uid(), name, budget:budget??""});
+  else {
+    const d=CATEGORY_GUIDE_DEFAULTS[name.toLowerCase()]||{examples:"",note:""};
+    db.catLib.push({id:uid(), name, budget:budget??"", guideExamples:d.examples, guideNote:d.note});
+  }
 }
 /* if `name` isn't an active category for this month yet, activate it now
    (pulling its saved budget from the library if it has one). No-op for "" / unknown. */
@@ -4621,19 +4807,89 @@ $("#catQuickAdd").addEventListener("change", e=>{
   M().expcat.push({id:uid(), name:c.name, budget:c.budget??"", manual:""});
   save(); render(); toast(`"${c.name}" added ✓`);
 });
-function renderCatLib(){
-  $("#catLibList").innerHTML = db.catLib.length ? db.catLib.map(c=>`
-    <div class="libitem">
-      <span class="nm">${esc(c.name)}</span>
-      <span class="amt">${c.budget!==""&&c.budget!=null?fmt(num(c.budget)):""}</span>
-      <button class="rowdel" onclick="catLibDel('${c.id}')" title="remove from list">✕</button>
-    </div>`).join("")
-    : `<div style="text-align:center;color:var(--ink-soft);padding:14px">Empty — name a category in the table and it registers itself.</div>`;
+function catGuidePreview(c){
+  const first=(c.guideExamples||"").split(/\n|,/).map(s=>s.trim()).find(Boolean);
+  return first || "Add examples for this category";
 }
+function renderCatLib(openId=null){
+  ensureCategoryHandbookData();
+  const q=($("#catGuideSearch")?.value||"").trim().toLowerCase();
+  const rows=db.catLib.filter(c=>{
+    if(!q) return true;
+    return [c.name,c.guideExamples,c.guideNote].join(" ").toLowerCase().includes(q);
+  });
+  $("#catLibList").innerHTML = rows.length ? rows.map(c=>`
+    <article class="ch-card ${openId===c.id?"open":""}" data-ch-id="${c.id}">
+      <button class="ch-head" type="button" data-ch-toggle="${c.id}">
+        <span class="ch-name">${esc(c.name)}</span>
+        <span class="ch-preview">${esc(catGuidePreview(c))}</span>
+        <span class="ch-chev">⌄</span>
+      </button>
+      <div class="ch-body">
+        <label class="ch-label" for="ch-ex-${c.id}">What belongs here?</label>
+        <textarea class="ch-area" id="ch-ex-${c.id}" data-ch-examples="${c.id}" placeholder="One example per line…">${esc(c.guideExamples||"")}</textarea>
+        <label class="ch-label" for="ch-note-${c.id}">My reminder</label>
+        <textarea class="ch-area ch-note" id="ch-note-${c.id}" data-ch-note="${c.id}" placeholder="Write your own rule for this category…">${esc(c.guideNote||"")}</textarea>
+        <div class="ch-actions">
+          <span class="ch-saved" data-ch-saved="${c.id}"></span>
+          <span>
+            <button class="btn small" type="button" data-ch-save="${c.id}">Save guide</button>
+            <button class="rowdel" type="button" onclick="catLibDel('${c.id}')" title="remove from category list">✕</button>
+          </span>
+        </div>
+      </div>
+    </article>`).join("")
+    : `<div style="text-align:center;color:var(--ink-soft);padding:18px">No matching categories.</div>`;
+}
+function openCategoryGuide(name=""){
+  ensureCategoryHandbookData();
+  const c=db.catLib.find(x=>(x.name||"").toLowerCase()===(name||"").toLowerCase());
+  $("#catGuideSearch").value="";
+  renderCatLib(c?.id||null);
+  $("#catLibDlg").showModal();
+  if(c){
+    requestAnimationFrame(()=>{
+      document.querySelector(`[data-ch-id="${CSS.escape(c.id)}"]`)?.scrollIntoView({block:"center"});
+    });
+  }
+}
+window.openCategoryGuide=openCategoryGuide;
 window.catLibDel = id=>{
   const i = db.catLib.findIndex(c=>c.id===id);
   if(i>-1){ db.catLib.splice(i,1); save(); renderCatLib(); renderCatQuickAdd(); }
 };
+$("#catLibList").addEventListener("click",e=>{
+  const toggle=e.target.closest("[data-ch-toggle]");
+  if(toggle){
+    toggle.closest(".ch-card")?.classList.toggle("open");
+    return;
+  }
+  const saveBtn=e.target.closest("[data-ch-save]");
+  if(saveBtn){
+    const id=saveBtn.dataset.chSave;
+    const c=db.catLib.find(x=>x.id===id);
+    if(!c) return;
+    c.guideExamples=document.querySelector(`[data-ch-examples="${CSS.escape(id)}"]`)?.value||"";
+    c.guideNote=document.querySelector(`[data-ch-note="${CSS.escape(id)}"]`)?.value||"";
+    save();
+    const msg=document.querySelector(`[data-ch-saved="${CSS.escape(id)}"]`);
+    if(msg){msg.textContent="Saved ✓";setTimeout(()=>msg.textContent="",1400);}
+    const preview=saveBtn.closest(".ch-card")?.querySelector(".ch-preview");
+    if(preview) preview.textContent=catGuidePreview(c);
+  }
+});
+$("#catGuideSearch").addEventListener("input",()=>renderCatLib());
+$("#catGuideExpand").onclick=()=>document.querySelectorAll("#catLibList .ch-card").forEach(x=>x.classList.add("open"));
+$("#catGuideCollapse").onclick=()=>document.querySelectorAll("#catLibList .ch-card").forEach(x=>x.classList.remove("open"));
+$("#catHandbookBtn").onclick=()=>openCategoryGuide();
+$("#quickCatInfo").onclick=()=>openCategoryGuide($("#quickCat").value);
+document.getElementById("jrCatInfo")?.addEventListener("click",()=>openCategoryGuide($("#jrCat")?.value||""));
+document.addEventListener("click",e=>{
+  const b=e.target.closest('[data-cat-guide-for="previous"]');
+  if(!b) return;
+  const select=b.previousElementSibling;
+  openCategoryGuide(select?.value||"");
+});
 $("#catLibClose").onclick = ()=>$("#catLibDlg").close();
 
 /* ============ Σ bundle expense ============ */
@@ -4944,11 +5200,33 @@ body[data-last-journal="quick"] #page-home .bookmark{left:62%;background:#d79b83
   const previousShowTab = window.showTab;
   if(typeof previousShowTab !== 'function') return;
 
+  /* remembers whether the current sub-page (library/report/year/archive/receipt/quick)
+     was opened from the All dashboard or from the Cover, so its back button can return
+     you to the right place instead of always dumping you back at the Cover. */
+  let subpageOrigin = 'home';
+  function updateBackButtons(){
+    JOURNAL_TABS.forEach(tab=>{
+      const btn = document.getElementById('backBtn-'+tab);
+      if(!btn) return;
+      if(subpageOrigin === 'all'){
+        btn.dataset.tab = 'all';
+        btn.textContent = '✕ Back to All';
+      }else{
+        btn.dataset.tab = 'home';
+        btn.textContent = '📔 Back to Cover';
+      }
+    });
+  }
+
   window.showTab = function(tab, options={premium:false}){
     const oldTab = (typeof curTab === 'string' ? curTab : 'home');
     const isJournal = JOURNAL_TABS.has(tab) && options.premium === true;
     const openingFromCover = oldTab === 'home' && isJournal;
     const movingWithinJournal = JOURNAL_TABS.has(oldTab) && isJournal && oldTab !== tab;
+
+    if(JOURNAL_TABS.has(tab) && oldTab === 'all') subpageOrigin = 'all';
+    else if(tab === 'all' || tab === 'home') subpageOrigin = 'home';
+    updateBackButtons();
 
     document.body.classList.toggle('journal-opening', openingFromCover);
     document.body.classList.toggle('journal-section-shift', movingWithinJournal);
@@ -4960,6 +5238,56 @@ body[data-last-journal="quick"] #page-home .bookmark{left:62%;background:#d79b83
   };
 })();
 </script>
+
+<script>
+/* Category select auto-width: fit the selected label, capped for table safety. */
+(function(){
+  const MIN_W = 112;
+  const MAX_W = 190;
+  const EXTRA = 34; // dropdown arrow + inner padding
+
+  function isCategorySelect(el){
+    if(!(el instanceof HTMLSelectElement)) return false;
+    if(el.id === "quickCat") return false; // Quick Add keeps its full grid width.
+    return el.matches(
+      '.cat-select-wrap > select, select[data-f="cat"], #jrCat'
+    );
+  }
+
+  function fitCategorySelect(select){
+    if(!isCategorySelect(select)) return;
+    const text = select.options[select.selectedIndex]?.text || select.value || "";
+    const cs = getComputedStyle(select);
+    const canvas = fitCategorySelect.canvas || (fitCategorySelect.canvas = document.createElement("canvas"));
+    const ctx = canvas.getContext("2d");
+    ctx.font = `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+    const measured = Math.ceil(ctx.measureText(text).width + EXTRA);
+    select.style.width = Math.max(MIN_W, Math.min(MAX_W, measured)) + "px";
+  }
+
+  function fitAll(root=document){
+    root.querySelectorAll?.('select').forEach(fitCategorySelect);
+  }
+
+  document.addEventListener("change", e => fitCategorySelect(e.target));
+  window.addEventListener("DOMContentLoaded", () => fitAll());
+
+  const observer = new MutationObserver(mutations => {
+    for(const mutation of mutations){
+      mutation.addedNodes.forEach(node => {
+        if(node.nodeType !== 1) return;
+        if(node.matches?.("select")) fitCategorySelect(node);
+        fitAll(node);
+      });
+    }
+  });
+  observer.observe(document.documentElement, {childList:true, subtree:true});
+
+  window.fitCategorySelect = fitCategorySelect;
+  window.fitAllCategorySelects = fitAll;
+})();
+</script>
+
 </body>
 </html>
 
