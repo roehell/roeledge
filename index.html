@@ -2446,6 +2446,62 @@ body.on-home #page-home.active,
   body.on-home #page-home .jcover .jtab,
   body.on-home #page-home .jcover .jtab:nth-child(even){height:38px !important;min-height:38px !important}
 }
+
+
+/* ===== CATEGORY HANDBOOK — smooth mobile dialog + iPhone zoom fix ===== */
+#catLibDlg{
+  opacity:0;
+  transform:translateY(10px) scale(.985);
+  transition:opacity .2s ease,transform .24s cubic-bezier(.2,.8,.2,1);
+}
+#catLibDlg[open]{
+  opacity:1;
+  transform:translateY(0) scale(1);
+}
+#catLibDlg::backdrop{
+  opacity:0;
+  backdrop-filter:blur(0);
+  transition:opacity .2s ease,backdrop-filter .2s ease;
+}
+#catLibDlg[open]::backdrop{
+  opacity:1;
+  backdrop-filter:blur(2px);
+}
+@media(max-width:560px){
+  #catLibDlg{
+    width:100vw;
+    max-width:none;
+    max-height:min(88dvh,760px);
+    margin:auto 0 0;
+    padding:18px 15px calc(16px + env(safe-area-inset-bottom));
+    border-radius:20px 20px 0 0;
+    border-left:0;
+    border-right:0;
+    border-bottom:0;
+    transform:translateY(28px);
+    overflow:hidden;
+  }
+  #catLibDlg[open]{transform:translateY(0)}
+  #catLibDlg .ch-search,
+  #catLibDlg .ch-area{
+    font-size:16px; /* prevents Safari from zooming the page on focus */
+  }
+  #catLibList.ch-list{
+    max-height:calc(88dvh - 190px);
+    overscroll-behavior:contain;
+    -webkit-overflow-scrolling:touch;
+  }
+  #catLibDlg .row{
+    position:sticky;
+    bottom:0;
+    padding-top:10px;
+    background:linear-gradient(180deg,transparent,var(--card) 24%);
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  #catLibDlg,#catLibDlg::backdrop{transition:none!important}
+}
+
 </style>
 </head>
 <body class="on-home" data-jtab="home">
@@ -4841,17 +4897,25 @@ function renderCatLib(openId=null){
     </article>`).join("")
     : `<div style="text-align:center;color:var(--ink-soft);padding:18px">No matching categories.</div>`;
 }
+let categoryGuideOpener=null;
 function openCategoryGuide(name=""){
   ensureCategoryHandbookData();
   const c=db.catLib.find(x=>(x.name||"").toLowerCase()===(name||"").toLowerCase());
+  const dlg=$("#catLibDlg");
+  categoryGuideOpener=document.activeElement instanceof HTMLElement ? document.activeElement : null;
   $("#catGuideSearch").value="";
   renderCatLib(c?.id||null);
-  $("#catLibDlg").showModal();
-  if(c){
-    requestAnimationFrame(()=>{
-      document.querySelector(`[data-ch-id="${CSS.escape(c.id)}"]`)?.scrollIntoView({block:"center"});
-    });
-  }
+  dlg.showModal();
+  requestAnimationFrame(()=>{
+    const list=$("#catLibList");
+    const card=c ? document.querySelector(`[data-ch-id="${CSS.escape(c.id)}"]`) : null;
+    if(list && card){
+      const target=Math.max(0,card.offsetTop-(list.clientHeight-card.offsetHeight)/2);
+      list.scrollTo({top:target,behavior:"smooth"});
+    }else if(list){
+      list.scrollTop=0;
+    }
+  });
 }
 window.openCategoryGuide=openCategoryGuide;
 window.catLibDel = id=>{
@@ -4891,6 +4955,10 @@ document.addEventListener("click",e=>{
   openCategoryGuide(select?.value||"");
 });
 $("#catLibClose").onclick = ()=>$("#catLibDlg").close();
+$("#catLibDlg").addEventListener("close",()=>{
+  requestAnimationFrame(()=>categoryGuideOpener?.focus({preventScroll:true}));
+  categoryGuideOpener=null;
+});
 
 /* ============ Σ bundle expense ============ */
 let bnItems = [];
