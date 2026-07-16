@@ -2524,6 +2524,25 @@ body.cat-guide-open{overflow:hidden!important}
 }
 
 </style>
+
+<style id="category-handbook-expanded-content-fix">
+/* Keep expanded handbook cards at their natural height inside the mobile scroll area. */
+@media (max-width:560px){
+  #catLibList.ch-list{
+    align-content:start !important;
+    grid-auto-rows:max-content !important;
+  }
+  #catLibDlg .ch-card{
+    min-height:max-content !important;
+    height:auto !important;
+  }
+  #catLibDlg .ch-card.open .ch-body{
+    display:block !important;
+    height:auto !important;
+    overflow:visible !important;
+  }
+}
+</style>
 </head>
 <body class="on-home" data-jtab="home">
 
