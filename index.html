@@ -2448,54 +2448,75 @@ body.on-home #page-home.active,
 }
 
 
-/* ===== CATEGORY HANDBOOK — smooth mobile dialog + iPhone zoom fix ===== */
+/* ===== CATEGORY HANDBOOK — native-feeling mobile sheet ===== */
+body.cat-guide-open{overflow:hidden!important}
 #catLibDlg{
   opacity:0;
   transform:translateY(10px) scale(.985);
-  transition:opacity .2s ease,transform .24s cubic-bezier(.2,.8,.2,1);
+  transition:opacity .2s ease,transform .28s cubic-bezier(.2,.82,.2,1);
 }
-#catLibDlg[open]{
-  opacity:1;
-  transform:translateY(0) scale(1);
-}
+#catLibDlg[open]{opacity:1;transform:translateY(0) scale(1)}
 #catLibDlg::backdrop{
   opacity:0;
   backdrop-filter:blur(0);
   transition:opacity .2s ease,backdrop-filter .2s ease;
 }
-#catLibDlg[open]::backdrop{
-  opacity:1;
-  backdrop-filter:blur(2px);
+#catLibDlg[open]::backdrop{opacity:1;backdrop-filter:blur(2px)}
+#catLibDlg .ch-sheet-head{
+  position:sticky;top:0;z-index:5;
+  display:grid;grid-template-columns:1fr 44px;align-items:start;gap:8px;
+  margin:-4px -4px 0;padding:4px 4px 8px;
+  background:var(--card);
 }
+#catLibDlg .ch-sheet-title{min-width:0}
+#catLibDlg .ch-sheet-title h3{margin:0 0 6px}
+#catLibDlg .ch-sheet-title .ch-intro{margin:0}
+#catLibDlg .ch-top-close{
+  width:44px;height:44px;border:0;border-radius:50%;
+  background:transparent;color:var(--ink-soft);font:inherit;font-size:25px;
+  line-height:1;cursor:pointer;display:grid;place-items:center;
+  -webkit-tap-highlight-color:transparent;
+}
+#catLibDlg .ch-top-close:hover,#catLibDlg .ch-top-close:focus-visible{
+  background:var(--card2);color:var(--ink);outline:none;
+}
+#catLibDlg .ch-drag-handle{display:none}
+#catLibDlg .ch-bottom-row{display:none}
+
 @media(max-width:560px){
   #catLibDlg{
-    width:100vw;
-    max-width:none;
-    max-height:min(88dvh,760px);
-    margin:auto 0 0;
-    padding:18px 15px calc(16px + env(safe-area-inset-bottom));
-    border-radius:20px 20px 0 0;
-    border-left:0;
-    border-right:0;
-    border-bottom:0;
-    transform:translateY(28px);
-    overflow:hidden;
+    width:100vw;max-width:none;
+    height:min(88dvh,760px);max-height:calc(100dvh - 12px);
+    margin:auto 0 0;padding:0 15px calc(12px + env(safe-area-inset-bottom));
+    border-radius:22px 22px 0 0;border-left:0;border-right:0;border-bottom:0;
+    transform:translateY(34px);overflow:hidden;
+    display:flex;flex-direction:column;
+    touch-action:pan-y;
   }
-  #catLibDlg[open]{transform:translateY(0)}
-  #catLibDlg .ch-search,
-  #catLibDlg .ch-area{
-    font-size:16px; /* prevents Safari from zooming the page on focus */
+  #catLibDlg[open]{transform:translateY(var(--ch-drag-y,0px))}
+  #catLibDlg.ch-dragging{transition:none!important}
+  #catLibDlg.ch-dismissing{
+    transform:translateY(110dvh)!important;
+    opacity:.72!important;
+    transition:transform .24s ease-in,opacity .2s ease!important;
   }
+  #catLibDlg .ch-sheet-head{
+    flex:none;display:grid;grid-template-columns:1fr 44px;
+    margin:0 -15px 0;padding:22px 15px 10px;
+    border-bottom:1px solid transparent;
+  }
+  #catLibDlg .ch-drag-handle{
+    display:block;position:absolute;left:50%;top:8px;transform:translateX(-50%);
+    width:44px;height:5px;border-radius:999px;background:color-mix(in srgb,var(--ink-soft) 34%,transparent);
+    cursor:grab;touch-action:none;
+  }
+  #catLibDlg .ch-sheet-head:has(+ .ch-toolbar){border-bottom-color:var(--line)}
+  #catLibDlg .ch-search,#catLibDlg .ch-area{font-size:16px}
+  #catLibDlg .ch-toolbar{flex:none;margin:10px 0 12px}
   #catLibList.ch-list{
-    max-height:calc(88dvh - 190px);
-    overscroll-behavior:contain;
-    -webkit-overflow-scrolling:touch;
-  }
-  #catLibDlg .row{
-    position:sticky;
-    bottom:0;
-    padding-top:10px;
-    background:linear-gradient(180deg,transparent,var(--card) 24%);
+    flex:1;min-height:0;max-height:none;
+    overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+    padding:2px 2px calc(18px + env(safe-area-inset-bottom));
   }
 }
 @media(prefers-reduced-motion:reduce){
@@ -3154,16 +3175,21 @@ body.on-home #page-home.active,
   </div>
 </dialog>
 
-<dialog id="catLibDlg">
-  <h3>📚 Category Handbook</h3>
-  <p class="ch-intro">A personal cheat sheet for what belongs in each category. Edit the examples or add your own reminder anytime.</p>
+<dialog id="catLibDlg" aria-labelledby="catLibTitle">
+  <div class="ch-sheet-head" id="catGuideDragZone">
+    <span class="ch-drag-handle" aria-hidden="true"></span>
+    <div class="ch-sheet-title">
+      <h3 id="catLibTitle">📚 Category Handbook</h3>
+      <p class="ch-intro">A personal cheat sheet for what belongs in each category. Edit the examples or add your own reminder anytime.</p>
+    </div>
+    <button class="ch-top-close" type="button" id="catLibClose" aria-label="Close Category Handbook">×</button>
+  </div>
   <div class="ch-toolbar">
     <input class="ch-search" id="catGuideSearch" type="search" placeholder="Search categories or examples…">
     <button class="btn small" type="button" id="catGuideExpand">Expand all</button>
     <button class="btn small" type="button" id="catGuideCollapse">Collapse all</button>
   </div>
   <div id="catLibList" class="ch-list"></div>
-  <div class="row"><button class="btn" id="catLibClose">Close</button></div>
 </dialog>
 
 <dialog id="confirmDlg">
@@ -4905,6 +4931,7 @@ function openCategoryGuide(name=""){
   categoryGuideOpener=document.activeElement instanceof HTMLElement ? document.activeElement : null;
   $("#catGuideSearch").value="";
   renderCatLib(c?.id||null);
+  document.body.classList.add("cat-guide-open");
   dlg.showModal();
   requestAnimationFrame(()=>{
     const list=$("#catLibList");
@@ -4954,11 +4981,54 @@ document.addEventListener("click",e=>{
   const select=b.previousElementSibling;
   openCategoryGuide(select?.value||"");
 });
-$("#catLibClose").onclick = ()=>$("#catLibDlg").close();
-$("#catLibDlg").addEventListener("close",()=>{
+const catGuideDlg=$("#catLibDlg");
+$("#catLibClose").onclick = ()=>catGuideDlg.close();
+catGuideDlg.addEventListener("close",()=>{
+  document.body.classList.remove("cat-guide-open");
+  catGuideDlg.classList.remove("ch-dragging","ch-dismissing");
+  catGuideDlg.style.removeProperty("--ch-drag-y");
   requestAnimationFrame(()=>categoryGuideOpener?.focus({preventScroll:true}));
   categoryGuideOpener=null;
 });
+
+/* Mobile swipe-down dismissal. Dragging starts from the header/handle only,
+   so the category list can still scroll normally. */
+(()=>{
+  const zone=$("#catGuideDragZone");
+  if(!zone || !catGuideDlg) return;
+  let startY=0,lastY=0,startTime=0,dragging=false;
+  const mobile=()=>matchMedia("(max-width:560px)").matches;
+  zone.addEventListener("pointerdown",e=>{
+    if(!mobile() || e.target.closest("button,input,textarea,select")) return;
+    dragging=true;startY=lastY=e.clientY;startTime=performance.now();
+    catGuideDlg.classList.add("ch-dragging");
+    zone.setPointerCapture?.(e.pointerId);
+  });
+  zone.addEventListener("pointermove",e=>{
+    if(!dragging) return;
+    lastY=e.clientY;
+    const dy=Math.max(0,lastY-startY);
+    catGuideDlg.style.setProperty("--ch-drag-y",`${dy}px`);
+  });
+  const finish=e=>{
+    if(!dragging) return;
+    dragging=false;
+    const dy=Math.max(0,lastY-startY);
+    const elapsed=Math.max(1,performance.now()-startTime);
+    const velocity=dy/elapsed;
+    catGuideDlg.classList.remove("ch-dragging");
+    if(dy>95 || (dy>42 && velocity>.55)){
+      catGuideDlg.classList.add("ch-dismissing");
+      setTimeout(()=>{ if(catGuideDlg.open) catGuideDlg.close(); },220);
+    }else{
+      catGuideDlg.style.setProperty("--ch-drag-y","0px");
+      setTimeout(()=>catGuideDlg.style.removeProperty("--ch-drag-y"),280);
+    }
+    try{zone.releasePointerCapture?.(e.pointerId)}catch(_){ }
+  };
+  zone.addEventListener("pointerup",finish);
+  zone.addEventListener("pointercancel",finish);
+})();
 
 /* ============ Σ bundle expense ============ */
 let bnItems = [];
