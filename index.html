@@ -821,11 +821,11 @@
   /* ---------- compact mobile review cards ---------- */
   .mobile-summary{display:none}
   @media (max-width:860px){
-    #tb-bills tr, #tb-log tr, #tb-savings tr{
+    #tb-bills tr, #tb-log tr, #tb-debt tr, #tb-savings tr{
       padding:0;
       overflow:hidden;
     }
-    #tb-bills .mobile-summary, #tb-log .mobile-summary, #tb-savings .mobile-summary{
+    #tb-bills .mobile-summary, #tb-log .mobile-summary, #tb-debt .mobile-summary, #tb-savings .mobile-summary{
       display:block;
       position:static;
       padding:0;
@@ -833,6 +833,7 @@
     }
     #tb-bills .mobile-summary::before,
     #tb-log .mobile-summary::before,
+    #tb-debt .mobile-summary::before,
     #tb-savings .mobile-summary::before{content:none;width:0}
     .mobile-summary-btn{
       width:100%;border:0;background:transparent;color:var(--ink);
@@ -855,13 +856,16 @@
     /* Collapse the full editable form until the summary is tapped. */
     #tb-bills tr:not(.mobile-open)>td:not(.mobile-summary),
     #tb-log tr:not(.mobile-open)>td:not(.mobile-summary),
+    #tb-debt tr:not(.mobile-open)>td:not(.mobile-summary),
     #tb-savings tr:not(.mobile-open)>td:not(.mobile-summary){display:none}
 
     #tb-bills tr.mobile-open,
     #tb-log tr.mobile-open,
+    #tb-debt tr.mobile-open,
     #tb-savings tr.mobile-open{padding:0 12px 8px}
     #tb-bills tr.mobile-open .mobile-summary,
     #tb-log tr.mobile-open .mobile-summary,
+    #tb-debt tr.mobile-open .mobile-summary,
     #tb-savings tr.mobile-open .mobile-summary{margin:0 -12px 5px;width:calc(100% + 24px);border-bottom:1px dashed var(--line)}
 
     /* Shift the existing field labels because the summary cell is now first. */
@@ -878,6 +882,11 @@
     #tb-log td:nth-child(4)::before{content:"Category"}
     #tb-log td:nth-child(5)::before{content:"Amount"}
     #tb-log td:nth-child(6)::before{content:"Paid with"}
+    #tb-debt td:nth-child(2)::before{content:"Debt"}
+    #tb-debt td:nth-child(3)::before{content:"Due day"}
+    #tb-debt td:nth-child(4)::before{content:"Budget"}
+    #tb-debt td:nth-child(5)::before{content:"Actual"}
+    #tb-debt td:nth-child(6)::before{content:"Paid"}
     #tb-savings td:nth-child(2)::before{content:"To"}
     #tb-savings td:nth-child(3)::before{content:"Amount"}
     #tb-savings td:nth-child(4)::before{content:"Date"}
@@ -3787,13 +3796,18 @@ function renderBills(){
   $("#tot-bills").textContent = fmt(t.bil.a) + " / " + fmt(t.bil.b);
 }
 function renderDebt(){
-  const rows = M().debt.map(r=>`<tr>
+  const rows = M().debt.map(r=>{
+    const debtAmt = r.actual!=="" && r.actual!=null ? fmt(r.actual) : fmt(r.budget||0);
+    const dueText = r.due ? `Due day ${r.due}` : "No due day";
+    return `<tr>
+    ${mobileSummary(r.name,debtAmt,dueText,r.paid?"✓ Paid":"Unpaid",r.paid?"paid":"")}
     <td>${inputCell("debt",r.id,"name","text",r.name,'placeholder="name"')}</td>
     <td>${inputCell("debt",r.id,"due","number",r.due??"",'min="1" max="31" placeholder="—" style="width:56px;text-align:center"')}</td>
     <td>${inputCell("debt",r.id,"budget","number",r.budget??"",'step="0.01" placeholder="0"')}</td>
     <td>${inputCell("debt",r.id,"actual","number",r.actual??"",'step="0.01" placeholder="0" '+overStyle(r))}</td>
     <td class="chk"><input type="checkbox" data-sec="debt" data-id="${r.id}" data-f="paid" ${r.paid?"checked":""}></td>
-    <td class="chk">${delBtn("debt",r.id)}</td></tr>`).join("");
+    <td class="chk">${delBtn("debt",r.id)}</td></tr>`;
+  }).join("");
   $("#tb-debt").innerHTML = rows || emptyRow(6, "nothing yet, and honestly? keep it that way 🎉 debt-free looks good on you");
   const t = totals();
   $("#tot-debt").textContent = fmt(t.deb.a) + " / " + fmt(t.deb.b);
@@ -3971,7 +3985,7 @@ function renderLog(){
     <td><span class="flag ${r.method==='cash'?'cash':''}">🧾 ${r.method==='cash'?'cash · counts':'tracked only'}</span></td>
     <td class="chk">${delBtn("receipt",r.id)}</td></tr>`);
   const logRows = m.log.map(e=>`<tr>
-    ${mobileSummary(e.name,fmt(e.amount||0),`${e.cat||"No category"} · ${mobileDate(e.date)}`,e.pay?`Paid with ${e.pay}`:"")}
+    ${mobileSummary(e.name,fmt(e.amount||0),`${e.cat||"No category"} · ${mobileDate(e.date)}`,e.pay?payLabel(e.pay):"")}
     <td>${inputCell("log",e.id,"date","date",e.date)}</td>
     <td>${inputCell("log",e.id,"name","text",e.name,'placeholder="what"')}</td>
     <td><span class="cat-select-wrap"><select data-sec="log" data-id="${e.id}" data-f="cat">${catOpts(e.cat)}</select><button class="cat-info-btn" type="button" data-cat-guide-for="previous" title="Open Category Handbook">𝒾</button></span></td>

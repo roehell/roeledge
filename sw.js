@@ -1,5 +1,5 @@
 /* Ledger service worker ~ bump CACHE on every deploy */
-const CACHE = "ledger-v33";
+const CACHE = "ledger-v34";
 const ASSETS = ["./","./index.html","./manifest.json","./icon-192.png","./icon-512.png"];
 
 self.addEventListener("install", e => {
