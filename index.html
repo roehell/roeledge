@@ -817,6 +817,74 @@
     .libform .btn{grid-column:1/-1}
   }
 
+
+  /* ---------- compact mobile review cards ---------- */
+  .mobile-summary{display:none}
+  @media (max-width:860px){
+    #tb-bills tr, #tb-log tr, #tb-savings tr{
+      padding:0;
+      overflow:hidden;
+    }
+    #tb-bills .mobile-summary, #tb-log .mobile-summary, #tb-savings .mobile-summary{
+      display:block;
+      position:static;
+      padding:0;
+      width:100%;
+    }
+    #tb-bills .mobile-summary::before,
+    #tb-log .mobile-summary::before,
+    #tb-savings .mobile-summary::before{content:none;width:0}
+    .mobile-summary-btn{
+      width:100%;border:0;background:transparent;color:var(--ink);
+      padding:13px 38px 13px 14px;text-align:left;cursor:pointer;
+      display:grid;grid-template-columns:minmax(0,1fr) auto;
+      gap:4px 12px;align-items:center;position:relative;font:inherit;
+    }
+    .mobile-summary-btn::after{
+      content:"⌄";position:absolute;right:14px;top:50%;transform:translateY(-50%);
+      color:var(--ink-soft);font-size:16px;transition:transform .18s ease;
+    }
+    tr.mobile-open .mobile-summary-btn::after{transform:translateY(-50%) rotate(180deg)}
+    .ms-title{font-weight:700;font-size:14.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .ms-amount{font-family:ui-monospace,monospace;font-weight:800;font-size:14px;white-space:nowrap}
+    .ms-meta{font-size:11.5px;color:var(--ink-soft);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .ms-status{font-size:11px;color:var(--ink-soft);white-space:nowrap;text-align:right}
+    .ms-status.paid{color:var(--good);font-weight:700}
+    .ms-status.overdue{color:var(--bad);font-weight:700}
+
+    /* Collapse the full editable form until the summary is tapped. */
+    #tb-bills tr:not(.mobile-open)>td:not(.mobile-summary),
+    #tb-log tr:not(.mobile-open)>td:not(.mobile-summary),
+    #tb-savings tr:not(.mobile-open)>td:not(.mobile-summary){display:none}
+
+    #tb-bills tr.mobile-open,
+    #tb-log tr.mobile-open,
+    #tb-savings tr.mobile-open{padding:0 12px 8px}
+    #tb-bills tr.mobile-open .mobile-summary,
+    #tb-log tr.mobile-open .mobile-summary,
+    #tb-savings tr.mobile-open .mobile-summary{margin:0 -12px 5px;width:calc(100% + 24px);border-bottom:1px dashed var(--line)}
+
+    /* Shift the existing field labels because the summary cell is now first. */
+    #tb-bills td:nth-child(2)::before{content:"Bill"}
+    #tb-bills td:nth-child(3)::before{content:"Conf #"}
+    #tb-bills td:nth-child(4)::before{content:"Budget"}
+    #tb-bills td:nth-child(5)::before{content:"Scheduled"}
+    #tb-bills td:nth-child(6)::before{content:"Due"}
+    #tb-bills td:nth-child(7)::before{content:"Actual"}
+    #tb-bills td:nth-child(8)::before{content:"⚡ Auto"}
+    #tb-bills td:nth-child(9)::before{content:"Paid"}
+    #tb-log td:nth-child(2)::before{content:"Date"}
+    #tb-log td:nth-child(3)::before{content:"What"}
+    #tb-log td:nth-child(4)::before{content:"Category"}
+    #tb-log td:nth-child(5)::before{content:"Amount"}
+    #tb-log td:nth-child(6)::before{content:"Paid with"}
+    #tb-savings td:nth-child(2)::before{content:"To"}
+    #tb-savings td:nth-child(3)::before{content:"Amount"}
+    #tb-savings td:nth-child(4)::before{content:"Date"}
+    #tb-savings td:nth-child(5)::before{content:"Conf #"}
+    #tb-savings td:nth-child(6)::before{content:"Jar 🫙"}
+  }
+
   /* ================= SOFT HOBONICHI JOURNAL LANDING ================= */
   .jpage{display:none}
   .jpage.active{display:block}
@@ -3677,10 +3745,32 @@ function billStatus(r){
   if(days<=5) return "due-soon";
   return "";
 }
+function mobileDate(v){
+  if(!v) return "No date";
+  const d = new Date(v+"T12:00:00");
+  return Number.isNaN(d.getTime()) ? v : d.toLocaleDateString(undefined,{month:"short",day:"numeric"});
+}
+function mobileSummary(title,amount,meta,status,statusClass=""){
+  return `<td class="mobile-summary"><button type="button" class="mobile-summary-btn" onclick="toggleMobileRow(this)">
+    <span class="ms-title">${esc(title||"Untitled")}</span>
+    <span class="ms-amount">${amount}</span>
+    <span class="ms-meta">${meta}</span>
+    <span class="ms-status ${statusClass}">${status}</span>
+  </button></td>`;
+}
+window.toggleMobileRow = btn=>{
+  const row=btn.closest("tr");
+  if(row) row.classList.toggle("mobile-open");
+};
+
 function renderBills(){
   const rows = M().bills.map(r=>{
     const st = billStatus(r);
+    const billAmt = r.actual!=="" && r.actual!=null ? fmt(r.actual) : fmt(r.budget||0);
+    const billMeta = `${r.dueDate?`Due ${mobileDate(r.dueDate)}`:"No due date"}${r.autopay?" · ⚡ Auto":""}`;
+    const billStatusText = r.paid?"✓ Paid":(st==="overdue"?"Overdue":(st==="due-soon"?"Due soon":"Unpaid"));
     return `<tr class="${st}">
+    ${mobileSummary(r.name,billAmt,billMeta,billStatusText,r.paid?"paid":(st==="overdue"?"overdue":""))}
     <td>${st?`<span class="duedot" title="${st==='overdue'?'overdue!':'due within 5 days'}"></span>`:""}${inputCell("bills",r.id,"name","text",r.name,'placeholder="name"')}</td>
     <td>${inputCell("bills",r.id,"note","text",r.note??"",'placeholder="conf #"')}</td>
     <td>${inputCell("bills",r.id,"budget","number",r.budget??"",'step="0.01" placeholder="0"')}</td>
@@ -3712,13 +3802,17 @@ function renderSavings(){
   const m = M();
   const jarOpts = sel => `<option value="" ${!sel?"selected":""}>(none)</option>` +
     db.jars.map(j=>`<option value="${j.id}" ${j.id===sel?"selected":""}>${esc(j.name)}</option>`).join("");
-  const rows = m.savings.map(r=>`<tr>
+  const rows = m.savings.map(r=>{
+    const jarName = db.jars.find(j=>j.id===r.jar)?.name || "No jar";
+    return `<tr>
+    ${mobileSummary(r.name,fmt(r.amount||0),`${jarName} · ${mobileDate(r.date)}`,r.note?`Conf ${r.note}`:"")}
     <td>${inputCell("savings",r.id,"name","text",r.name,'placeholder="e.g. Ally savings"')}</td>
     <td>${inputCell("savings",r.id,"amount","number",r.amount??"",'step="0.01" placeholder="0"')}</td>
     <td>${inputCell("savings",r.id,"date","date",r.date??"")}</td>
     <td>${inputCell("savings",r.id,"note","text",r.note??"",'placeholder="conf #"')}</td>
     <td><select data-sec="savings" data-id="${r.id}" data-f="jar">${jarOpts(r.jar)}</select></td>
-    <td class="chk">${delBtn("savings",r.id)}</td></tr>`).join("");
+    <td class="chk">${delBtn("savings",r.id)}</td></tr>`;
+  }).join("");
   $("#tb-savings").innerHTML = rows || emptyRow(6);
   const t = totals();
   $("#tot-savings").textContent = fmt(t.sav.a) + " · " + m.savings.length + " transfer" + (m.savings.length===1?"":"s");
@@ -3869,6 +3963,7 @@ function renderLog(){
   const m = M();
   const catOpts = sel => m.expcat.map(c=>`<option ${c.name===sel?"selected":""}>${esc(c.name)}</option>`).join("") + `<option value="" ${!sel?"selected":""}>(none)</option>`;
   const receiptRows = m.receipt.map(r=>`<tr style="opacity:${r.method==='cash'?1:.65}">
+    ${mobileSummary(r.name,fmt(r.amount),`${r.cat||"No category"} · ${mobileDate(r.date)}`,r.method==='cash'?"💵 cash/debit":"🧾 tracked only")}
     <td class="num">${esc(r.date)}</td>
     <td>${esc(r.name)}</td>
     <td><span class="cat-select-wrap"><select data-sec="receipt" data-id="${r.id}" data-f="cat">${catOpts(r.cat)}</select><button class="cat-info-btn" type="button" data-cat-guide-for="previous" title="Open Category Handbook">𝒾</button></span></td>
@@ -3876,6 +3971,7 @@ function renderLog(){
     <td><span class="flag ${r.method==='cash'?'cash':''}">🧾 ${r.method==='cash'?'cash · counts':'tracked only'}</span></td>
     <td class="chk">${delBtn("receipt",r.id)}</td></tr>`);
   const logRows = m.log.map(e=>`<tr>
+    ${mobileSummary(e.name,fmt(e.amount||0),`${e.cat||"No category"} · ${mobileDate(e.date)}`,e.pay?`Paid with ${e.pay}`:"")}
     <td>${inputCell("log",e.id,"date","date",e.date)}</td>
     <td>${inputCell("log",e.id,"name","text",e.name,'placeholder="what"')}</td>
     <td><span class="cat-select-wrap"><select data-sec="log" data-id="${e.id}" data-f="cat">${catOpts(e.cat)}</select><button class="cat-info-btn" type="button" data-cat-guide-for="previous" title="Open Category Handbook">𝒾</button></span></td>
